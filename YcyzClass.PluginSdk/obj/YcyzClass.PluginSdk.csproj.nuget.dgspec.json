@@ -1,0 +1,702 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Users\\hualei\\.qclaw\\workspace\\YcyzClass\\YcyzClass.PluginSdk\\YcyzClass.PluginSdk.csproj": {}
+  },
+  "projects": {
+    "C:\\Users\\hualei\\.qclaw\\workspace\\YcyzClass\\YcyzClass.Core\\YcyzClass.Core.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\hualei\\.qclaw\\workspace\\YcyzClass\\YcyzClass.Core\\YcyzClass.Core.csproj",
+        "projectName": "YcyzClass.Core",
+        "projectPath": "C:\\Users\\hualei\\.qclaw\\workspace\\YcyzClass\\YcyzClass.Core\\YcyzClass.Core.csproj",
+        "packagesPath": "C:\\Users\\hualei\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\hualei\\.qclaw\\workspace\\YcyzClass\\YcyzClass.Core\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\hualei\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "C:\\Users\\hualei\\.qclaw\\workspace\\YcyzClass\\YcyzClass.Platforms.Abstractions\\YcyzClass.Platforms.Abstractions.csproj": {
+                "projectPath": "C:\\Users\\hualei\\.qclaw\\workspace\\YcyzClass\\YcyzClass.Platforms.Abstractions\\YcyzClass.Platforms.Abstractions.csproj"
+              },
+              "C:\\Users\\hualei\\.qclaw\\workspace\\YcyzClass\\YcyzClass.Shared.IPC\\YcyzClass.Shared.IPC.csproj": {
+                "projectPath": "C:\\Users\\hualei\\.qclaw\\workspace\\YcyzClass\\YcyzClass.Shared.IPC\\YcyzClass.Shared.IPC.csproj"
+              },
+              "C:\\Users\\hualei\\.qclaw\\workspace\\YcyzClass\\YcyzClass.Shared\\YcyzClass.Shared.csproj": {
+                "projectPath": "C:\\Users\\hualei\\.qclaw\\workspace\\YcyzClass\\YcyzClass.Shared\\YcyzClass.Shared.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "AsyncImageLoader.Avalonia": {
+              "target": "Package",
+              "version": "[3.3.0, )"
+            },
+            "Avalonia": {
+              "target": "Package",
+              "version": "[11.3.13, )"
+            },
+            "Avalonia.Controls.ColorPicker": {
+              "target": "Package",
+              "version": "[11.3.13, )"
+            },
+            "Avalonia.Desktop": {
+              "target": "Package",
+              "version": "[11.3.13, )"
+            },
+            "Avalonia.Diagnostics": {
+              "target": "Package",
+              "version": "[11.3.13, )"
+            },
+            "Avalonia.Labs.CommandManager": {
+              "target": "Package",
+              "version": "[11.3.0, )"
+            },
+            "AvaloniaUI.DiagnosticsSupport": {
+              "target": "Package",
+              "version": "[2.2.0-beta2, )"
+            },
+            "ClassIsland.Markdown.Avalonia": {
+              "target": "Package",
+              "version": "[11.0.3.4, )"
+            },
+            "ClassIsland.SimpleGitInfoGenerator": {
+              "include": "Build, Analyzers",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[1.0.0.1, )"
+            },
+            "FluentAvaloniaUI": {
+              "target": "Package",
+              "version": "[2.4.1, )"
+            },
+            "HotAvalonia": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[3.0.2, )"
+            },
+            "Lib.Harmony.Thin": {
+              "target": "Package",
+              "version": "[2.4.2, )"
+            },
+            "Microsoft.Extensions.Configuration.UserSecrets": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Microsoft.Extensions.Hosting": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Microsoft.Extensions.Hosting.Abstractions": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Microsoft.SourceLink.GitHub": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Microsoft.Windows.CsWin32": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[0.3.183, )"
+            },
+            "MoonSharp": {
+              "target": "Package",
+              "version": "[2.0.0, )"
+            },
+            "Octokit": {
+              "target": "Package",
+              "version": "[9.1.0, )"
+            },
+            "ReactiveUI": {
+              "target": "Package",
+              "version": "[20.2.45, )"
+            },
+            "SoundFlow": {
+              "target": "Package",
+              "version": "[1.2.1.*, )"
+            },
+            "System.Text.Encoding.CodePages": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Xaml.Behaviors": {
+              "target": "Package",
+              "version": "[11.3.9.5, )"
+            },
+            "YamlDotNet": {
+              "target": "Package",
+              "version": "[16.3.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[8.0.26, 8.0.26]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[8.0.26, 8.0.26]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[8.0.26, 8.0.26]"
+            }
+          ],
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.313/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\hualei\\.qclaw\\workspace\\YcyzClass\\YcyzClass.Platforms.Abstractions\\YcyzClass.Platforms.Abstractions.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\hualei\\.qclaw\\workspace\\YcyzClass\\YcyzClass.Platforms.Abstractions\\YcyzClass.Platforms.Abstractions.csproj",
+        "projectName": "YcyzClass.Platforms.Abstractions",
+        "projectPath": "C:\\Users\\hualei\\.qclaw\\workspace\\YcyzClass\\YcyzClass.Platforms.Abstractions\\YcyzClass.Platforms.Abstractions.csproj",
+        "packagesPath": "C:\\Users\\hualei\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\hualei\\.qclaw\\workspace\\YcyzClass\\YcyzClass.Platforms.Abstractions\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\hualei\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "C:\\Users\\hualei\\.qclaw\\workspace\\YcyzClass\\YcyzClass.Shared\\YcyzClass.Shared.csproj": {
+                "projectPath": "C:\\Users\\hualei\\.qclaw\\workspace\\YcyzClass\\YcyzClass.Shared\\YcyzClass.Shared.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Avalonia": {
+              "target": "Package",
+              "version": "[11.3.13, )"
+            },
+            "Avalonia.Diagnostics": {
+              "target": "Package",
+              "version": "[11.3.13, )"
+            },
+            "ClassIsland.SimpleGitInfoGenerator": {
+              "include": "Build, Analyzers",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[1.0.0.1, )"
+            },
+            "HotAvalonia": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[3.0.2, )"
+            },
+            "Microsoft.SourceLink.GitHub": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[8.0.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[8.0.26, 8.0.26]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[8.0.26, 8.0.26]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[8.0.26, 8.0.26]"
+            }
+          ],
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.313/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\hualei\\.qclaw\\workspace\\YcyzClass\\YcyzClass.PluginSdk\\YcyzClass.PluginSdk.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\hualei\\.qclaw\\workspace\\YcyzClass\\YcyzClass.PluginSdk\\YcyzClass.PluginSdk.csproj",
+        "projectName": "YcyzClass.PluginSdk",
+        "projectPath": "C:\\Users\\hualei\\.qclaw\\workspace\\YcyzClass\\YcyzClass.PluginSdk\\YcyzClass.PluginSdk.csproj",
+        "packagesPath": "C:\\Users\\hualei\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\hualei\\.qclaw\\workspace\\YcyzClass\\YcyzClass.PluginSdk\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\hualei\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "C:\\Users\\hualei\\.qclaw\\workspace\\YcyzClass\\YcyzClass.Core\\YcyzClass.Core.csproj": {
+                "projectPath": "C:\\Users\\hualei\\.qclaw\\workspace\\YcyzClass\\YcyzClass.Core\\YcyzClass.Core.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "ClassIsland.SimpleGitInfoGenerator": {
+              "include": "Build, Analyzers",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[1.0.0.1, )"
+            },
+            "Microsoft.SourceLink.GitHub": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[8.0.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[8.0.26, 8.0.26]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[8.0.26, 8.0.26]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[8.0.26, 8.0.26]"
+            }
+          ],
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.313/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\hualei\\.qclaw\\workspace\\YcyzClass\\YcyzClass.Shared.IPC\\YcyzClass.Shared.IPC.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\hualei\\.qclaw\\workspace\\YcyzClass\\YcyzClass.Shared.IPC\\YcyzClass.Shared.IPC.csproj",
+        "projectName": "YcyzClass.Shared.IPC",
+        "projectPath": "C:\\Users\\hualei\\.qclaw\\workspace\\YcyzClass\\YcyzClass.Shared.IPC\\YcyzClass.Shared.IPC.csproj",
+        "packagesPath": "C:\\Users\\hualei\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\hualei\\.qclaw\\workspace\\YcyzClass\\YcyzClass.Shared.IPC\\obj\\",
+        "projectStyle": "PackageReference",
+        "crossTargeting": true,
+        "configFilePaths": [
+          "C:\\Users\\hualei\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net472",
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "C:\\Users\\hualei\\.qclaw\\workspace\\YcyzClass\\YcyzClass.Shared\\YcyzClass.Shared.csproj": {
+                "projectPath": "C:\\Users\\hualei\\.qclaw\\workspace\\YcyzClass\\YcyzClass.Shared\\YcyzClass.Shared.csproj"
+              }
+            }
+          },
+          "net472": {
+            "targetAlias": "net472",
+            "projectReferences": {
+              "C:\\Users\\hualei\\.qclaw\\workspace\\YcyzClass\\YcyzClass.Shared\\YcyzClass.Shared.csproj": {
+                "projectPath": "C:\\Users\\hualei\\.qclaw\\workspace\\YcyzClass\\YcyzClass.Shared\\YcyzClass.Shared.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "ClassIsland.SimpleGitInfoGenerator": {
+              "include": "Build, Analyzers",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[1.0.0.1, )"
+            },
+            "Microsoft.SourceLink.GitHub": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "dotnetCampus.Ipc": {
+              "target": "Package",
+              "version": "[2.0.0-alpha410, )"
+            },
+            "dotnetCampus.Ipc.Analyzers": {
+              "include": "Analyzers",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.0.0-alpha410, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[8.0.26, 8.0.26]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[8.0.26, 8.0.26]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[8.0.26, 8.0.26]"
+            }
+          ],
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.313/PortableRuntimeIdentifierGraph.json"
+        },
+        "net472": {
+          "targetAlias": "net472",
+          "dependencies": {
+            "ClassIsland.SimpleGitInfoGenerator": {
+              "include": "Build, Analyzers",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[1.0.0.1, )"
+            },
+            "Microsoft.NETFramework.ReferenceAssemblies": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[1.0.3, )",
+              "autoReferenced": true
+            },
+            "Microsoft.SourceLink.GitHub": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "dotnetCampus.Ipc": {
+              "target": "Package",
+              "version": "[2.0.0-alpha410, )"
+            },
+            "dotnetCampus.Ipc.Analyzers": {
+              "include": "Analyzers",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.0.0-alpha410, )"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.313\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\hualei\\.qclaw\\workspace\\YcyzClass\\YcyzClass.Shared\\YcyzClass.Shared.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\hualei\\.qclaw\\workspace\\YcyzClass\\YcyzClass.Shared\\YcyzClass.Shared.csproj",
+        "projectName": "YcyzClass.Shared",
+        "projectPath": "C:\\Users\\hualei\\.qclaw\\workspace\\YcyzClass\\YcyzClass.Shared\\YcyzClass.Shared.csproj",
+        "packagesPath": "C:\\Users\\hualei\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\hualei\\.qclaw\\workspace\\YcyzClass\\YcyzClass.Shared\\obj\\",
+        "projectStyle": "PackageReference",
+        "crossTargeting": true,
+        "configFilePaths": [
+          "C:\\Users\\hualei\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net472",
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {}
+          },
+          "net472": {
+            "targetAlias": "net472",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "ClassIsland.SimpleGitInfoGenerator": {
+              "include": "Build, Analyzers",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[1.0.0.1, )"
+            },
+            "CommunityToolkit.Mvvm": {
+              "target": "Package",
+              "version": "[8.2.1, )"
+            },
+            "CsesSharp": {
+              "target": "Package",
+              "version": "[1.0.0, )"
+            },
+            "Google.Protobuf": {
+              "target": "Package",
+              "version": "[3.27.0-rc1, )"
+            },
+            "Grpc.Net.Client": {
+              "target": "Package",
+              "version": "[2.71.0, )"
+            },
+            "Grpc.Tools": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.62.0, )"
+            },
+            "Microsoft.Extensions.Hosting.Abstractions": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Microsoft.SourceLink.GitHub": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[8.0.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[8.0.26, 8.0.26]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[8.0.26, 8.0.26]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[8.0.26, 8.0.26]"
+            }
+          ],
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.313/PortableRuntimeIdentifierGraph.json"
+        },
+        "net472": {
+          "targetAlias": "net472",
+          "dependencies": {
+            "ClassIsland.SimpleGitInfoGenerator": {
+              "include": "Build, Analyzers",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[1.0.0.1, )"
+            },
+            "CommunityToolkit.Mvvm": {
+              "target": "Package",
+              "version": "[8.2.1, )"
+            },
+            "CsesSharp": {
+              "target": "Package",
+              "version": "[1.0.0, )"
+            },
+            "Google.Protobuf": {
+              "target": "Package",
+              "version": "[3.27.0-rc1, )"
+            },
+            "Grpc.Net.Client": {
+              "target": "Package",
+              "version": "[2.71.0, )"
+            },
+            "Grpc.Tools": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.62.0, )"
+            },
+            "Microsoft.Extensions.Hosting.Abstractions": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Microsoft.NETFramework.ReferenceAssemblies": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[1.0.3, )",
+              "autoReferenced": true
+            },
+            "Microsoft.SourceLink.GitHub": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "System.Text.Json": {
+              "target": "Package",
+              "version": "[8.0.5, )"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.313\\RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,5 @@
+obj\Release\net8.0\Protobuf\Service/Handshake.cs \
+obj\Release\net8.0\Protobuf\Service/HandshakeGrpc.cs: Protobuf/Client/HandshakeScReq.proto\
+ Protobuf/Enum/Retcode.proto\
+ Protobuf/Server/HandshakeScRsp.proto\
+ Protobuf/Service/Handshake.proto

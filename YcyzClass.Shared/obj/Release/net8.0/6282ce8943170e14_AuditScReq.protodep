@@ -1,0 +1,2 @@
+obj\Release\net8.0\Protobuf\Client/AuditScReq.cs: Protobuf/Enum/AuditEvents.proto\
+ Protobuf/Client/AuditScReq.proto

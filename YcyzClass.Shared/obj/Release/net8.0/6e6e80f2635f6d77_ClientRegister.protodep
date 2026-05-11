@@ -1,0 +1,5 @@
+obj\Release\net8.0\Protobuf\Service/ClientRegister.cs \
+obj\Release\net8.0\Protobuf\Service/ClientRegisterGrpc.cs: Protobuf/Client/ClientRegisterCsReq.proto\
+ Protobuf/Enum/Retcode.proto\
+ Protobuf/Server/ClientRegisterScRsp.proto\
+ Protobuf/Service/ClientRegister.proto

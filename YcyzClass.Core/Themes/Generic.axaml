@@ -1,0 +1,16 @@
+<ResourceDictionary
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:YcyzClass.Core"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:lessonsControls="clr-namespace:YcyzClass.Core.Controls.LessonsControls"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:profile="clr-namespace:YcyzClass.Shared.Models.Profile;assembly=YcyzClass.Shared"
+    xmlns:iconControl="clr-namespace:YcyzClass.Core.Controls.IconControl"
+    mc:Ignorable="d">
+    <ResourceDictionary.MergedDictionaries>
+        <!-- <ResourceInclude Source="avares://YcyzClass.Core/Controls/IconControl/IconControl.axaml"/> -->
+        <!-- <ResourceInclude Source="avares://YcyzClass.Core/Controls/StickerControl/StickerControl.axaml"/> -->
+        <ResourceInclude Source="avares://YcyzClass.Core/Controls/DevelopmentBuildAdorner.axaml"/>
+    </ResourceDictionary.MergedDictionaries>
+</ResourceDictionary>

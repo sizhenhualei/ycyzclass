@@ -1,0 +1,5 @@
+obj\Release\net8.0\Protobuf\Service/ConfigUpload.cs \
+obj\Release\net8.0\Protobuf\Service/ConfigUploadGrpc.cs: Protobuf/Enum/Retcode.proto\
+ Protobuf/Server/ConfigUploadScRsp.proto\
+ Protobuf/Client/ConfigUploadScReq.proto\
+ Protobuf/Service/ConfigUpload.proto

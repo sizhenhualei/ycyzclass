@@ -1,0 +1,3 @@
+obj\Release\net8.0\Protobuf\Server/ClientCommandDeliverScRsp.cs: Protobuf/Enum/CommandTypes.proto\
+ Protobuf/Enum/Retcode.proto\
+ Protobuf/Server/ClientCommandDeliverScRsp.proto

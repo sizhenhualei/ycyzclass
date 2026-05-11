@@ -1,0 +1,2 @@
+obj\Release\net8.0\Protobuf\Server/HandshakeScRsp.cs: Protobuf/Enum/Retcode.proto\
+ Protobuf/Server/HandshakeScRsp.proto

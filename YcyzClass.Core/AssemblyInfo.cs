@@ -1,0 +1,25 @@
+using System.Runtime.CompilerServices;
+using Avalonia.Metadata;
+
+[assembly: InternalsVisibleTo("YcyzClass")]
+[assembly: InternalsVisibleTo("YcyzClass.Desktop")]
+[assembly: InternalsVisibleTo("YcyzClass.Platforms.Windows")]
+
+[assembly: XmlnsPrefix("http://ycyzclass.tech/schemas/xaml/core", "ci")]
+[assembly: XmlnsDefinition("http://ycyzclass.tech/schemas/xaml/core", "YcyzClass.Core")]
+[assembly: XmlnsDefinition("http://ycyzclass.tech/schemas/xaml/core", "YcyzClass.Core.Converters")]
+[assembly: XmlnsDefinition("http://ycyzclass.tech/schemas/xaml/core", "YcyzClass.Core.Controls")]
+[assembly: XmlnsDefinition("http://ycyzclass.tech/schemas/xaml/core", "YcyzClass.Core.Controls.CommonDialog")]
+[assembly: XmlnsDefinition("http://ycyzclass.tech/schemas/xaml/core", "YcyzClass.Core.Controls.LessonsControls")]
+[assembly: XmlnsDefinition("http://ycyzclass.tech/schemas/xaml/core", "YcyzClass.Core.Controls.IconControl")]
+[assembly: XmlnsDefinition("http://ycyzclass.tech/schemas/xaml/core", "YcyzClass.Core.Controls.NavHyperlink")]
+[assembly: XmlnsDefinition("http://ycyzclass.tech/schemas/xaml/core", "YcyzClass.Core.Controls.Ruleset")]
+[assembly: XmlnsDefinition("http://ycyzclass.tech/schemas/xaml/core", "YcyzClass.Core.Controls.Tutorial")]
+[assembly: XmlnsDefinition("http://ycyzclass.tech/schemas/xaml/core", "YcyzClass.Core.Commands")]
+[assembly: XmlnsDefinition("http://ycyzclass.tech/schemas/xaml/core", "YcyzClass.Core.Abstractions.Controls")]
+[assembly: XmlnsDefinition("http://ycyzclass.tech/schemas/xaml/core", "YcyzClass.Core.Abstractions.Behaviors")]
+[assembly: XmlnsDefinition("http://ycyzclass.tech/schemas/xaml/core", "YcyzClass.Core.Controls.StickerControl")]
+[assembly: XmlnsDefinition("http://ycyzclass.tech/schemas/xaml/core", "YcyzClass.Core.Abstractions.Views")]
+[assembly: XmlnsDefinition("http://ycyzclass.tech/schemas/xaml/core", "YcyzClass.Core.Behaviors")]
+[assembly: XmlnsDefinition("http://ycyzclass.tech/schemas/xaml/core", "YcyzClass.Core.Assists")]
+[assembly: XmlnsDefinition("http://ycyzclass.tech/schemas/xaml/core", "YcyzClass.Core.IconSources")]

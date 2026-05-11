@@ -1,0 +1,7 @@
+syntax = "proto3";
+package YcyzClass.Shared.Protobuf.AuditEvent;
+option csharp_namespace = "YcyzClass.Shared.Protobuf.AuditEvent";
+
+message AuthorizeEvent {
+  int32 Level = 1;
+}

@@ -1,0 +1,24 @@
+{
+  "version": 2,
+  "dgSpecHash": "TewZ1Pr2T5g=",
+  "success": false,
+  "projectFilePath": "C:\\Users\\hualei\\.qclaw\\workspace\\YcyzClass\\YcyzClass.ExamplePlugin\\YcyzClass.ExamplePlugin.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\hualei\\.nuget\\packages\\microsoft.netcore.app.ref\\8.0.26\\microsoft.netcore.app.ref.8.0.26.nupkg.sha512",
+    "C:\\Users\\hualei\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\8.0.26\\microsoft.windowsdesktop.app.ref.8.0.26.nupkg.sha512",
+    "C:\\Users\\hualei\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\8.0.26\\microsoft.aspnetcore.app.ref.8.0.26.nupkg.sha512"
+  ],
+  "logs": [
+    {
+      "code": "NU1101",
+      "level": "Error",
+      "message": "找不到包 YcyzClass.PluginSdk。源 nuget.org 中不存在具有此 ID 的包",
+      "projectPath": "C:\\Users\\hualei\\.qclaw\\workspace\\YcyzClass\\YcyzClass.ExamplePlugin\\YcyzClass.ExamplePlugin.csproj",
+      "filePath": "C:\\Users\\hualei\\.qclaw\\workspace\\YcyzClass\\YcyzClass.ExamplePlugin\\YcyzClass.ExamplePlugin.csproj",
+      "libraryId": "YcyzClass.PluginSdk",
+      "targetGraphs": [
+        "net8.0"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
+    <Import Project="$(NuGetPackageRoot)microsoft.sourcelink.common\8.0.0\build\Microsoft.SourceLink.Common.targets" Condition="Exists('$(NuGetPackageRoot)microsoft.sourcelink.common\8.0.0\build\Microsoft.SourceLink.Common.targets')" />
+    <Import Project="$(NuGetPackageRoot)microsoft.build.tasks.git\8.0.0\build\Microsoft.Build.Tasks.Git.targets" Condition="Exists('$(NuGetPackageRoot)microsoft.build.tasks.git\8.0.0\build\Microsoft.Build.Tasks.Git.targets')" />
+    <Import Project="$(NuGetPackageRoot)microsoft.sourcelink.github\8.0.0\build\Microsoft.SourceLink.GitHub.targets" Condition="Exists('$(NuGetPackageRoot)microsoft.sourcelink.github\8.0.0\build\Microsoft.SourceLink.GitHub.targets')" />
+    <Import Project="$(NuGetPackageRoot)microsoft.extensions.options\8.0.0\buildTransitive\net6.0\Microsoft.Extensions.Options.targets" Condition="Exists('$(NuGetPackageRoot)microsoft.extensions.options\8.0.0\buildTransitive\net6.0\Microsoft.Extensions.Options.targets')" />
+    <Import Project="$(NuGetPackageRoot)microsoft.extensions.logging.abstractions\8.0.0\buildTransitive\net6.0\Microsoft.Extensions.Logging.Abstractions.targets" Condition="Exists('$(NuGetPackageRoot)microsoft.extensions.logging.abstractions\8.0.0\buildTransitive\net6.0\Microsoft.Extensions.Logging.Abstractions.targets')" />
+    <Import Project="$(NuGetPackageRoot)communitytoolkit.mvvm\8.2.1\buildTransitive\netstandard2.1\CommunityToolkit.Mvvm.targets" Condition="Exists('$(NuGetPackageRoot)communitytoolkit.mvvm\8.2.1\buildTransitive\netstandard2.1\CommunityToolkit.Mvvm.targets')" />
+    <Import Project="$(NuGetPackageRoot)classisland.simplegitinfogenerator\1.0.0.1\buildTransitive\ClassIsland.SimpleGitInfoGenerator.targets" Condition="Exists('$(NuGetPackageRoot)classisland.simplegitinfogenerator\1.0.0.1\buildTransitive\ClassIsland.SimpleGitInfoGenerator.targets')" />
+    <Import Project="$(NuGetPackageRoot)fody\6.9.2\build\Fody.targets" Condition="Exists('$(NuGetPackageRoot)fody\6.9.2\build\Fody.targets')" />
+    <Import Project="$(NuGetPackageRoot)avalonia.buildservices\11.3.2\buildTransitive\Avalonia.BuildServices.targets" Condition="Exists('$(NuGetPackageRoot)avalonia.buildservices\11.3.2\buildTransitive\Avalonia.BuildServices.targets')" />
+    <Import Project="$(NuGetPackageRoot)avalonia\11.3.13\buildTransitive\Avalonia.targets" Condition="Exists('$(NuGetPackageRoot)avalonia\11.3.13\buildTransitive\Avalonia.targets')" />
+    <Import Project="$(NuGetPackageRoot)hotavalonia\3.0.2\build\HotAvalonia.targets" Condition="Exists('$(NuGetPackageRoot)hotavalonia\3.0.2\build\HotAvalonia.targets')" />
+  </ImportGroup>
+</Project>

@@ -1,0 +1,6 @@
+obj\Release\net8.0\Protobuf\Service/Audit.cs \
+obj\Release\net8.0\Protobuf\Service/AuditGrpc.cs: Protobuf/Enum/AuditEvents.proto\
+ Protobuf/Client/AuditScReq.proto\
+ Protobuf/Enum/Retcode.proto\
+ Protobuf/Server/AuditScRsp.proto\
+ Protobuf/Service/Audit.proto

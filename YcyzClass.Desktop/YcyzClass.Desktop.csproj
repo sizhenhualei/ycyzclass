@@ -1,0 +1,68 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <OutputType>Exe</OutputType>
+        <BaseFramework>net8.0</BaseFramework>
+        <ApplicationId>cn.ycyzclass.app</ApplicationId>
+        <Company>YcyzClass</Company>
+        <Product>YcyzClass</Product>
+        <SatelliteResourceLanguages>en;zh-cn</SatelliteResourceLanguages>
+        <Title>YcyzClass</Title>
+        <AssemblyTitle>YcyzClass</AssemblyTitle>
+    </PropertyGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\YcyzClass.Platforms.Abstractions\YcyzClass.Platforms.Abstractions.csproj" />
+      <ProjectReference Include="..\YcyzClass\YcyzClass.csproj" />
+    </ItemGroup>
+    
+    
+    <ItemGroup>
+        <ProjectReference Include="..\platforms\YcyzClass.Platforms.Windows\YcyzClass.Platforms.Windows.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+      <AvaloniaResource Include="Assets\AppLogo.ico">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+          <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+      </AvaloniaResource>
+      <None Include="Assets/**" CopyToPublishDirectory="Always" CopyToOutputDirectory="Always"
+            PublishFolderType="Resource"/>
+    </ItemGroup>
+    <ItemGroup>
+      <ImageAsset Remove="Assets\AppLogo.xcassets\AppIcon.appiconset\AppLogo@384w.png" />
+      <ImageAsset Remove="Assets\AppLogo.xcassets\AppIcon.appiconset\AppLogo.png" />
+      <ImageAsset Remove="Assets\AppLogo.xcassets\AppIcon.appiconset\AppLogo 2.png" />
+      <ImageAsset Remove="Assets\AppLogo.xcassets\AppIcon.appiconset\AppLogo 3.png" />
+      <ImageAsset Remove="Assets\AppLogo.xcassets\AppIcon.appiconset\AppLogo 1.png" />
+      <ImageAsset Remove="Assets\AppLogo.xcassets\AppIcon.appiconset\AppLogo@768w.png" />
+      <ImageAsset Remove="Assets\AppLogo.xcassets\AppIcon.appiconset\AppLogo 4.png" />
+      <ImageAsset Remove="Assets\AppLogo.xcassets\AppIcon.appiconset\AppLogo@384w 1.png" />
+      <ImageAsset Remove="Assets\AppLogo.xcassets\AppIcon.appiconset\AppLogo@768w 2.png" />
+      <ImageAsset Remove="Assets\AppLogo.xcassets\AppIcon.appiconset\AppLogo@768w 1.png" />
+      <ImageAsset Remove="Assets\AppLogo.xcassets\AppIcon.appiconset\AppLogo_16x16.png" />
+    </ItemGroup>
+    
+    <!-- Drop Code analysis dep -->
+    <ItemGroup>
+        <Reference Update="Microsoft.CodeAnalysis.CSharp">
+            <Private>false</Private>
+            <ExcludeAssets>runtime</ExcludeAssets>
+        </Reference>
+        <Reference Update="Microsoft.CodeAnalysis.VisualBasic">
+            <Private>false</Private>
+            <ExcludeAssets>runtime</ExcludeAssets>
+        </Reference>
+        <Reference Update="Microsoft.CodeAnalysis">
+            <Private>false</Private>
+            <ExcludeAssets>runtime</ExcludeAssets>
+        </Reference>
+    </ItemGroup>
+    
+    <PropertyGroup Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='Debug_MSIX'">
+        <DefineConstants>$(DefineConstants);TRACE;DEBUG</DefineConstants>
+    </PropertyGroup>
+    <Import Project="../Global.props"/>
+    <Import Project="../AvaloniaShared.props"/>
+    <Import Project="../CrossPlatformProps.props"/>
+</Project>

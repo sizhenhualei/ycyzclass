@@ -1,0 +1,7 @@
+syntax = "proto3";
+package YcyzClass.Shared.Protobuf.Command;
+option csharp_namespace = "YcyzClass.Shared.Protobuf.Command";
+
+message HeartBeat {
+    bool isOnline = 1;
+}

@@ -1,0 +1,3 @@
+C:\Users\hualei\.qclaw\workspace\YcyzClass\YcyzClass.Shared\obj\Release\net8.0\YcyzClass.Shared.csproj.AssemblyReference.cache
+C:\Users\hualei\.qclaw\workspace\YcyzClass\YcyzClass.Shared\obj\Release\net8.0\YcyzClass.Shared.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\hualei\.qclaw\workspace\YcyzClass\YcyzClass.Shared\obj\Release\net8.0\YcyzClass.Shared.csproj.CoreCompileInputs.cache

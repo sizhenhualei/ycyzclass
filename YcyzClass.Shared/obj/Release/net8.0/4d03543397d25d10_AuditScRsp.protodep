@@ -1,0 +1,2 @@
+obj\Release\net8.0\Protobuf\Server/AuditScRsp.cs: Protobuf/Enum/Retcode.proto\
+ Protobuf/Server/AuditScRsp.proto

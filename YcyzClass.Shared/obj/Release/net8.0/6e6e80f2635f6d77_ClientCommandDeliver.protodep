@@ -1,0 +1,6 @@
+obj\Release\net8.0\Protobuf\Service/ClientCommandDeliver.cs \
+obj\Release\net8.0\Protobuf\Service/ClientCommandDeliverGrpc.cs: Protobuf/Enum/CommandTypes.proto\
+ Protobuf/Enum/Retcode.proto\
+ Protobuf/Server/ClientCommandDeliverScRsp.proto\
+ Protobuf/Client/ClientCommandDeliverScReq.proto\
+ Protobuf/Service/ClientCommandDeliver.proto

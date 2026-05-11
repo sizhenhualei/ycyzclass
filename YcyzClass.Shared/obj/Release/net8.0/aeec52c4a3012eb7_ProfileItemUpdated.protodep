@@ -1,0 +1,2 @@
+obj\Release\net8.0\Protobuf\AuditEvent/ProfileItemUpdated.cs: Protobuf/Enum/ListItemUpdateOperations.proto\
+ Protobuf/AuditEvent/ProfileItemUpdated.proto
