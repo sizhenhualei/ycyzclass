@@ -518,7 +518,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     [JsonIgnore]
     public bool IsSentryEnabled
     {
-        get => GlobalStorageService.GetValue("IsSentryEnabled") is "1" or null;
+        get => GlobalStorageService.GetValue("IsSentryEnabled") is "1";
         set
         {
             try

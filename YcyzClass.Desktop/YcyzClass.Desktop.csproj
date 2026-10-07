@@ -26,7 +26,7 @@
         <AppName>YcyzClass</AppName>
         <DebControlDescription>功能强大、可定制、跨平台的大屏课表显示工具。</DebControlDescription>
         <DesktopComment>功能强大、可定制、跨平台的大屏课表显示工具。</DesktopComment>
-        <DebControlHomepage>https://ycyzclass.tech</DebControlHomepage>
+        <DebControlHomepage>https://github.com/sizhenhualei/ycyzclass</DebControlHomepage>
         <DebControlSection>utils</DebControlSection>
         <DebControlMaintainer>司振华蕾 x DeepSeekV4.1</DebControlMaintainer>
         <Png32x32IconFile>Assets\AppLogo@32w.png</Png32x32IconFile>

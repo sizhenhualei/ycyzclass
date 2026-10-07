@@ -109,7 +109,9 @@ public static class Program
             }
         }
 
-        var sentryEnabled = GlobalStorageService.GetValue("IsSentryEnabled") is "1" or null;
+        // YcyzClass 分支未部署遥测服务端（无可用 Sentry DSN），因此默认不启用遥测上报；
+        // 用户仍可在“隐私”设置中手动开关，但本分支开启后不会实际上报。
+        var sentryEnabled = GlobalStorageService.GetValue("IsSentryEnabled") is "1";
         if (sentryEnabled )
         {
             SentrySdk.Init(ConfigureSentry);
@@ -167,7 +169,8 @@ public static class Program
         // A Sentry Data Source Name (DSN) is required.
         // See https://docs.sentry.io/product/sentry-basics/dsn-explainer/
         // You can set it in the SENTRY_DSN environment variable, or you can set it in code here.
-        options.Dsn = "https://16f66314173eb09592b08a5ee80f7352@todayeatsentry.ycyzclass.tech:21815/2";
+        // 本分支未部署自建 Sentry 服务端：DSN 置空，遥测不会上报（Sentry 对空 DSN 视为未启用）。
+        options.Dsn = "";
         // When debug is enabled, the Sentry client will emit detailed debugging information to the console.
         // This might be helpful, or might interfere with the normal operation of your application.
         // We enable it here for demonstration purposes when first trying Sentry.

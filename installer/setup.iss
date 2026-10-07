@@ -3,7 +3,7 @@
 #define AppVersion GetCmdParam("AppVersion", "2.0.0")
 #endif
 #define AppPublisher "司振华蕾 x DeepSeekV4.1"
-#define AppURL "https://ycyzclass.tech/"
+#define AppURL "https://github.com/sizhenhualei/ycyzclass/"
 #define AppExeName "YcyzClass.exe"
 
 #ifndef SourceDir

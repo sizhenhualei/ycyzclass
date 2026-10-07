@@ -58,6 +58,8 @@ public class UpdateService : IHostedService, INotifyPropertyChanged
     private DistributionInfoClient _distributionInfo;
     private string _currentWorkingMessage = "";
 
+    // 本分支（YcyzClass）尚未部署 Phainon 分发服务端，此地址为占位值：在自行部署分发服务前，
+    // “检查更新”会因无法获取 DistributionInfo 而失败，不影响其它功能。
     private const string PhainonRootUrl = "https://distribution.ycyzclass.tech";
 
     internal static string UpdateCachePath { get; } = Path.Combine(CommonDirectories.AppCacheFolderPath, "Update");

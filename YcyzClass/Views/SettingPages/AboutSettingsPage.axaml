@@ -205,7 +205,7 @@
                                 </Style>
                             </WrapPanel.Styles>
                             <HyperlinkButton Click="SettingsExpanderItemShowOssLicense_OnClick"
-                                             CommandParameter="https://ycyzclass.tech">
+                                             CommandParameter="https://github.com/sizhenhualei/ycyzclass/blob/master/LICENSE.txt">
                                 <TextBlock Text="开放源代码许可"/>
                             </HyperlinkButton>
                             <HyperlinkButton Click="ButtonPrivacy_OnClick"
@@ -214,8 +214,8 @@
                             </HyperlinkButton>
                         </WrapPanel>
                     </controls3:SettingsExpanderItem.Footer>
-                    <TextBlock Background="Transparent" >
-                        <Run Text="Copyright (c) 2023-"/><Run Text="{Binding Year, Source={x:Static system:DateTime.Now}, Mode=OneWay}" /> HelloWRC
+                    <TextBlock Background="Transparent" TextWrapping="Wrap">
+                        <Run Text="Copyright (c) 2026-"/><Run Text="{Binding Year, Source={x:Static system:DateTime.Now}, Mode=OneWay}" /> 司振华蕾 x DeepSeekV4.1<LineBreak/>本作品修改自 ClassIsland（原作者 HelloWRC），非 ClassIsland 官方项目。
                     </TextBlock>
                 </controls3:SettingsExpanderItem>
                 <controls3:SettingsExpanderItem Content="常用链接">
@@ -228,7 +228,7 @@
                                 </Style>
                             </WrapPanel.Styles>
                             <HyperlinkButton Click="UriNavigationCommands_OnClick"
-                                             CommandParameter="https://ycyzclass.tech">
+                                             CommandParameter="https://github.com/sizhenhualei/ycyzclass">
                                 <TextBlock Text="项目主页"/>
                             </HyperlinkButton>
                             <HyperlinkButton Click="UriNavigationCommands_OnClick"
@@ -259,7 +259,7 @@
                     IsClickEnabled="True"/>
                 <controls3:SettingsExpanderItem
                     Click="UriNavigationCommands_OnClick"
-                    CommandParameter="https://github.com/ClassIsland/voting/discussions/categories/ycyzclass?discussions_q=is%3Aopen+category%3AYcyzClass+sort%3Atop"
+                    CommandParameter="https://github.com/sizhenhualei/ycyzclass/issues?q=is%3Aissue+is%3Aopen+label%3Aenhancement"
                     Content="功能投票"
                     ActionIconSource="{controls1:FluentIconSource &#xEC2E;} "
                     IsClickEnabled="True"/>

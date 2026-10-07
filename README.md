@@ -31,7 +31,7 @@ YcyzClass 是一款适用于班级多媒体屏幕的跨平台课表信息显示�
 
 #### 💬[ClassIsland QQ 频道](https://pd.qq.com/s/grr6qwqwj) | [ClassIsland QQ 群组 1 群](https://qm.qq.com/q/4NsDQKiAuQ) | [2 群](https://qm.qq.com/q/MhWCvrk7mu)
 
-#### [🌐 官方网站](https://ycyzclass.tech/) | [🚀 软件下载](https://ycyzclass.tech/download) | [📚 项目文档](https://docs.classisland.tech) | [🗳 功能投票](https://github.com/ClassIsland/voting/discussions?discussions_q=is%3Aopen+sort%3Atop)
+#### [🌐 项目仓库](https://github.com/sizhenhualei/ycyzclass) | [🚀 软件下载](https://github.com/sizhenhualei/ycyzclass/releases) | [📚 项目文档](https://docs.classisland.tech) | [🗳 功能投票](https://github.com/ClassIsland/voting/discussions?discussions_q=is%3Aopen+sort%3Atop)
 
 ###### [观看介绍视频，快速了解突破创新 →](https://www.bilibili.com/video/BV12fFoefEGn/)
 
@@ -149,7 +149,7 @@ YcyzClass 与部分窗口美化工具（特别是如 Mica For Everyone 这类修
 
 对于普通用户，可以在以下渠道下载到本软件，请根据自身网络环境选择合适的渠道。
 
-- [**YcyzClass 官网（推荐）**](https://ycyzclass.tech/download)
+- [**YcyzClass 下载页（GitHub Releases，推荐）**](https://github.com/sizhenhualei/ycyzclass/releases)
 - [GitHub Releases](https://github.com/sizhenhualei/ycyzclass/releases/)
 
 ## 获取帮助＆加入社区

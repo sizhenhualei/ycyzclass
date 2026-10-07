@@ -300,8 +300,8 @@ public partial class App
             Name = "经典",
             Description = "YcyzClass 的经典外观。",
             Banner = "avares://YcyzClass/Assets/XamlThemePreviews/ycyzclass.classic.png",
-            Author = "YcyzClass",
-            Url = "https://github.com/ClassIsland/ClassIsland"
+            Author = "司振华蕾 x DeepSeekV4.1",
+            Url = "https://github.com/sizhenhualei/ycyzclass"
         });
         services.AddXamlTheme(new Uri("avares://YcyzClass/XamlThemes/FluentTheme/Styles.axaml"), new ThemeManifest()
         {
@@ -309,8 +309,8 @@ public partial class App
             Name = "Fluent",
             Description = "焕然一新的 YcyzClass 外观。",
             Banner = "avares://YcyzClass/Assets/XamlThemePreviews/ycyzclass.fluent.png",
-            Author = "YcyzClass",
-            Url = "https://github.com/ClassIsland/ClassIsland",
+            Author = "司振华蕾 x DeepSeekV4.1",
+            Url = "https://github.com/sizhenhualei/ycyzclass",
             VerticalSafeAreaPx = 20
         });
         // 教程

@@ -24,7 +24,7 @@
                        FontSize="12"
                        FontFamily="JetBrains Mono, Consolas,  黑体"
                        IsVisible="{Binding ShowOssWatermark, RelativeSource={RelativeSource TemplatedParent}}">
-                <Run Text="https://www.ycyzclass.tech"/>
+                <Run Text="https://github.com/sizhenhualei/ycyzclass"/>
             </TextBlock>
         </Grid>
     </ControlTemplate>

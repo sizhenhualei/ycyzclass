@@ -58,7 +58,7 @@ var installation = Directory.GetDirectories(root)
 
 if (installation == null)
 {
-    ShowError("找不到有效的 YcyzClass 版本，可能是安装已损坏。请在 https://ycyzclass.tech/download 重新下载并安装 YcyzClass。");
+    ShowError("找不到有效的 YcyzClass 版本，可能是安装已损坏。请在 https://github.com/sizhenhualei/ycyzclass/releases 重新下载并安装 YcyzClass。");
     return 1;
 }
 
