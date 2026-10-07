@@ -80,7 +80,7 @@ public partial class DataTransferPage : UserControl
         ViewModel.PerformImportAction = BeginPerformClassIslandImport;
         ViewModel.PageIndex = 1;
         ViewModel.ImportSourcePath = "";
-        ViewModel.ImportDescription = "支持从 1.x 版本的 YcyzClass 导入课表、组件配置、自动化配置、应用设置、部分插件和主题等数据。";
+        ViewModel.ImportDescription = "支持从 1.x 版本的 ClassIsland 导入课表、组件配置、自动化配置、应用设置、部分插件和主题等数据。";
         ViewModel.IsExport = false;
     }
 
@@ -95,12 +95,12 @@ public partial class DataTransferPage : UserControl
         PopupHelper.DisableAllPopups();
         var file = await PlatformServices.FilePickerService.OpenFilesPickerAsync(new FilePickerOpenOptions()
         {
-            Title = "选择先前版本的 YcyzClass 实例",
+            Title = "选择先前版本的 ClassIsland 实例",
             FileTypeFilter =
             [
-                new FilePickerFileType("YcyzClass 可执行文件")
+                new FilePickerFileType("ClassIsland 可执行文件")
                 {
-                    Patterns = ["YcyzClass.exe"]
+                    Patterns = ["ClassIsland.exe"]
                 }
             ]
         }, topLevel);
@@ -149,7 +149,7 @@ public partial class DataTransferPage : UserControl
         var settings = ConfigureFileHelper.LoadConfigUnWrapped<Settings>(Path.Combine(root, "Settings.json"), false);
         if (settings.LastAppVersion < Version.Parse("1.7.0.0"))
         {
-            throw new Exception("源 YcyzClass 版本必须在 1.7.0.x，才能进行导入。");
+            throw new Exception("源 ClassIsland 版本必须在 1.7.0.x，才能进行导入。");
         }
         settings.MainWindowFont = MainWindow.DefaultFontFamilyKey;
         settings.AutoInstallUpdateNextStartup = false;
