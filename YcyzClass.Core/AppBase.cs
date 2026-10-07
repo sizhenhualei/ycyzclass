@@ -5,6 +5,8 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Media;
 using YcyzClass.Core.Enums;
 using YcyzClass.Shared;
+// GitInfo 由第三方源生成器 ClassIsland.SimpleGitInfoGenerator 生成，其命名空间固定为 ClassIsland，请勿随本项目重命名。
+using ClassIsland;
 
 namespace YcyzClass.Core;
 

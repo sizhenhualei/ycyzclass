@@ -1,6 +1,7 @@
 using System.Reflection;
 using System.Runtime.Versioning;
-using YcyzClass;
+// GitInfo 类型由第三方源生成器 ClassIsland.SimpleGitInfoGenerator 生成，其命名空间固定为 ClassIsland，请勿随本项目重命名。
+using ClassIsland;
 
 #if NIX
 [assembly: AssemblyVersion("0.0.0.0")]
