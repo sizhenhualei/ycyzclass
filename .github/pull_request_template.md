@@ -1,9 +1,9 @@
 <!--
-感谢您参与 ClassIsland 的贡献！
+感谢您参与 YcyzClass 的贡献！
 
 提交 PR 前请确认:
 1. 已阅读贡献指南:
-https://github.com/ClassIsland/ClassIsland/blob/master/CONTRIBUTING.md
+https://github.com/sizhenhualei/ycyzclass/blob/master/CONTRIBUTING.md
 
 ⚠ 在提交 PR 前，请确保您已在本地完成必要的测试，且确保要实现的功能或修复的问题能正常工作。 ⚠
 ⚠ 谎报测试结果可能会导致您最高被**永久**限制向本组织中的仓库提交 PR 和进行其它互动。 ⚠

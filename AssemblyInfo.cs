@@ -1,6 +1,6 @@
 using System.Reflection;
 using System.Runtime.Versioning;
-using ClassIsland;
+using YcyzClass;
 
 #if NIX
 [assembly: AssemblyVersion("0.0.0.0")]
@@ -10,8 +10,8 @@ using ClassIsland;
 [assembly: AssemblyInformationalVersion($"{GitInfo.Tag}+{GitInfo.CommitHash}")]
 #endif
 
-[assembly: AssemblyTitle("ClassIsland")]
-[assembly: AssemblyProduct("ClassIsland")]
+[assembly: AssemblyTitle("YcyzClass")]
+[assembly: AssemblyProduct("YcyzClass")]
 #if NETCOREAPP
 // [assembly: SupportedOSPlatform("Windows")]
 #endif

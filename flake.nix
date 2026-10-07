@@ -15,9 +15,9 @@
         pkgs = import nixpkgs { inherit system; };
       in
       {
-        packages.classisland = pkgs.callPackage ./tools/nix/classisland.nix { };
-        packages.classisland-bin = pkgs.callPackage ./tools/nix/classisland-bin.nix { };
-        packages.default = pkgs.callPackage ./tools/nix/classisland-bin.nix { };
+        packages.ycyzclass = pkgs.callPackage ./tools/nix/ycyzclass.nix { };
+        packages.ycyzclass-bin = pkgs.callPackage ./tools/nix/ycyzclass-bin.nix { };
+        packages.default = pkgs.callPackage ./tools/nix/ycyzclass-bin.nix { };
       }
     );
 }

@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "YcyzClass 插件": {
+      "commandName": "Executable",
+      "executablePath": "$(YcyzClass_DebugBinaryFile)",
+      "commandLineArgs": "-epp $(TargetDir)",
+      "workingDirectory": "$(YcyzClass_DebugBinaryDirectory)"
+    }
+  }
+}

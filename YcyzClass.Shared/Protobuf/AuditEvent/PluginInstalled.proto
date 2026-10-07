@@ -1,0 +1,8 @@
+syntax = "proto3";
+package YcyzClass.Shared.Protobuf.AuditEvent;
+option csharp_namespace = "YcyzClass.Shared.Protobuf.AuditEvent";
+
+message PluginInstalled {
+  string PluginId = 1;
+  string Version = 2;
+}

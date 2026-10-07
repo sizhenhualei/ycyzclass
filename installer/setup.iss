@@ -1,13 +1,13 @@
-#define AppName "ClassIsland"
+#define AppName "YcyzClass"
 #ifndef AppVersion
 #define AppVersion GetCmdParam("AppVersion", "2.0.0")
 #endif
-#define AppPublisher "ClassIsland"
-#define AppURL "https://classisland.tech/"
-#define AppExeName "ClassIsland.exe"
+#define AppPublisher "司振华蕾 x DeepSeekV4.1"
+#define AppURL "https://ycyzclass.tech/"
+#define AppExeName "YcyzClass.exe"
 
 #ifndef SourceDir
-#define SourceDir "D:/a/ClassIsland/ClassIsland/out_artifacts/out_appBase_windows_x64_full_folder"
+#define SourceDir "D:/a/YcyzClass/YcyzClass/out_artifacts/out_appBase_windows_x64_full_folder"
 #endif
 
 [Files]
@@ -25,7 +25,7 @@ DefaultDirName={autopf}\{#AppName}
 UninstallDisplayIcon={app}\{#AppExeName}
 DisableProgramGroupPage=yes
 LicenseFile={#GetEnv("GITHUB_WORKSPACE") + "\\LICENSE.txt"}
-SetupIconFile={#GetEnv("GITHUB_WORKSPACE") + "\\ClassIsland\\Assets\\AppLogo.ico"}
+SetupIconFile={#GetEnv("GITHUB_WORKSPACE") + "\\YcyzClass\\Assets\\AppLogo.ico"}
 SolidCompression=yes
 ; WizardStyle=modern dynamic windows11
 #if Arch == "x64"

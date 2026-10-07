@@ -1,14 +1,14 @@
 <Project>
     <PropertyGroup>
-        <Authors>HelloWRC</Authors>
-        <Company>HelloWRC.Dev</Company>
+        <Authors>司振华蕾 x DeepSeekV4.1</Authors>
+        <Company>YcyzClass</Company>
         <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
         <PackageLicenseExpression>LGPL-3.0-only</PackageLicenseExpression>
         <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
-		<PackageProjectUrl>https://classisland.tech</PackageProjectUrl>
-		<RepositoryUrl>https://github.com/ClassIsland/ClassIsland</RepositoryUrl>
+		<PackageProjectUrl>https://ycyzclass.tech</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/sizhenhualei/ycyzclass</RepositoryUrl>
 	    <PackageReadmeFile>README.md</PackageReadmeFile>
-		<Copyright>Copyright (c) 2024 HelloWRC</Copyright>
+		<Copyright>Copyright (c) 2026 司振华蕾 x DeepSeekV4.1; based on ClassIsland, Copyright (c) 2024 HelloWRC, GPL-3.0</Copyright>
 	    <RepositoryType>git</RepositoryType>
 	</PropertyGroup>
     <ItemGroup>

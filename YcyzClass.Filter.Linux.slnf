@@ -1,0 +1,21 @@
+﻿{
+  "solution": {
+    "path": "YcyzClass.sln",
+    "projects": [
+      "build\\_build.csproj",
+      "YcyzClass.Core\\YcyzClass.Core.csproj",
+      "YcyzClass.Desktop\\YcyzClass.Desktop.csproj",
+      "YcyzClass.DocsGenerator\\YcyzClass.DocsGenerator.csproj",
+      "YcyzClass.ExamplePlugin\\YcyzClass.ExamplePlugin.csproj",
+      "YcyzClass.Launcher\\YcyzClass.Launcher.csproj",
+      "YcyzClass.Platforms.Abstractions\\YcyzClass.Platforms.Abstractions.csproj",
+      "YcyzClass.PluginSdk\\YcyzClass.PluginSdk.csproj",
+      "YcyzClass.Shared.IPC\\YcyzClass.Shared.IPC.csproj",
+      "YcyzClass.Shared\\YcyzClass.Shared.csproj",
+      "YcyzClass\\YcyzClass.csproj",
+      "platforms\\YcyzClass.Platforms.Linux\\YcyzClass.Platforms.Linux.csproj",
+      "vendors\\EdgeTtsSharp\\Edge_tts_sharp\\Edge_tts_sharp.csproj",
+      "vendors\\PhainonDistributionCenter.Shared\\PhainonDistributionCenter.Shared.csproj"
+    ]
+  }
+}

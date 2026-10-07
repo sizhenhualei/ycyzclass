@@ -1,4 +1,4 @@
-﻿$PUBLISH_TARGET = ".\ClassIsland"
+﻿$PUBLISH_TARGET = ".\YcyzClass"
 
 $ErrorActionPreference = "Stop"
 
