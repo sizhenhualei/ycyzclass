@@ -17,7 +17,6 @@ using YcyzClass.Shared;
 using YcyzClass.Shared.Helpers;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.Logging;
-using Sentry;
 
 namespace YcyzClass.Services;
 

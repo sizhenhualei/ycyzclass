@@ -6,6 +6,7 @@ using YcyzClass.Core.Abstractions.Services;
 using YcyzClass.Core.ComponentModels;
 using YcyzClass.Core.Models.Plugin;
 using YcyzClass.Services;
+using YcyzClass.Shared.ComponentModels;
 using YcyzClass.Views.SettingPages;
 using CommunityToolkit.Mvvm.ComponentModel;
 using DynamicData;
@@ -18,16 +19,12 @@ namespace YcyzClass.ViewModels.SettingsPages;
 public partial class PluginsSettingsPageViewModel : ObservableRecipient
 {
     public IPluginService PluginService { get; }
-    public IPluginMarketService PluginMarketService { get; }
     public SettingsService SettingsService { get; }
     public ILogger<PluginsSettingsPage> Logger { get; }
     
     [ObservableProperty] private PluginInfo? _selectedPluginInfo;
     [ObservableProperty] private string _readmeDocument = "";
     [ObservableProperty] private bool _isPluginOperationsPopupOpened = false;
-    [ObservableProperty] private bool _isPluginMarketOperationsPopupOpened = false;
-    [ObservableProperty] private PluginIndexInfo? _selectedPluginIndexInfo;
-    [ObservableProperty] private int _pluginCategoryIndex = 1;
     [ObservableProperty] private string _pluginFilterText = "";
     [ObservableProperty] private bool _isLoadingDocument = false;
     [ObservableProperty] private bool _isInstallingLocalPlugin = false;
@@ -43,25 +40,24 @@ public partial class PluginsSettingsPageViewModel : ObservableRecipient
     private ReadOnlyObservableCollection<KeyValuePair<string, PluginInfo>> _mergedPluginsFiltered = null!;
     public ReadOnlyObservableCollection<KeyValuePair<string, PluginInfo>> MergedPluginsFiltered => _mergedPluginsFiltered;
 
-    [ObservableProperty] private SyncDictionaryList<string, string> _officialPluginMirrors = null!;
-
     public SyncDictionaryList<string, PluginInfo> MergedPlugins { get; }
 
     /// <inheritdoc/>
-    public PluginsSettingsPageViewModel(IPluginService pluginService, IPluginMarketService pluginMarketService, SettingsService settingsService, ILogger<PluginsSettingsPage> logger)
+    public PluginsSettingsPageViewModel(IPluginService pluginService, SettingsService settingsService, ILogger<PluginsSettingsPage> logger)
     {
         PluginService = pluginService;
-        PluginMarketService = pluginMarketService;
         SettingsService = settingsService;
         Logger = logger;
 
-        MergedPlugins = new SyncDictionaryList<string, PluginInfo>(PluginMarketService.MergedPlugins, () => "");
-        SettingsService.Settings
-            .ObservableForProperty(x => x.OfficialIndexMirrors)
-            .Subscribe(_ => UpdateOfficialPluginSources());
+        var localPlugins = new ObservableDictionary<string, PluginInfo>();
+        foreach (var plugin in IPluginService.LoadedPlugins)
+        {
+            localPlugins[plugin.Manifest.Id] = plugin;
+        }
+
+        MergedPlugins = new SyncDictionaryList<string, PluginInfo>(localPlugins, () => "");
 
         UpdateMergedPlugins();
-        UpdateOfficialPluginSources();
     }
 
     public void UpdateMergedPlugins()
@@ -70,7 +66,7 @@ public partial class PluginsSettingsPageViewModel : ObservableRecipient
             return;
 
         var pluginFilter = this
-            .WhenAnyValue(x => x.PluginFilterText, x => x.PluginCategoryIndex)
+            .WhenAnyValue(x => x.PluginFilterText)
             .Select(_ => new Func<KeyValuePair<string, PluginInfo>, bool>(PluginSourceFilter));
 
         MergedPlugins.List
@@ -83,23 +79,9 @@ public partial class PluginsSettingsPageViewModel : ObservableRecipient
         OnPropertyChanged(nameof(MergedPluginsFiltered));
     }
 
-    private void UpdateOfficialPluginSources()
-    {
-        OfficialPluginMirrors =
-            new SyncDictionaryList<string, string>(SettingsService.Settings.OfficialIndexMirrors, () => "");
-    }
-    
     private bool PluginSourceFilter(KeyValuePair<string, PluginInfo> kvp)
     {
         var info = kvp.Value;
-        if (!info.IsLocal && PluginCategoryIndex == 1)
-        {
-            return false;
-        }
-        if (!info.IsAvailableOnMarket && PluginCategoryIndex == 0)
-        {
-            return false;
-        }
         
         var filter = PluginFilterText;
         if (string.IsNullOrWhiteSpace(filter))

@@ -20,7 +20,6 @@ using DynamicData.Binding;
 using FluentAvalonia.UI.Data;
 using Microsoft.Extensions.Logging;
 using ReactiveUI;
-using WebSocketSharp;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace YcyzClass.Views;

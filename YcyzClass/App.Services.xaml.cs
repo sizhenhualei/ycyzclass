@@ -10,11 +10,11 @@ using YcyzClass.Controls.EditMode;
 using YcyzClass.Controls.NotificationProviders;
 using YcyzClass.Controls.ProfileTransferProviders;
 using YcyzClass.Controls.RuleSettingsControls;
-using YcyzClass.Controls.SpeechProviderSettingsControls;
+
 using YcyzClass.Controls.TriggerSettingsControls;
 using YcyzClass.Core.Abstractions.Services;
 using YcyzClass.Core.Abstractions.Services.Management;
-using YcyzClass.Core.Abstractions.Services.Metadata;
+
 using YcyzClass.Core.Abstractions.Services.SpeechService;
 using YcyzClass.Core.Controls.Ruleset;
 using YcyzClass.Core.Enums.Profile;
@@ -30,12 +30,11 @@ using YcyzClass.Models.Rules;
 using YcyzClass.Platforms.Abstraction;
 using YcyzClass.Platforms.Abstraction.Services;
 using YcyzClass.Services;
-using YcyzClass.Services.AppUpdating;
 using YcyzClass.Services.Automation.Actions;
 using YcyzClass.Services.Automation.Triggers;
 using YcyzClass.Services.Logging;
 using YcyzClass.Services.Management;
-using YcyzClass.Services.Metadata;
+
 using YcyzClass.Services.NotificationProviders;
 using YcyzClass.Services.SpeechService;
 using YcyzClass.ViewModels;
@@ -48,7 +47,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Logging.EventLog;
-using Sentry;
 
 namespace YcyzClass;
 
@@ -57,7 +55,7 @@ public partial class App
     private void ConfigureServices(HostBuilderContext context, IServiceCollection services)
     {
         services.AddSingleton<SettingsService>();
-        services.AddSingleton<UpdateService>();
+
         services.AddSingleton<ITaskBarIconService, TaskBarIconService>();
         // services.AddSingleton<WallpaperPickingService>();
         services.AddSingleton<INotificationHostService, NotificationHostService>();
@@ -80,7 +78,7 @@ public partial class App
         services.AddSingleton<IUriNavigationService, UriNavigationService>();
         services.AddHostedService<MemoryWatchDogService>();
         services.AddSingleton<IPluginService, PluginService>();
-        services.AddSingleton<IPluginMarketService, PluginMarketService>();
+
         services.AddSingleton<IRulesetService, RulesetService>();
         services.AddSingleton<IActionService, ActionService>();
         services.AddSingleton<IWindowRuleService, WindowRuleService>();
@@ -94,7 +92,7 @@ public partial class App
         services.AddSingleton<UriTriggerHandlerService>();
         services.AddSingleton<SignalTriggerHandlerService>();
         services.AddSingleton<TrayMenuTriggerHandlerService>();
-        services.AddSingleton<IAnnouncementService, AnnouncementService>();
+
         services.AddSingleton<ILocationService>(PlatformServices.LocationService);
         services.AddSingleton<IXamlThemeService, XamlThemeService>();
         services.AddSingleton<IAudioService, AudioService>();
@@ -126,7 +124,7 @@ public partial class App
         services.AddTransient<StorageSettingsViewModel>();
         services.AddTransient<ErrorSettingsViewModel>();
         services.AddTransient<ThemesSettingsViewModel>();
-        services.AddTransient<UpdateSettingsPageViewModel>();
+
         services.AddTransient<DebugPageViewModel>();
         services.AddTransient<RefreshingSettingsViewModel>();
         // Views
@@ -168,10 +166,7 @@ public partial class App
         services.AddSettingsPage<WindowSettingsPage>();
         services.AddSettingsPage<WeatherSettingsPage>();
         services.AddSettingsPage<AutomationSettingsPage>();
-        if (UpdateService.AllowedPackageTypes.Contains(PackagingType))
-        {
-            services.AddSettingsPage<UpdateSettingsPage>();
-        }
+
         services.AddSettingsPage<PluginsSettingsPage>();
         services.AddSettingsPage<ThemesSettingsPage>();
         services.AddSettingsPage<TestSettingsPage>();
@@ -212,13 +207,7 @@ public partial class App
             builder.AddFilter<EventLogLoggerProvider>(level => level >= LogLevel.Error);
             builder.AddConsoleFormatter<YcyzClassConsoleFormatter, ConsoleFormatterOptions>();
             builder.AddConsole(console => { console.FormatterName = "ycyzclass"; });
-            builder.AddSentry(o =>
-            {
-                o.InitializeSdk = false;
-                o.MinimumBreadcrumbLevel = LogLevel.Information;
-                o.EnableLogs = true;
-                o.SetBeforeSendLog(log => log.Level < SentryLogLevel.Info ? null : log);
-            });
+
             var debug = false;
 #if DEBUG
             debug = true;
@@ -228,7 +217,7 @@ public partial class App
                 builder.SetMinimumLevel(LogLevel.Trace);
             }
         });
-        services.AddSingleton<ILoggerProvider, SentryLoggerProvider>();
+
         services.AddSingleton<ILoggerProvider, AppLoggerProvider>();
         services.AddSingleton<ILoggerProvider, FileLoggerProvider>();
         // AttachedSettings
@@ -281,8 +270,7 @@ public partial class App
         if (System.OperatingSystem.IsWindows()) {
             services.AddSpeechProvider<SystemSpeechService>();
         }
-        services.AddSpeechProvider<EdgeTtsService, EdgeTtsSpeechServiceSettingsControl>();
-        services.AddSpeechProvider<GptSoVitsService, GptSovitsSpeechServiceSettingsControl>();
+
         // 天气图标模板
         services.AddWeatherIconTemplate("ycyzclass.weatherIcons.lucide", "Lucide（默认）", (this.FindResource("LucideWeatherIconTemplate") as IDataTemplate)!);
         services.AddWeatherIconTemplate("ycyzclass.weatherIcons.fluentDesign", "Fluent Design", (this.FindResource("FluentDesignWeatherIconTemplate") as IDataTemplate)!);

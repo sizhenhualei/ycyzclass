@@ -98,11 +98,6 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
             // ignored
         }
 
-        if (Settings is { IsSystemSpeechSystemExist: false, SpeechSource: 0 })
-        {
-            Settings.SpeechSource = 1;
-        }
-
         var requiresRestarting = false;
         if (!SkipMigration)
         {

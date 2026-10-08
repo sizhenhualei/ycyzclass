@@ -1,6 +1,5 @@
 ﻿using YcyzClass.Core.Abstractions.Services;
 using YcyzClass.Core.Abstractions.Services.Management;
-using YcyzClass.Core.Abstractions.Services.Metadata;
 using YcyzClass.Core.Services;
 using YcyzClass.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -11,14 +10,12 @@ public class GeneralSettingsViewModel(
     SettingsService settingsService,
     IManagementService managementService,
     IExactTimeService exactTimeService,
-    ISplashService splashService,
-    IAnnouncementService announcementService) : ObservableRecipient
+    ISplashService splashService) : ObservableRecipient
 {
     public SettingsService SettingsService { get; } = settingsService;
     public IManagementService ManagementService { get; } = managementService;
     public IExactTimeService ExactTimeService { get; } = exactTimeService;
     public ISplashService SplashService { get; } = splashService;
-    public IAnnouncementService AnnouncementService { get; } = announcementService;
     private bool _isWeekOffsetSettingsOpen = false;
     private bool _isSplashPreviewing = false;
 

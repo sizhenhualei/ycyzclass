@@ -1,6 +1,4 @@
 using System;
-using System.ComponentModel;
-using System.Windows;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using YcyzClass.Core.Abstractions.Controls;
@@ -25,15 +23,6 @@ public partial class PrivacySettingsPage : SettingsPageBase
         InitializeComponent();
         DataContext = this;
         SettingsService = settingsService;
-        SettingsService.Settings.PropertyChanged += OnSettingsOnPropertyChanged;
-    }
-
-    private void OnSettingsOnPropertyChanged(object? sender, PropertyChangedEventArgs args)
-    {
-        if (args.PropertyName == nameof(SettingsService.Settings.IsSentryEnabled))
-        {
-            RequestRestart();
-        }
     }
 
     private void HyperlinkMsAppCenter_OnClick(object sender, RoutedEventArgs e)
@@ -44,15 +33,4 @@ public partial class PrivacySettingsPage : SettingsPageBase
             Title = "YcyzClass 隐私政策"
         }.ShowDialog((TopLevel.GetTopLevel(this) as Window)!);
     }
-
-    private void PrivacySettingsPage_OnLoaded(object sender, RoutedEventArgs e)
-    {
-        SettingsService.Settings.PropertyChanged += OnSettingsOnPropertyChanged;
-    }
-
-    private void PrivacySettingsPage_OnUnloaded(object sender, RoutedEventArgs e)
-    {
-        SettingsService.Settings.PropertyChanged -= OnSettingsOnPropertyChanged;
-    }
 }
-

@@ -25,7 +25,6 @@ using YcyzClass.Shared.IPC.Abstractions.Services;
 using YcyzClass.Shared.Protobuf.AuditEvent;
 using YcyzClass.Shared.Protobuf.Enum;
 using dotnetCampus.Ipc.CompilerServices.GeneratedProxies;
-using Sentry;
 
 namespace YcyzClass.Services;
 
@@ -77,8 +76,6 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
 
     private async Task MergeManagementProfileAsync()
     {
-        var span = SentrySdk.GetSpan();
-        var spanLoadMgmtProfile = span?.StartChild("profile-mgmt-pull-profile");
         Logger.LogInformation("正在拉取集控档案");
         if (ManagementService.Connection == null)
             return;
@@ -89,41 +86,32 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
             Profile? subjects = null;
             if (ManagementService.Manifest.ClassPlanSource.IsNewerAndNotNull(ManagementService.Versions.ClassPlanVersion))
             {
-                var spanDownload = spanLoadMgmtProfile?.StartChild("profile-mgmt-download-classPlan");
                 var cpOld = LoadConfig<Profile>(ManagementClassPlanPath);
                 var cpNew = classPlan = await ManagementService.Connection.GetJsonAsync<Profile>(ManagementService.Manifest.ClassPlanSource.Value!);
                 MergeDictionary(Profile.ClassPlans, cpOld.ClassPlans, cpNew.ClassPlans);
                 MergeDictionary(Profile.ClassPlanGroups, cpOld.ClassPlanGroups, cpNew.ClassPlanGroups);
-                spanDownload?.Finish();
             }
             if (ManagementService.Manifest.TimeLayoutSource.IsNewerAndNotNull(ManagementService.Versions.TimeLayoutVersion))
             {
-                var spanDownload = spanLoadMgmtProfile?.StartChild("profile-mgmt-download-timeLayout");
                 var tlOld = LoadConfig<Profile>(ManagementTimeLayoutPath);
                 var tlNew = timeLayouts = await ManagementService.Connection.GetJsonAsync<Profile>(ManagementService.Manifest.TimeLayoutSource.Value!);
                 MergeDictionary(Profile.TimeLayouts, tlOld.TimeLayouts, tlNew.TimeLayouts);
-                spanDownload?.Finish();
             }
             if (ManagementService.Manifest.SubjectsSource.IsNewerAndNotNull(ManagementService.Versions.SubjectsVersion))
             {
-                var spanDownload = spanLoadMgmtProfile?.StartChild("profile-mgmt-download-subjects");
                 var subjectOld = LoadConfig<Profile>(ManagementSubjectsPath);
                 var subjectNew = subjects = await ManagementService.Connection.GetJsonAsync<Profile>(ManagementService.Manifest.SubjectsSource.Value!);
                 MergeDictionary(Profile.Subjects, subjectOld.Subjects, subjectNew.Subjects);
-                spanDownload?.Finish();
             }
 
-            var spanSaving = spanLoadMgmtProfile?.StartChild("profile-mgmt-save");
             SaveProfile("_management-profile.json");
             ManagementService.Versions.ClassPlanVersion = ManagementService.Manifest.ClassPlanSource.Version;
             ManagementService.Versions.TimeLayoutVersion = ManagementService.Manifest.TimeLayoutSource.Version;
             ManagementService.Versions.SubjectsVersion = ManagementService.Manifest.SubjectsSource.Version;
             ManagementService.SaveSettings();
-            spanSaving?.Finish();
         }
         catch (Exception exp)
         {
-            spanLoadMgmtProfile?.Finish(exp);
             Logger.LogError(exp, "拉取档案失败。");
         }
 
@@ -133,13 +121,10 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
         Profile.ClassPlans = CopyObject(Profile.ClassPlans);
         Profile.RefreshTimeLayouts();
         Logger.LogTrace("成功拉取集控档案！");
-        spanLoadMgmtProfile?.Finish();
     }
 
     public async Task LoadProfileAsync()
     {
-        var span = SentrySdk.GetSpan();
-        var spanLoadingProfile = span?.StartChild("profile-loading");
         var filename = ManagementService.IsManagementEnabled ? "_management-profile.json" : SettingsService.Settings.SelectedProfile;
         var path = Path.Combine(ProfilePath, filename);
         Logger.LogInformation("加载档案中：{}", path);
@@ -182,7 +167,6 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
         Profile.ClassPlans.CollectionChanged += (sender, args) => AuditProfileChangeEvent(AuditEvents.ClassPlanUpdated, args);
         Profile.TimeLayouts.CollectionChanged += (sender, args) => AuditProfileChangeEvent(AuditEvents.TimeLayoutUpdated, args);
         Profile.Subjects.CollectionChanged += (sender, args) => AuditProfileChangeEvent(AuditEvents.SubjectUpdated, args);
-        spanLoadingProfile?.Finish();
     }
 
     public void AuditProfileChangeEvent(AuditEvents eventType, NotifyCollectionChangedEventArgs args)

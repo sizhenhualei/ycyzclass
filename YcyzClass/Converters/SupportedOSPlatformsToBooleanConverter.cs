@@ -5,7 +5,6 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using Avalonia.Data.Converters;
 using Avalonia.Platform;
-using Sentry.Protocol;
 
 namespace YcyzClass.Converters;
 public class SupportedOSPlatformsToBooleanConverter : IValueConverter

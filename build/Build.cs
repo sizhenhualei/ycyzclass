@@ -35,8 +35,6 @@ partial class Build : NukeBuild
     [Parameter("Package")] readonly string Package;
     [Parameter("BuildType")] readonly string BuildType;
     [Parameter("BuildName")] readonly string BuildName;
-    [Parameter("API_SIGNING_KEY")] readonly string ApiSigningKey;
-    [Parameter("API_SIGNING_KEY_PS")] readonly string ApiSigningKeyPs;
     [Parameter] readonly string AppVersion;
     
     string PublishArtifactName;
@@ -49,7 +47,6 @@ partial class Build : NukeBuild
     readonly AbsolutePath AppOutputPath = RootDirectory / "out";
     readonly AbsolutePath AppPublishPath = RootDirectory / "out" / "YcyzClass";
     readonly AbsolutePath LauncherPublishPath = RootDirectory / "out" / "Launcher";
-    readonly AbsolutePath AppSecretsPath = RootDirectory / "YcyzClass" / "secrets.g.cs";
 
     [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
     readonly Configuration Configuration = Configuration.Release ;
@@ -74,13 +71,11 @@ partial class Build : NukeBuild
             };
             RuntimeIdentifier = $"{osRid}-{Arch}";
             PublishArtifactName = $"out_{BuildName}_{OsName}_{Arch}_{BuildType}_{Package}";
-            IsSecretFilled = !(string.IsNullOrEmpty(ApiSigningKey) || string.IsNullOrEmpty(ApiSigningKeyPs));
             AppPublishArtifactPath = AppOutputPath / PublishArtifactName + ".zip";
             LauncherPublishArtifactPath = AppOutputPath / PublishArtifactName + ".zip";
             
             Log.Information("AppVersion = {AppVersion}", AppVersion);
             Log.Information("RuntimeIdentifier = {RuntimeIdentifier}", RuntimeIdentifier);
-            Log.Information("IsSecretFilled = {IsSecretFilled}", IsSecretFilled);
             Log.Information("PublishArtifactName = {PublishArtifactName}", PublishArtifactName);
             Log.Information("AppPublishArtifactPath = {AppPublishArtifactPath}", AppPublishArtifactPath);
             Log.Information("LauncherPublishArtifactPath = {LauncherPublishArtifactPath}", LauncherPublishArtifactPath);

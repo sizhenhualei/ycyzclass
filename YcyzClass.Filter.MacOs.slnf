@@ -13,8 +13,6 @@
       "YcyzClass\\YcyzClass.csproj",
       "platforms\\YcyzClass.Platforms.Linux\\YcyzClass.Platforms.Linux.csproj",
       "platforms\\YcyzClass.Platforms.MacOs\\YcyzClass.Platforms.MacOs.csproj",
-      "vendors\\EdgeTtsSharp\\Edge_tts_sharp\\Edge_tts_sharp.csproj",
-      "vendors\\PhainonDistributionCenter.Shared\\PhainonDistributionCenter.Shared.csproj",
       "vendors\\System.Device.Location\\System.Device.Location.csproj"
     ]
   }

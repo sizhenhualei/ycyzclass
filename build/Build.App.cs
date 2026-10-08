@@ -14,8 +14,6 @@ partial class Build
 {
     string RuntimeIdentifier = "";
     AbsolutePath AppPublishArtifactPath;
-    bool IsSecretFilled = false;
-    
     Target RestoreDesktopApp => _ => _
         .Before(CompileApp)
         .DependsOn(GenerateMetadata)
@@ -45,33 +43,7 @@ partial class Build
         });
 
 
-    Target GenerateSecrets => t => t
-        .Executes(() =>
-        {
-            var content = 
-               $$""""
-                 namespace YcyzClass.Services.SpeechService{
-                     public static partial class GptSovitsSecrets
-                     {
-                         public const string PrivateKey = 
-                 """
-                 {{ApiSigningKey}}
-                 """;
-                     
-                         public const string PrivateKeyPassPhrase = 
-                 """
-                 {{ApiSigningKeyPs}}
-                 """;
-                     
-                         public const bool IsSecretsFilled = {{IsSecretFilled.ToString().ToLower()}};
-                     }
-                 }
-                 """";
-            File.WriteAllText(AppSecretsPath, content);
-        });
-    
     Target CompileApp => t => t
-        .DependsOn(GenerateSecrets)
         .DependsOn(GenerateMetadata)
         .DependsOn(CleanDesktopApp)
         .Executes(() =>
@@ -109,22 +81,7 @@ partial class Build
             AppPublishPath.ZipTo(AppPublishArtifactPath);
         });
 
-    Target PostCleanup => _ => _
-        .After(CompileApp)
-        .DependsOn(GenerateSecrets)
-        .AssuredAfterFailure()
-        .Executes(() =>
-        {
-            if (File.Exists(AppSecretsPath))
-            {
-                File.Delete(AppSecretsPath);
-            }
-        });
-
     Target PublishApp => _ => _
         .DependsOn(CompileApp)
-        .DependsOn(GenerateAppZipArchive)
-        .DependsOn(PostCleanup);
-    
-    
+        .DependsOn(GenerateAppZipArchive);
 }

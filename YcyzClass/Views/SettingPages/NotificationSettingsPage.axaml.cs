@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using YcyzClass.Core.Abstractions.Controls;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
@@ -26,8 +25,6 @@ using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace YcyzClass.Views.SettingPages;
-
-using GptSoVitsSpeechSettingsList = ObservableCollection<GptSoVitsSpeechSettings>;
 
 /// <summary>
 /// NotificationSettingsPage.xaml 的交互逻辑

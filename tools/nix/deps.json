@@ -230,11 +230,6 @@
     "hash": "sha256-cI2HZDKeRdG0Dwz9KBPVBh2z/E4geGhqYt0QEA1CgAE="
   },
   {
-    "pname": "Downloader",
-    "version": "4.0.3",
-    "hash": "sha256-QBSvvVmejnnK8QlS/OEkDXOpbrUW5pGpbPR+6zzFstg="
-  },
-  {
     "pname": "DynamicData",
     "version": "9.1.2",
     "hash": "sha256-rDbtd7Fw/rhq6s9G4p/rltZ3EIR5r1RcMXsAEe7nZjw="
@@ -900,16 +895,6 @@
     "hash": "sha256-c5tXWhE/fYbJVl9rXs0uHh3pTsg44YD1dJvyOA0WoMs="
   },
   {
-    "pname": "Sentry",
-    "version": "6.4.0",
-    "hash": "sha256-LFMiq+4G9BJgk+/CNItXYPb0tl4ksaUg2Yx35/1nw7Y="
-  },
-  {
-    "pname": "Sentry.Extensions.Logging",
-    "version": "6.4.0",
-    "hash": "sha256-H5Ekvcc2gbBHEeNHl2F0TD1B30vvxCjxGk6360ZbRms="
-  },
-  {
     "pname": "SharpZipLib",
     "version": "1.4.2",
     "hash": "sha256-/giVqikworG2XKqfN9uLyjUSXr35zBuZ2FX2r8X/WUY="
@@ -1273,11 +1258,6 @@
     "pname": "Tmds.DBus.Protocol",
     "version": "0.21.2",
     "hash": "sha256-gaK/5aAummyin6ptnhaJbnA0ih4+2xADrtrLfFbHwYI="
-  },
-  {
-    "pname": "WebSocketSharp-netstandard",
-    "version": "1.0.1",
-    "hash": "sha256-YJWvp68EtaYTjLVYOFABsif8d2gEKP3HGOJEenHkCWE="
   },
   {
     "pname": "WindowsShortcutFactory",

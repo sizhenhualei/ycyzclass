@@ -11,7 +11,6 @@ if ($(Test-Path ./out) -eq $false) {
 }
 #dotnet clean
 
-./tools/release-gen/generate-secrets.ps1
 
 
 $os_rid = ''

@@ -58,11 +58,6 @@ public partial class GeneralSettingsPage : SettingsPageBase
         ViewModel.IsWeekOffsetSettingsOpen = true;
     }
 
-    private void ButtonCloseSellingAnnouncementBanner_OnClick(object sender, RoutedEventArgs e)
-    {
-        ViewModel.SettingsService.Settings.ShowSellingAnnouncement = false;
-    }
-    
     private void ViewModelOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         

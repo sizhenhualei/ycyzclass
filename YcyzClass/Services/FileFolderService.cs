@@ -6,9 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using YcyzClass.Core;
-using YcyzClass.Services.AppUpdating;
 using YcyzClass.Services.Management;
-using YcyzClass.Services.SpeechService;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Path = System.IO.Path;
@@ -26,8 +24,6 @@ public class FileFolderService(SettingsService settingsService, ILogger<FileFold
         ManagementService.ManagementConfigureFolderPath,
         CommonDirectories.AppTempFolderPath,
         CommonDirectories.AppCacheFolderPath,
-        UpdateService.UpdateCachePath,
-        EdgeTtsService.EdgeTtsCacheFolderPath,
         PluginService.PluginsPkgRootPath,
         PluginService.PluginsRootPath,
         PluginService.PluginConfigsFolderPath,

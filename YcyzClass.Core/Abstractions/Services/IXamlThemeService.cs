@@ -31,21 +31,10 @@ public interface IXamlThemeService
     void LoadAllThemes();
 
     /// <summary>
-    /// 已将主题仓库与本地主题合并的全部主题
+    /// 已将内置主题与本地主题合并的全部主题
     /// </summary>
     public ObservableDictionary<string, ThemeInfo> MergedThemes { get; }
 
-
-    /// <summary>
-    /// 请求下载主题
-    /// </summary>
-    /// <param name="id">要下载的主题id</param>
-    public void RequestDownloadTheme(string id);
-
-    /// <summary>
-    /// 请求重启事件
-    /// </summary>
-    public event EventHandler? RestartRequested;
 
     /// <summary>
     /// 重载本地主题源

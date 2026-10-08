@@ -56,7 +56,6 @@
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1" />
-        <PackageReference Include="Downloader" Version="5.9.0" />
         <PackageReference Include="Google.Protobuf" Version="3.27.0-rc1" />
         <PackageReference Include="Grpc.Tools" Version="2.62.0">
             <PrivateAssets>all</PrivateAssets>
@@ -73,8 +72,6 @@
         <PackageReference Include="Pastel" Version="4.2.0" />
         <PackageReference Include="PgpCore" Version="6.5.1" />
         <PackageReference Include="RawInput.Sharp" Version="0.1.3" />
-        <PackageReference Include="Sentry" Version="6.4.0" />
-        <PackageReference Include="Sentry.Extensions.Logging" Version="6.4.0" />
         <PackageReference Include="SharpZipLib" Version="1.4.2" />
         <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
         <PackageReference Include="System.CommandLine.Hosting" Version="0.4.0-alpha.22272.1" />
@@ -156,10 +153,6 @@
 	<ItemGroup>
 	  <Compile Remove="Assets\Localization\SettingsPage\General\Localization.SettingsPage.General.Designer.cs" />
 	  <Compile Remove="Assets\Localization\TrayMenu\Localization.TrayMenu.Designer.cs" />
-	  <Compile Update="Views\SettingPages\UpdateSettingsPage.axaml.cs">
-	    <DependentUpon>UpdateSettingsPage.axaml</DependentUpon>
-	    <SubType>Code</SubType>
-	  </Compile>
 	  <Compile Update="App.Services.xaml.cs">
 	    <DependentUpon>App.axaml</DependentUpon>
 	  </Compile>
@@ -181,8 +174,6 @@
     <ItemGroup>
         <ProjectReference Include="..\YcyzClass.Core\YcyzClass.Core.csproj" />
         <ProjectReference Include="..\YcyzClass.Shared\YcyzClass.Shared.csproj" />
-        <ProjectReference Include="..\vendors\EdgeTtsSharp\Edge_tts_sharp\Edge_tts_sharp.csproj" />
-        <ProjectReference Include="..\vendors\PhainonDistributionCenter.Shared\PhainonDistributionCenter.Shared.csproj" />
     </ItemGroup>
 	<ItemGroup>
 	  <Compile Update="Controls\TimeLine\TimeLineListItemControl.axaml.cs">

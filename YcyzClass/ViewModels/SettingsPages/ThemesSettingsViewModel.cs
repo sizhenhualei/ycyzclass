@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using YcyzClass.Core.Abstractions.Services;
 using YcyzClass.Core.ComponentModels;
-using YcyzClass.Core.Models.Plugin;
 using CommunityToolkit.Mvvm.ComponentModel;
 using YcyzClass.Core.Models.XamlTheme;
 using YcyzClass.Services;
@@ -14,14 +13,10 @@ namespace YcyzClass.ViewModels.SettingsPages;
 public partial class ThemesSettingsViewModel : ObservableObject
 {
     public IXamlThemeService XamlThemeService { get; }
-    public IPluginMarketService PluginMarketService { get; }
     public SettingsService SettingsService { get; }
     
     [ObservableProperty] private ThemeInfo? _selectedThemeInfo;
     [ObservableProperty] private bool _isThemeOperationsPopupOpened = false;
-    [ObservableProperty] private bool _isThemeMarketOperationsPopupOpened = false;
-    [ObservableProperty] private ThemeIndexItem? _selectedThemeIndexInfo;
-    [ObservableProperty] private int _themeCategoryIndex = 1;
     [ObservableProperty] private string _themeFilterText = "";
     [ObservableProperty] private bool _isDragEntering = false;
     
@@ -30,10 +25,9 @@ public partial class ThemesSettingsViewModel : ObservableObject
     public SyncDictionaryList<string, ThemeInfo> MergedThemes { get; set; } = null!;
     
     /// <inheritdoc/>
-    public ThemesSettingsViewModel(IXamlThemeService xamlThemeService, IPluginMarketService pluginMarketService, SettingsService settingsService)
+    public ThemesSettingsViewModel(IXamlThemeService xamlThemeService, SettingsService settingsService)
     {
         XamlThemeService = xamlThemeService;
-        PluginMarketService = pluginMarketService;
         SettingsService = settingsService;
         
         UpdateMergedThemes();
@@ -51,15 +45,6 @@ public partial class ThemesSettingsViewModel : ObservableObject
     private bool ThemeSourceFilter(KeyValuePair<string, ThemeInfo> kvp)
     {
         var info = kvp.Value;
-        if (!info.IsLocal && ThemeCategoryIndex == 1)
-        {
-            return false;
-        }
-        if (!info.IsAvailableOnMarket && ThemeCategoryIndex == 0)
-        {
-            return false;
-        }
-
         var filter = ThemeFilterText;
         if (string.IsNullOrWhiteSpace(filter))
             return true;

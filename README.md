@@ -72,7 +72,6 @@ YcyzClass 是一款适用于班级多媒体屏幕的跨平台课表信息显示�
 - [x] 使用密码等认证方式保护应用设置和课表配置
 - [x] 丝滑、流畅的过渡动画
 - [x] 自动获取与系统配色搭配的主题色
-- [x] 自动软件更新
 - [ ] [集控管理](https://docs.classisland.tech/management)_（即将发布）_
 - [ ] ……
 
@@ -283,7 +282,7 @@ YcyzClass 与部分窗口美化工具（特别是如 Mica For Everyone 这类修
 <!-- autocorrect-enable -->
 <!--markdownlint-disable MD001 MD033 MD041 MD051-->
 
-本项目使用了[这些第三方库和框架](./doc/Dependencies.md)。
+本项目使用了[这些第三方库和框架](YcyzClass/Assets/dependencies.g.json)。
 
 感谢 [JetBrains](https://www.jetbrains.com.cn/) 为本项目的开发人员提供的[开源开发许可证](https://www.jetbrains.com.cn/community/opensource/)。
 

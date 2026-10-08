@@ -20,7 +20,6 @@ using YcyzClass.Services.Logging;
 using YcyzClass.Services.Management;
 
 using Microsoft.Extensions.Logging;
-using Sentry;
 
 namespace YcyzClass.Services;
 
@@ -59,7 +58,6 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
             {"SystemOsArch",  RuntimeInformation.OSArchitecture.ToString()},
             {"SystemDeviceName", name},
             {"SystemDeviceVendor", vendor},
-            {"UserTraceId", SentrySdk.GetTraceHeader()?.TraceId.ToString() ?? "none"},
             {"AppPackageRoot", CommonDirectories.AppPackageRoot},
             {"AppRoot", CommonDirectories.AppRootFolderPath},
             {"AppCurrentDirectory", Environment.CurrentDirectory},

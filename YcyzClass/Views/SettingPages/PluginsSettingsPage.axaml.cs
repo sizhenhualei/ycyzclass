@@ -63,19 +63,6 @@ public partial class PluginsSettingsPage : SettingsPageBase
     {
         InitializeComponent();
         DataContext = this;
-
-        ViewModel.PluginMarketService.ObservableForProperty(x => x.Exception)
-            .Subscribe(_ =>
-            {
-                if (ViewModel.PluginMarketService.Exception != null)
-                {
-                    this.ShowErrorToast("无法加载插件源", ViewModel.PluginMarketService.Exception);
-                }
-            });
-        if (DateTime.Now - ViewModel.SettingsService.Settings.LastRefreshPluginSourceTime >= TimeSpan.FromDays(7))
-        {
-            _ = ViewModel.PluginMarketService.RefreshPluginSourceAsync();
-        }
     }
 
     private async Task UpdateReadmeDocument()
@@ -301,9 +288,6 @@ public partial class PluginsSettingsPage : SettingsPageBase
 
     private async Task ProcessInstallFiles(IEnumerable<string> filePaths)
     {
-        if (ViewModel.SettingsService.Settings.IsPluginMarketWarningVisible)
-            return;
-
         var paths = filePaths
             .Where(x => !string.IsNullOrWhiteSpace(x))
             .Select(x => x.Trim())
@@ -402,7 +386,6 @@ public partial class PluginsSettingsPage : SettingsPageBase
         {
             return;
         }
-        ViewModel.IsPluginMarketOperationsPopupOpened = false;
         PopupHelper.DisableAllPopups();
         var file = await PlatformServices.FilePickerService.OpenFilesPickerAsync(new FilePickerOpenOptions()
         {
@@ -433,136 +416,14 @@ public partial class PluginsSettingsPage : SettingsPageBase
         ViewModel.IsPluginOperationsPopupOpened = false;
     }
 
-    private async void ButtonBaseRefreshPlugins_OnClick(object sender, RoutedEventArgs e)
-    {
-        await ViewModel.PluginMarketService.RefreshPluginSourceAsync();
-    }
-
-    private async void ButtonInstallPlugin_OnClick(object sender, RoutedEventArgs e)
-    {
-        if (ViewModel.SelectedPluginInfo == null)
-            return;
-        await InstallPlugin(ViewModel.SelectedPluginInfo.Manifest.Id);
-    }
-
-    [RelayCommand]
-    private async Task InstallPlugin(string id)
-    {
-        List<PluginInfo> resolvedPlugins = [];
-        List<string> missingPlugins = [];
-        var plugin = ViewModel.PluginMarketService.ResolveMarketPlugin(id);
-        if (plugin == null)
-        {
-            Logger.LogWarning("未找到插件：{}", id);
-            return;
-        }
-
-        resolvedPlugins.Add(plugin);
-        if (plugin.IsNotSupportCurrentOS)
-        {
-            var result = await new ContentDialog()
-            {
-                Title = "操作系统不受该插件支持",
-                Content = "此插件所声明支持的操作系统并未包括当前所运行的操作系统。" + Environment.NewLine + "如果继续安装此插件，此插件将可能无法正常工作。您要继续安装此插件吗？",
-                SecondaryButtonText = "取消",
-                PrimaryButtonText = "继续",
-                DefaultButton = ContentDialogButton.Secondary
-            }.ShowAsync();
-            if (result != ContentDialogResult.Primary)
-            {
-                return;
-            }
-        }
-        ResolveDependencies(plugin, resolvedPlugins, missingPlugins);
-        if (missingPlugins.Count > 0)
-        {
-            var result = await new ContentDialog()
-            {
-                Title = "缺少依赖项",
-                Content = "此插件的部分必选依赖项未安装且无法从市场获取。如果继续安装此插件，此插件将可能无法工作。您要继续安装此插件吗？" +Environment.NewLine +Environment.NewLine +
-                          "未找到的必选依赖项："+Environment.NewLine + string.Join(Environment.NewLine, missingPlugins),
-                SecondaryButtonText = "取消",
-                PrimaryButtonText = "继续",
-                DefaultButton = ContentDialogButton.Secondary
-            }.ShowAsync();
-            if (result != ContentDialogResult.Primary)
-            {
-                return;
-            }
-        }
-        foreach (var i in resolvedPlugins)
-        {
-            ViewModel.PluginMarketService.RequestDownloadPlugin(i.Manifest.Id);
-        }
-    }
-
-    private void ResolveDependencies(PluginInfo plugin, List<PluginInfo> resolvedPlugins, List<string> missingPlugins)
-    {
-        if (IPluginService.LoadedPluginsIds.Contains(plugin.Manifest.Id) || resolvedPlugins.Contains(plugin))
-        {
-            return;
-        }
-        resolvedPlugins.Add(plugin);
-        foreach (var i in plugin.Manifest.Dependencies)
-        {
-            var dep = ViewModel.PluginMarketService.ResolveMarketPlugin(i.Id);
-            if (dep == null)
-            {
-                if (i.IsRequired && !IPluginService.LoadedPluginsIds.Contains(i.Id))
-                {
-                    missingPlugins.Add(i.Id);
-                }
-                continue;
-            }
-            ResolveDependencies(dep, resolvedPlugins, missingPlugins);
-        }
-    }
-
-    private void MenuItemReloadFromCache_OnClick(object sender, RoutedEventArgs e)
-    {
-        ViewModel.IsPluginMarketOperationsPopupOpened = false;
-        ViewModel.PluginMarketService.LoadPluginSource();
-    }
-
-    [RelayCommand]
-    private void OpenPluginSourceManager()
-    {
-        ViewModel.IsPluginMarketOperationsPopupOpened = false;
-        OpenDrawer("PluginSourceManageDrawer");
-    }
-
     private void MenuItemOpenPluginsFolder_OnClick(object sender, RoutedEventArgs e)
     {
-        ViewModel.IsPluginMarketOperationsPopupOpened = false;
         Process.Start(new ProcessStartInfo()
         {
             FileName = Path.GetFullPath(Services.PluginService.PluginsRootPath),
             UseShellExecute = true
         });
     }
-
-    private void ButtonBase2_OnClick(object sender, RoutedEventArgs e)
-    {
-        ViewModel.IsPluginMarketOperationsPopupOpened = false;
-    }
-
-    private void ButtonAddPluginSource_OnClick(object sender, RoutedEventArgs e)
-    {
-        ViewModel.SettingsService.Settings.PluginIndexes.Add(new PluginIndexInfo());
-    }
-
-    private void ButtonRemovePluginSource_OnClick(object sender, RoutedEventArgs e)
-    {
-        if (ViewModel.SelectedPluginIndexInfo == null)
-            return;
-        ViewModel.SettingsService.Settings.PluginIndexes.Remove(ViewModel.SelectedPluginIndexInfo);
-    }
-
-    private void ListBoxCategory_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-        ViewModel.UpdateMergedPlugins();
-    }
-    
 
     private void TextBoxFilter_OnKeyDown(object sender, KeyEventArgs e)
     {
@@ -574,11 +435,6 @@ public partial class PluginsSettingsPage : SettingsPageBase
     private void ButtonRestart_OnClick(object sender, RoutedEventArgs e)
     {
         RequestRestart();
-    }
-
-    private void ButtonAgreePluginNotice_OnClick(object sender, RoutedEventArgs e)
-    {
-        ViewModel.SettingsService.Settings.IsPluginMarketWarningVisible = false;
     }
 
     private void Selector_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -594,7 +450,7 @@ public partial class PluginsSettingsPage : SettingsPageBase
     private void Grid_DragEnter(object sender, DragEventArgs e)
     {
         var files = e.Data.GetFiles()?.Select(x => x.Path.LocalPath).Where(x => !string.IsNullOrWhiteSpace(x)).ToList();
-        if (files == null || files.Count == 0 || ViewModel.SettingsService.Settings.IsPluginMarketWarningVisible)
+        if (files == null || files.Count == 0)
         {
             ViewModel.IsDragEntering = false;
             e.DragEffects = DragDropEffects.None;
@@ -623,8 +479,6 @@ public partial class PluginsSettingsPage : SettingsPageBase
     private async void Grid_Drop(object sender, DragEventArgs e)
     {
         ViewModel.IsDragEntering = false;
-        if (ViewModel.SettingsService.Settings.IsPluginMarketWarningVisible)
-            return;
 
         var files = e.Data.GetFiles()?.Select(x => x.Path.LocalPath).ToList();
         if (files == null || files.Count == 0)
@@ -642,39 +496,11 @@ public partial class PluginsSettingsPage : SettingsPageBase
     private void PluginsSettingsPage_OnLoaded(object sender, RoutedEventArgs e)
     {
         ViewModel.PropertyChanged += ViewModelOnPropertyChanged;
-        ViewModel.PluginMarketService.RestartRequested += OnPluginMarketServiceOnRestartRequested;
-    }
-
-    private void OnPluginMarketServiceOnRestartRequested(object? sender, EventArgs args)
-    {
-        if (ViewModel.PluginMarketService.MergedPlugins.Any(x => x.Value.DownloadProgress?.IsDownloading == true))
-        {
-            return;
-        }
-        RequestRestart();
     }
 
     private void PluginsSettingsPage_OnUnloaded(object sender, RoutedEventArgs e)
     {
         ViewModel.PropertyChanged -= ViewModelOnPropertyChanged;
-        ViewModel.PluginMarketService.RestartRequested -= OnPluginMarketServiceOnRestartRequested;
-    }
-
-    private void ButtonOpenMarket_OnClick(object sender, RoutedEventArgs e)
-    {
-        ViewModel.PluginCategoryIndex = 0;
-    }
-
-    private void MenuItemManagePluginSources_OnClick(object? sender, RoutedEventArgs e)
-    {
-        // 这里清除掉来自 PopupBase 的调用堆栈，防止出现打开抽屉命令执行事件传播错误的问题。
-        Dispatcher.UIThread.InvokeAsync(OpenPluginSourceManager);
-    }
-
-    private void MenuItemPluginUpdateSettings_OnClick(object? sender, RoutedEventArgs e)
-    {
-        // 这里清除掉来自 PopupBase 的调用堆栈，防止出现打开抽屉命令执行事件传播错误的问题。
-        Dispatcher.UIThread.InvokeAsync(() => OpenDrawer("PluginUpdateSettingsDrawer"));
     }
 }
 

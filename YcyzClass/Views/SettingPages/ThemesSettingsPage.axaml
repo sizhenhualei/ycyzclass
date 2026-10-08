@@ -84,18 +84,8 @@
         </controls:InfoBar>
 
         <Grid Row="1" ColumnDefinitions="*,Auto" IsVisible="{Binding !ViewModel.SettingsService.Settings.IsThemeWarningVisible}">
-            <TabStrip Grid.Column="0" Classes="compact"
-                      SelectionChanged="ListBoxCategory_OnSelectionChanged"
-                      SelectedIndex="{Binding ViewModel.ThemeCategoryIndex}">
-                <TabStripItem>市场</TabStripItem>
-                <TabStripItem>已安装</TabStripItem>
-            </TabStrip>
 
             <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                <Button Theme="{StaticResource TransparentButton}"
-                        Click="ButtonBase_OnClick">
-                    <ci:IconText Glyph="&#xe0b5;" Text="刷新市场" />
-                </Button>
                 <Button Theme="{StaticResource TransparentButton}"
                         Click="ButtonLoadThemes_OnClick">
                     <ci:IconText Glyph="&#xe0bd;" Text="重载主题" />
@@ -111,10 +101,6 @@
             </StackPanel>
         </Grid>
 
-        <StackPanel Grid.Row="2" Grid.Column="0" IsVisible="{Binding !ViewModel.SettingsService.Settings.IsThemeWarningVisible}">
-            <ProgressBar IsIndeterminate="True"
-                         IsVisible="{Binding ViewModel.PluginMarketService.IsLoadingPluginSource}"/>
-        </StackPanel>
         
 
         <ListBox Grid.Row="3" 
@@ -201,8 +187,7 @@
                                 <StackPanel Grid.Row="0" Grid.RowSpan="2" Grid.Column="2" Orientation="Horizontal"
                                             HorizontalAlignment="Right"
                                             VerticalAlignment="Center"
-                                            Margin="0 -8"
-                                            IsEnabled="{Binding Value.DownloadProgress.IsDownloading, Converter={StaticResource InvertBooleanConverter}}">
+                                            Margin="0 -8">
                                     <Button Theme="{StaticResource TransparentButton}"
                                                 Content="{ci:FluentIcon &#xe808;}"
                                                 IsVisible="{Binding Value.IsError}"
@@ -240,47 +225,6 @@
                                             </MenuFlyout>
                                         </Button.Flyout>
                                     </Button>
-                                    <Panel>
-                                        <Button
-                                            ToolTip.Tip="安装"
-                                            Classes="accent"
-                                            CornerRadius="14"
-                                            Width="28" Height="28"
-                                            Padding="0"
-                                            CommandParameter="{Binding Value.Manifest.Id}"
-                                            Command="{Binding Data.InstallThemeCommand, Source={StaticResource BindingProxy}}"
-                                            Content="{ci:FluentIcon &#xE0D2;}">
-                                            <Button.IsVisible>
-                                                <MultiBinding Converter="{x:Static BoolConverters.And}">
-                                                    <Binding Path="Value.IsLocal" Converter="{StaticResource InvertBooleanConverter}"/>
-                                                    <Binding Path="Value.IsAvailableOnMarket"/>
-                                                    <Binding Path="Value.RestartRequired" Converter="{StaticResource InvertBooleanConverter}"/>
-                                                </MultiBinding>
-                                            </Button.IsVisible>
-                                        </Button>
-                                        <Button
-                                            ToolTip.Tip="更新"
-                                            Classes="accent"
-                                            CornerRadius="14"
-                                            Width="28" Height="28"
-                                            Padding="0"
-                                            CommandParameter="{Binding Value.Manifest.Id}"
-                                            Command="{Binding Data.InstallThemeCommand, Source={StaticResource BindingProxy}}"
-                                            Content="{ci:FluentIcon &#xE1A0;}">
-                                            <Button.IsVisible>
-                                                <MultiBinding Converter="{x:Static BoolConverters.And}">
-                                                    <Binding Path="Value.IsLocal"/>
-                                                    <Binding Path="Value.IsAvailableOnMarket"/>
-                                                    <Binding Path="Value.IsUpdateAvailable"/>
-                                                    <Binding Path="Value.RestartRequired" Converter="{StaticResource InvertBooleanConverter}"/>
-                                                </MultiBinding>
-                                            </Button.IsVisible>
-                                        </Button>
-                                        <controls:ProgressRing Width="28" Height="28" MinWidth="0" MinHeight="0" IsIndeterminate="False"
-                                                                IsVisible="{Binding Value.DownloadProgress.IsDownloading, FallbackValue={x:False}}"
-                                                                Value="{Binding Value.DownloadProgress.Progress}"
-                                                                Maximum="100"/>
-                                    </Panel>
                                     <Button
                                         ToolTip.Tip="重启以应用更改"
                                         CornerRadius="14"
@@ -351,7 +295,7 @@
                             <TextBlock TextAlignment="Center"
                                        HorizontalAlignment="Center"
                                        TextWrapping="Wrap"
-                                       Text="需要注意，主题以 XAML 样式的形式加载，可能存在与部分 YcyzClass 版本不兼容，甚至使应用完全无法使用的情况。并且主题在加载过程中会转译为可执行代码，可以以 YcyzClass 的身份和权限执行任意代码。请不要安装来路不明的主题，开发者也无法保证市场所提供的主题都是绝对安全的。YcyzClass 开发团队对使用主题造成的一切后果概不负责。" />
+                                       Text="需要注意，主题以 XAML 样式的形式加载，可能存在与部分 YcyzClass 版本不兼容，甚至使应用完全无法使用的情况。并且主题在加载过程中会转译为可执行代码，可以以 YcyzClass 的身份和权限执行任意代码。请不要安装来路不明的主题，开发者也无法保证第三方主题都是绝对安全的。YcyzClass 开发团队对使用主题造成的一切后果概不负责。" />
                         </StackPanel>
                     </Border>
 

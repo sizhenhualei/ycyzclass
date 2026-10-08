@@ -4,18 +4,6 @@ namespace YcyzClass.Models;
 
 public class ApplicationCommand
 {
-    public string? UpdateReplaceTarget
-    {
-        get;
-        set;
-    }
-    
-    public string? UpdateDeleteTarget
-    {
-        get;
-        set;
-    }
-
     public bool WaitMutex
     {
         get;
@@ -31,8 +19,6 @@ public class ApplicationCommand
     public string Uri { get; set; } = "";
 
     public string ExternalPluginPath { get; set; } = "";
-
-    public bool EnableSentryDebug { get; set; } = false;
 
     public bool Verbose { get; set; } = false;
 
@@ -51,8 +37,6 @@ public class ApplicationCommand
     public string ImportEntries { get; set; } = "0";
 
     public bool ImportComplete { get; set; } = false;
-
-    public bool ImportV1Complete { get; set; } = false;
 
     public bool Refreshing { get; set; } = false;
 

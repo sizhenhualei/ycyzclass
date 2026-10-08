@@ -20,7 +20,6 @@ using YcyzClass.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using YcyzClass.Services;
-using Sentry;
 using System.IO;
 using YcyzClass.Controls;
 using Path = System.IO.Path;
@@ -291,8 +290,6 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
     {
         if (e.Parameter is SettingsWindowNavigationData { IsNavigateFromSettingsWindow: true } data)
         {
-            var transaction = data.Transaction as ITransactionTracer;
-            var span = data.Span as ISpan;
             try
             {
                 // 如果是从设置导航栏导航的，并且没有要求保留历史记录，那么就要清除掉返回项目
@@ -302,14 +299,10 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
                 }
 
                 ViewModel.IsNavigating = false;
-                span?.Finish(SpanStatus.Ok);
-                transaction?.Finish(SpanStatus.Ok);
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, "无法完成设置页面导航 {}", ViewModel.SelectedPageInfo?.Id);
-                span?.Finish(ex, SpanStatus.InternalError);
-                transaction?.Finish(SpanStatus.InternalError);
             }
         }
         else if (e.NavigationMode == NavigationMode.Back)
@@ -341,10 +334,6 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
             return;
         }
 
-        var transaction = SentrySdk.StartTransaction("Navigate SettingsPage", "settings.navigate");
-        transaction.SetTag("navigationPage", info.Name);
-        transaction.SetTag("navigationPage.id", info.Id);
-        var spanLoadPhase1 = transaction.StartChild("setupPage");
         switch (info.Category)
         {
             // 判断是否可以导航
@@ -385,21 +374,17 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
             {
                 NavigationFrame.BackStack.Clear();
             }
-            var spanLoadPhase2 = transaction.StartChild("frameNavigate");
-            var data = new SettingsWindowNavigationData(true, uri != null, uri, keepHistory, transaction, spanLoadPhase2, info);
+            var data = new SettingsWindowNavigationData(true, uri != null, uri, keepHistory, null, null, info);
             NavigationFrame.NavigateFromObject(data);
             //ViewModel.FrameContent;
             if (!keepHistory)
             {
                 NavigationFrame.BackStack.Clear();
             }
-            spanLoadPhase1.Finish(SpanStatus.Ok);
         }
         catch (Exception ex)
         {
             Logger.LogError(ex, "无法完成设置页面导航 {}", info.Id);
-            spanLoadPhase1.Finish(ex, SpanStatus.InternalError);
-            transaction.Finish(SpanStatus.InternalError);
             ViewModel.IsNavigating = false;
             if (info.Id != ErrorPageId)
             {
@@ -463,7 +448,6 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
             {
                 return;
             }
-            SentrySdk.Metrics.EmitCounter("views.SettingsWindow.open", 1);
             IsOpened = true;
             Show();
         }
@@ -793,12 +777,7 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
             return null;
         }
 
-        var page = GetPage(data.Info.Id, out var cached);
-        if (data.Transaction is ITransactionTracer transaction)
-        {
-            transaction.SetTag("cache.hit", cached.ToString());
-            transaction.SetTag("cache.policy", SettingsService.Settings.SettingsPagesCachePolicy.ToString());
-        }
+        var page = GetPage(data.Info.Id, out _);
 
         if (page != null)
         {

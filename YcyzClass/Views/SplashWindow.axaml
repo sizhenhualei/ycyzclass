@@ -4,7 +4,6 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:controls="clr-namespace:FluentAvalonia.UI.Controls;assembly=FluentAvalonia"
         xmlns:views="clr-namespace:YcyzClass.Views;assembly=YcyzClass"
-        xmlns:ycyClass="clr-namespace:Sentry.Protocol;assembly=Sentry"
         xmlns:ci="http://ycyzclass.tech/schemas/xaml/core"
         xmlns:asyncImageLoader="clr-namespace:AsyncImageLoader;assembly=AsyncImageLoader.Avalonia"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"

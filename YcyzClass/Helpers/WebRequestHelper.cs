@@ -10,12 +10,10 @@ using YcyzClass.Shared.Helpers;
 
 using Microsoft.Extensions.Logging;
 using Org.BouncyCastle.Security;
-using PhainonDistributionCenter.Shared.Models.Api.Responses;
-using Sentry;
 
 namespace YcyzClass.Helpers;
 
-public class WebRequestHelper(Uri? baseUri = null, bool phainon = false)
+public class WebRequestHelper(Uri? baseUri = null)
 {
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web)
     {
@@ -24,7 +22,7 @@ public class WebRequestHelper(Uri? baseUri = null, bool phainon = false)
             new ColorHexJsonConverter()
         }
     };
-    private HttpClient HttpClient { get; } = new(new SentryHttpMessageHandler())
+    private HttpClient HttpClient { get; } = new()
     {
         BaseAddress = baseUri
     };
@@ -62,17 +60,7 @@ public class WebRequestHelper(Uri? baseUri = null, bool phainon = false)
                     }
                 }
 
-                T? r;
-                if (phainon)
-                {
-                    var phainonResult = JsonSerializer.Deserialize<Result<T>>(data, JsonOptions);
-                    phainonResult?.VerifySuccess();
-                    r = phainonResult?.Content;
-                }
-                else
-                {
-                    r = JsonSerializer.Deserialize<T>(data, JsonOptions);
-                }
+                var r = JsonSerializer.Deserialize<T>(data, JsonOptions);
                 return r ?? throw new InvalidOperationException("Json.Deserialize returned null value.");
             }
             catch (Exception ex)

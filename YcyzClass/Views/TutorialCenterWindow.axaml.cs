@@ -11,7 +11,6 @@ using YcyzClass.ViewModels;
 using CommunityToolkit.Mvvm.Input;
 using FluentAvalonia.UI.Controls;
 using FluentAvalonia.UI.Windowing;
-using Sentry;
 
 namespace YcyzClass.Views;
 
@@ -32,7 +31,6 @@ public partial class TutorialCenterWindow : MyWindow
     {
         if (!IsOpened)
         {
-            SentrySdk.Metrics.EmitCounter("views.TutorialCenterWindow.open", 1);
             IsOpened = true;
             Show();
         }

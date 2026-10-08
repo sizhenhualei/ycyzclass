@@ -13,9 +13,7 @@
       "YcyzClass.Shared.IPC\\YcyzClass.Shared.IPC.csproj",
       "YcyzClass.Shared\\YcyzClass.Shared.csproj",
       "YcyzClass\\YcyzClass.csproj",
-      "platforms\\YcyzClass.Platforms.Linux\\YcyzClass.Platforms.Linux.csproj",
-      "vendors\\EdgeTtsSharp\\Edge_tts_sharp\\Edge_tts_sharp.csproj",
-      "vendors\\PhainonDistributionCenter.Shared\\PhainonDistributionCenter.Shared.csproj"
+      "platforms\\YcyzClass.Platforms.Linux\\YcyzClass.Platforms.Linux.csproj"
     ]
   }
 }

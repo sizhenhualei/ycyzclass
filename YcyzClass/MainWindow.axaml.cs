@@ -54,7 +54,6 @@ using FluentAvalonia.UI.Controls;
 using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
 
-using Sentry;
 using Linearstar.Windows.RawInput;
 using YamlDotNet.Core;
 
@@ -348,7 +347,6 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        var span = SentrySdk.GetSpan()?.StartChild("startup-initialize-mainWindow");
         ViewModel.Profile.PropertyChanged += (sender, args) => SaveProfile();
         ViewModel.Settings.PropertyChanged += SettingsOnPropertyChanged;
         LoadSettings();
@@ -359,7 +357,6 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         UserPrefrenceUpdateStopwatch.Start();
         AppBase.Current.PlatformSettings!.ColorValuesChanged += OnSystemEventsOnUserPreferenceChanged;
         AppBase.Current.AppStopping += (sender, args) => AppBase.Current.PlatformSettings!.ColorValuesChanged -= OnSystemEventsOnUserPreferenceChanged;
-        span?.Finish();
     }
     
     private void InitializeRawInputHandler()

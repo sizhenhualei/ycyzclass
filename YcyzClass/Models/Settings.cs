@@ -15,7 +15,6 @@ using YcyzClass.Shared.Models.Notification;
 using YcyzClass.Models.AllContributors;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.Logging;
-using Octokit;
 using YcyzClass.Core.Models;
 using YcyzClass.Core.Abstractions.Models.Speech;
 using YcyzClass.Core.Attributes;
@@ -67,15 +66,12 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private bool _isMainWindowVisible = true;
     private bool _isWelcomeWindowShowed = false;
     private bool _isReportingEnabled = true;
-    private Dictionary<string, string> _releaseChannels = new()
-    {
-    };
 
-    private string _selectedChannel = "https://install.appcenter.ms/api/v0.1/apps/hellowrc/ycyzclass/distribution_groups/public";
-    private DateTime _lastCheckUpdateTime = DateTime.MinValue;
-    private UpdateStatus _lastUpdateStatus = UpdateStatus.UpToDate;
-    private int _updateMode = 3;
-    private bool _autoInstallUpdateNextStartup = true;
+
+
+
+
+
     private bool _isDebugOptionsEnabled = false;
     private Color _selectedPlatte = Colors.DodgerBlue;
     private int _selectedPlatteIndex = 0;
@@ -117,13 +113,6 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private string _splashCustomLogoSource = "";
     private bool _isDebugConsoleEnabled = false;
     private string _debugGitHubAuthKey = "";
-    private Dictionary<string, SpeedTestResult> _speedTestResults = new();
-    private bool _isAutoSelectUpgradeMirror = true;
-    private DateTime _lastSpeedTest = DateTime.MinValue;
-    private string _updateReleaseInfo = "";
-    private Version _updateVersion = new Version();
-    private Release _lastCheckUpdateInfoCacheGitHub = new Release();
-    private string _updateDownloadUrl = "";
     private DateTime _firstLaunchTime = DateTime.Now;
     private long _diagnosticStartupCount = 0;
     private int _diagnosticCrashCount = 0;
@@ -134,8 +123,8 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private bool _isNetworkConnect = false;
     private bool _isSpeechEnabled = true;
     private double _speechVolume = 1.0;
-    private int _speechSource = 0;
-    private string _edgeTtsVoiceName = "zh-CN-XiaoxiaoNeural";
+
+
     private string _exactTimeServer = "ntp.aliyun.com";
     private bool _isExactTimeEnabled = true;
     private double _timeOffsetSeconds = 0.0;
@@ -154,7 +143,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private bool _allowNotificationEffect = true;
     private bool _allowNotificationSound = false;
     private bool _allowNotificationTopmost = true;
-    private string _updateArtifactHash = "";
+
     private ObservableCollection<string> _excludedWeatherAlerts = new();
     private string _currentComponentConfig = "Default";
     private bool _isAutomationEnabled = false;
@@ -163,21 +152,9 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private Version _lastAppVersion = new Version("0.0.0.0");
     private bool _showComponentsMigrateTip = false;
     private bool _expAllowEditingActivatedTimeLayout = false;
-    private ObservableDictionary<string, string> _pluginIndexSelectedMirrors = new();
-    private ObservableCollection<string> _userPluginIndexes = new();
-    private ObservableDictionary<string, string> _additionalPluginIndexes = new();
-    private ObservableCollection<PluginIndexInfo> _pluginIndexes = new();
-    private string _officialSelectedMirror = "github";
-    private ObservableDictionary<string, string> _officialIndexMirrors = new()
-    {
-        { "github", "https://github.com" },
-        { "ghproxy", "https://mirror.ghproxy.com/https://github.com" },
-        { "moeyy", "https://github.moeyy.xyz/https://github.com" }
-    };
-    private bool _ignoreSslForPluginMirrors = false;
 
     private bool _isMigratedFromv14 = false;
-    private DateTime _lastRefreshPluginSourceTime = DateTime.MinValue;
+
     private bool _isProfileEditorClassInfoSubjectAutoMoveNextEnabled = true;
     private double _notificationSoundVolume = 1.0;
     private double _radiusX = 8.0;
@@ -201,7 +178,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private bool _isErrorLoadingRawInput = false;
     private bool _isCustomForegroundColorEnabled = false;
     private Color _customForegroundColor = Colors.DodgerBlue;
-    private bool _isPluginMarketWarningVisible = true;
+
     private bool _isTransientDisabled = false;
     private bool _isWaitForTransientDisabled = false;
     private bool _isCriticalSafeMode = false;
@@ -213,9 +190,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private int _settingsPagesCachePolicy = 0;
     private string _notificationSpeechCustomSmgTokenSource = "";
 
-    private string _selectedUpdateMirrorV2 = "main";
-    private string _selectedUpdateChannelV2 = "stable";
-    private GptSoVitsSpeechSettings _gptSoVitsSpeechSettings = new();
+
     private double _mainWindowLineVerticalMargin = 5;
     private ObservableCollection<Guid> _trustedProfileIds = [];
     private bool _isNonExactCountdownEnabled = false;
@@ -515,24 +490,6 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    [JsonIgnore]
-    public bool IsSentryEnabled
-    {
-        get => GlobalStorageService.GetValue("IsSentryEnabled") is "1";
-        set
-        {
-            try
-            {
-                var envVar = value ? "1" : "0";
-                GlobalStorageService.SetValue("IsSentryEnabled", envVar);
-                OnPropertyChanged();
-            }
-            catch (Exception ex)
-            {
-                IAppHost.GetService<ILogger<Settings>>().LogError(ex, "无法设置 Sentry 启用状态。");
-            }
-        }
-    }
 
     /// <summary>
     /// TaskBarIcon点击行为
@@ -1425,29 +1382,6 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    /// <summary>
-    /// 语音合成源
-    /// </summary>
-    /// <value>
-    /// 0 - 系统TTS<br/>
-    /// 1 - EdgeTTS
-    /// </value>
-    public int SpeechSource
-    {
-        get => _speechSource;
-        set
-        {
-            if (value == _speechSource) return;
-            if (!IsSystemSpeechSystemExist)
-            {
-                _speechSource = 1;
-                OnPropertyChanged();
-                return;
-            }
-            _speechSource = value;
-            OnPropertyChanged();
-        }
-    }
 
     public string SelectedSpeechProvider
     {
@@ -1460,16 +1394,6 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    public string EdgeTtsVoiceName
-    {
-        get => _edgeTtsVoiceName;
-        set
-        {
-            if (value == _edgeTtsVoiceName) return;
-            _edgeTtsVoiceName = value;
-            OnPropertyChanged();
-        }
-    }
 
     public bool IsNotificationEffectEnabled
     {
@@ -1603,16 +1527,6 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    public GptSoVitsSpeechSettings GptSoVitsSpeechSettings
-    {
-        get => _gptSoVitsSpeechSettings;
-        set
-        {
-            if (Equals(value, _gptSoVitsSpeechSettings)) return;
-            _gptSoVitsSpeechSettings = value;
-            OnPropertyChanged();
-        }
-    }
 
     public bool NotificationUseStandaloneEffectUiThread
     {
@@ -1665,146 +1579,6 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
 
     #endregion
 
-    #region AppUpgrades
-
-    /// <summary>
-    /// 更新模式
-    /// </summary>
-    public int UpdateMode
-    {
-        get => _updateMode;
-        set
-        {
-            if (value == _updateMode) return;
-            _updateMode = value;
-            OnPropertyChanged();
-        }
-    }
-
-    [Obsolete]
-    public string SelectedChannel
-    {
-        get => _selectedChannel;
-        set
-        {
-            if (value == _selectedChannel) return;
-            _selectedChannel = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public DateTime LastCheckUpdateTime
-    {
-        get => _lastCheckUpdateTime;
-        set
-        {
-            if (value.Equals(_lastCheckUpdateTime)) return;
-            _lastCheckUpdateTime = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public UpdateStatus LastUpdateStatus
-    {
-        get => _lastUpdateStatus;
-        set
-        {
-            if (value == _lastUpdateStatus) return;
-            _lastUpdateStatus = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public bool AutoInstallUpdateNextStartup
-    {
-        get => _autoInstallUpdateNextStartup;
-        set
-        {
-            if (value == _autoInstallUpdateNextStartup) return;
-            _autoInstallUpdateNextStartup = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public string UpdateArtifactHash
-    {
-        get => _updateArtifactHash;
-        set
-        {
-            if (value == _updateArtifactHash) return;
-            _updateArtifactHash = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public string SelectedUpdateMirrorV2
-    {
-        get => _selectedUpdateMirrorV2;
-        set
-        {
-            if (value == _selectedUpdateMirrorV2) return;
-            _selectedUpdateMirrorV2 = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public string SelectedUpdateChannelV2
-    {
-        get => _selectedUpdateChannelV2;
-        set
-        {
-            if (value == _selectedUpdateChannelV2) return;
-            _selectedUpdateChannelV2 = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public Guid SelectedUpdateChannelV3
-    {
-        get => _selectedUpdateChannelV3;
-        set
-        {
-            if (value == _selectedUpdateChannelV3) return;
-            _selectedUpdateChannelV3 = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public string DebugSubChannelOverride
-    {
-        get => _debugSubChannelOverride;
-        set
-        {
-            if (value == _debugSubChannelOverride) return;
-            _debugSubChannelOverride = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public string DebugPublicKeyOverride
-    {
-        get => _debugPublicKeyOverride;
-        set
-        {
-            if (value == _debugPublicKeyOverride) return;
-            _debugPublicKeyOverride = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public string DebugPhainonRootUrlOverride
-    {
-        get => _debugPhainonRootUrlOverride;
-        set
-        {
-            if (value == _debugPhainonRootUrlOverride) return;
-            _debugPhainonRootUrlOverride = value;
-            OnPropertyChanged();
-        }
-    }
-
-    #endregion
-
     #region Window
 
     /// <summary>
@@ -1844,19 +1618,15 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private bool _autoDisableCorruptPlugins = true;
     private bool _corruptPluginsDisabledLastSession = false;
     private ObservableDictionary<string, NotificationSettings> _notificationChannelsNotifySettings = new();
-    private string _selectedSpeechProvider = "ycyzclass.speech.edgeTts";
+    private string _selectedSpeechProvider = "ycyzclass.speech.system";
     private bool _isThemeWarningVisible = true;
     private string _weatherIconId = "ycyzclass.weatherIcons.lucide";
     private bool _isRollingComponentWarningVisible = true;
     private int _animationLevel = 1;
     private bool _isIslandSeperated = false;
     private bool _reduceProgressAccuracy = true;
-    private Guid _selectedUpdateChannelV3 = Guid.Empty;
-    private string _debugSubChannelOverride = "";
-    private string _debugPublicKeyOverride = "";
-    private string _debugPhainonRootUrlOverride = "";
-    private bool _isPluginsAutoUpdateEnabled = true;
-    private bool _isPluginsUpdateNotificationEnabled = true;
+
+
     private int _windowTopmostRecheckMode = 0;
     private bool _isScreenRecordingModeEnabled = false;
     private bool _isWindowCaptureBlockingEnabled = false;
@@ -2285,98 +2055,6 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
 
     #endregion
 
-    #region Plugins
-
-    public ObservableDictionary<string, string> OfficialIndexMirrors
-    {
-        get => _officialIndexMirrors;
-        set
-        {
-            if (Equals(value, _officialIndexMirrors)) return;
-            _officialIndexMirrors = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public string OfficialSelectedMirror
-    {
-        get => _officialSelectedMirror;
-        set
-        {
-            if (value == _officialSelectedMirror) return;
-            _officialSelectedMirror = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public ObservableCollection<PluginIndexInfo> PluginIndexes
-    {
-        get => _pluginIndexes;
-        set
-        {
-            if (Equals(value, _pluginIndexes)) return;
-            _pluginIndexes = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public bool IgnoreSslForPluginMirrors
-    {
-        get => _ignoreSslForPluginMirrors;
-        set
-        {
-            if (value == _ignoreSslForPluginMirrors) return;
-            _ignoreSslForPluginMirrors = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public DateTime LastRefreshPluginSourceTime
-    {
-        get => _lastRefreshPluginSourceTime;
-        set
-        {
-            if (value.Equals(_lastRefreshPluginSourceTime)) return;
-            _lastRefreshPluginSourceTime = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public bool IsPluginMarketWarningVisible
-    {
-        get => _isPluginMarketWarningVisible;
-        set
-        {
-            if (value == _isPluginMarketWarningVisible) return;
-            _isPluginMarketWarningVisible = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public bool IsPluginsAutoUpdateEnabled
-    {
-        get => _isPluginsAutoUpdateEnabled;
-        set
-        {
-            if (value == _isPluginsAutoUpdateEnabled) return;
-            _isPluginsAutoUpdateEnabled = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public bool IsPluginsUpdateNotificationEnabled
-    {
-        get => _isPluginsUpdateNotificationEnabled;
-        set
-        {
-            if (value == _isPluginsUpdateNotificationEnabled) return;
-            _isPluginsUpdateNotificationEnabled = value;
-            OnPropertyChanged();
-        }
-    }
-
-    #endregion
-
     public bool IsRollingComponentWarningVisible
     {
         get => _isRollingComponentWarningVisible;
@@ -2611,25 +2289,6 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    [JsonIgnore]
-    public bool ShowSellingAnnouncement
-    {
-        get => GlobalStorageService.GetValue("ShowSellingAnnouncement") is "1" or null;
-        set
-        {
-            try
-            {
-                var envVar = value ? "1" : "0";
-                GlobalStorageService.SetValue("ShowSellingAnnouncement", envVar);
-                OnPropertyChanged();
-            }
-            catch (Exception ex)
-            {
-                IAppHost.GetService<ILogger<Settings>>().LogError(ex, "无法设置 ShowSellingAnnouncement 启用状态。");
-            }
-
-        }
-    }
 
     public bool HasEditModeTutorialShown
     {

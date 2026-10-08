@@ -94,11 +94,6 @@ public partial class DebugPage : SettingsPageBase
         ViewModel.SettingsService.Settings.ShowComponentsMigrateTip = true;
     }
 
-    private void MenuItemShowPluginMarketWarning_OnClick(object sender, RoutedEventArgs e)
-    {
-        ViewModel.SettingsService.Settings.IsPluginMarketWarningVisible = true;
-    }
-
     private void MenuItemShowAutomationWarning_OnClick(object sender, RoutedEventArgs e)
     {
         ViewModel.SettingsService.Settings.IsAutomationWarningVisible = true;

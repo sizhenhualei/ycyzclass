@@ -31,7 +31,6 @@ using YcyzClass.Shared;
 using YcyzClass.ViewModels.SettingsPages;
 using FluentAvalonia.UI.Controls;
 using Microsoft.Extensions.Logging;
-using Sentry;
 
 namespace YcyzClass.Views.SettingPages;
 
@@ -191,7 +190,6 @@ public partial class AboutSettingsPage : SettingsPageBase
             ViewModel.Sayings = ViewModel.SayingsCollection[0];
             ViewModel.SayingsCollection.RemoveAt(0);
         }
-        SentrySdk.Metrics.EmitCounter("views.settings.about.sayings.click", 1);
     }
 
     private async void SettingsExpanderItemShowOssLicense_OnClick(object? sender, RoutedEventArgs e)

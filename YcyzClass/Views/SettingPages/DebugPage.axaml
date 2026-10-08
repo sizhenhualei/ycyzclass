@@ -67,8 +67,6 @@
                                         Header="应用设置">
                 <controls3:SettingsExpanderItem Content="覆盖设置版本" Click="MenuItemOverwriteSettingsVersion_OnClick"
                                                 IsClickEnabled="True"/>
-                <controls3:SettingsExpanderItem Content="显示插件使用须知" Click="MenuItemShowPluginMarketWarning_OnClick"
-                                                IsClickEnabled="True"/>
                 <controls3:SettingsExpanderItem Content="显示自动化使用须知" Click="MenuItemShowAutomationWarning_OnClick"
                                                 IsClickEnabled="True"/>
             </controls3:SettingsExpander>

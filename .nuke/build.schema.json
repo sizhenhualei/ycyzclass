@@ -37,11 +37,9 @@
         "GenerateAppZipArchive",
         "GenerateLauncherZipArchive",
         "GenerateMetadata",
-        "GenerateSecrets",
         "InitPluginDevEnv",
         "PopulateGitVersion",
         "PopulateNupkgVersion",
-        "PostCleanup",
         "PublishApp",
         "PublishLauncher",
         "RestoreDesktopApp",
@@ -120,14 +118,6 @@
   "allOf": [
     {
       "properties": {
-        "ApiSigningKey": {
-          "type": "string",
-          "description": "API_SIGNING_KEY"
-        },
-        "ApiSigningKeyPs": {
-          "type": "string",
-          "description": "API_SIGNING_KEY_PS"
-        },
         "AppVersion": {
           "type": "string"
         },

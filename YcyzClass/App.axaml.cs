@@ -15,7 +15,6 @@ using YcyzClass.Core.Controls;
 using YcyzClass.Shared;
 using YcyzClass.Models;
 using YcyzClass.Services;
-using YcyzClass.Services.AppUpdating;
 using YcyzClass.Services.Management;
 using YcyzClass.Services.SpeechService;
 using YcyzClass.Views;
@@ -24,12 +23,11 @@ using YcyzClass.Views;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using UpdateStatus = YcyzClass.Shared.Enums.UpdateStatus;
+
 #if DEBUG
 using JetBrains.Profiler.Api;
 #endif
 using YcyzClass.Core;
-using Sentry;
 using YcyzClass.Shared.IPC.Abstractions.Services;
 using dotnetCampus.Ipc.CompilerServices.GeneratedProxies;
 using YcyzClass.Services.Automation.Triggers;
@@ -86,7 +84,6 @@ public partial class App : AppBase, IAppHost
 
     public static T GetService<T>() => IAppHost.GetService<T>();
 
-    public bool IsSentryEnabled { get; set; } = false;
 
     private bool _isStartedCompleted = false;
 
@@ -263,14 +260,7 @@ public partial class App : AppBase, IAppHost
             {
                 Uri = Uri.TryCreate(args[0], UriKind.Absolute, out var uri) ? uri.ToString() : $"avares://YcyzClass/Assets/HoYoStickers/{args[0]}.png"
             });
-        SentrySdk.ConfigureScope(s =>
-        {
-            s.SetTag("subChannel", AppSubChannel);
-            s.SetTag("subChannel.os", OperatingSystem);
-            s.SetTag("subChannel.platform", Platform);
-            s.SetTag("subChannel.buildType", BuildType);
-            s.SetTag("subChannel.packagingType", PackagingType);
-        });
+
         Popup.IsOpenProperty.Changed.AddClassHandler<Popup>(PopupIsOpenChanged);
         base.Initialize();
     }
@@ -378,13 +368,6 @@ public partial class App : AppBase, IAppHost
         //Settings.DiagnosticCrashCount++;
         //Settings.DiagnosticLastCrashTime = DateTime.Now;
 
-        if (!critical)  // 全局未捕获的异常应该由 SentrySdk 自行捕获。
-        {
-            SentrySdk.CaptureException(e, scope =>
-            {
-                scope.Level = SentryLevel.Fatal;
-            });
-        }
 
         var plugins = DiagnosticService.GetPluginsByStacktrace(e);
         var disabled = DiagnosticService.DisableCorruptPlugins(plugins);
@@ -398,7 +381,6 @@ public partial class App : AppBase, IAppHost
         }
         if (!safe)
         {
-            var traceId = SentrySdk.GetTraceHeader()?.TraceId;
             var crashInfo = e.ToString();
             if (plugins.Count > 0)
             {
@@ -410,16 +392,7 @@ public partial class App : AppBase, IAppHost
                     +Environment.NewLine+ "================================"+Environment.NewLine;
                 crashInfo = pluginsWarning + crashInfo;
             }
-            if (traceId != null)
-            {
-                var traceInfo = $"""
-                                 在向开发者提交问题时请保留以下信息：
-                                 TraceID: {traceId}
-                                 ================================
 
-                                 """;
-                crashInfo = traceInfo + crashInfo;
-            }
             CrashWindow = new CrashWindow()
             {
                 CrashInfo = crashInfo,
@@ -491,12 +464,7 @@ public partial class App : AppBase, IAppHost
         CreatePhonyRootWindow();
         PlatformServices.WindowPlatformService.SetWindowFeature(PhonyRootWindow, WindowFeatures.ToolWindow | WindowFeatures.SkipManagement | WindowFeatures.Transparent, true);
         Initialized?.Invoke(this, EventArgs.Empty);
-        var transaction = SentrySdk.StartTransaction(
-            "startup",
-            "startup"
-        );
-        SentrySdk.ConfigureScope(s => s.Transaction = transaction);
-        var spanPreInit = transaction.StartChild("startup-init");
+
         AppBase.CurrentLifetime = YcyzClass.Core.Enums.ApplicationLifetime.Initializing;
         Dispatcher.UIThread.UnhandledException += App_OnDispatcherUnhandledException;
         MyWindow.ShowOssWatermark = ApplicationCommand.ShowOssWatermark;
@@ -517,8 +485,7 @@ public partial class App : AppBase, IAppHost
         {
             if (!ApplicationCommand.WaitMutex)
             {
-                spanPreInit.Finish();
-                transaction.Finish();
+
                 
                 if (ApplicationCommand.Autostartup)
                 {
@@ -604,7 +571,6 @@ public partial class App : AppBase, IAppHost
             
             var recoveryWindow = new RecoveryWindow();
             recoveryWindow.Show();
-            transaction.Finish();
             return;
         }
 
@@ -612,19 +578,12 @@ public partial class App : AppBase, IAppHost
         await File.WriteAllTextAsync(startupCountFilePath, startupCount.ToString());
         AppDomain.CurrentDomain.ProcessExit += CurrentDomainOnProcessExit;
 
-        var spanProcessUpdate = spanPreInit.StartChild("startup-process-update");
-        
-        if (ApplicationCommand.UpdateDeleteTarget != null)
-        {
-            //MessageBox.Show($"Update DELETE {ApplicationCommand.UpdateDeleteTarget}");
-            UpdateService.RemoveUpdateTemporary(ApplicationCommand.UpdateDeleteTarget);
-        }
-        spanProcessUpdate.Finish();
+
 
         FileFolderService.CreateFolders();
         PluginService.ProcessPluginsInstall();
         bool isSystemSpeechSystemExist = false;
-        var spanHostBuilding = spanPreInit.StartChild("startup-host-building");
+
 
         IAppHost.Host = Microsoft.Extensions.Hosting.Host
             .CreateDefaultBuilder()
@@ -665,8 +624,7 @@ public partial class App : AppBase, IAppHost
 #if DEBUG
         MemoryProfiler.GetSnapshot("Host built");
 #endif
-        spanHostBuilding.Finish();
-        spanPreInit.Finish();
+
         if (!string.IsNullOrWhiteSpace(ApplicationCommand.ImportV1) || !string.IsNullOrWhiteSpace(ApplicationCommand.ImportV2))
         {
             var dtWindow = new DataTransferWindow()
@@ -685,16 +643,15 @@ public partial class App : AppBase, IAppHost
             }
             return;
         }
-        var spanLaunching = transaction.StartChild("startup-launching");
-        var spanSetupMgmt = spanLaunching.StartChild("startup-setup-mgmt");
+
         var successSetupMgmt = await GetService<IManagementService>().SetupManagement();
-        spanSetupMgmt.Finish();
+
         if (!successSetupMgmt)
         {
             Stop();
             return;
         }
-        var spanLoadingSettings = spanLaunching.StartChild("startup-loading-settings");
+
         await GetService<SettingsService>().LoadSettingsAsync();
         Settings = GetService<SettingsService>().Settings;
         Settings.IsSystemSpeechSystemExist = isSystemSpeechSystemExist;
@@ -709,7 +666,7 @@ public partial class App : AppBase, IAppHost
             Logger.LogWarning($"上次会话因MLE结束。MemoryKillCount={Settings.DiagnosticMemoryKillCount}");
             #endif
         }
-        spanLoadingSettings.Finish();
+
         //OverrideFocusVisualStyle();
 
         CurrentLifetime = Core.Enums.ApplicationLifetime.StartingOnline;
@@ -728,25 +685,12 @@ public partial class App : AppBase, IAppHost
         GetService<ISplashService>().CurrentProgress = 30;
         GetService<ISplashService>().SetDetailedStatus("正在启动挂起检查服务");
 
-        var spanStartHangService = spanLaunching.StartChild("startup-start-hang-service");
         GetService<IHangService>();
-        spanStartHangService.Finish();
 
         GetService<ISplashService>().SetDetailedStatus("正在创建任务栏图标");
-        var spanCreateTaskbarIcon = spanLaunching.StartChild("startup-create-taskbar-icon");
 
-        if (!ApplicationCommand.Quiet)  // 在静默启动时不进行更新相关操作
-        {
-            GetService<ISplashService>().SetDetailedStatus("正在进行更新服务启动操作");
-            var spanCheckUpdate = spanLaunching.StartChild("startup-process-update");
-            var r = await GetService<UpdateService>().AppStartup();
-            spanCheckUpdate.Finish();
-            if (r)
-            {
-                await GetService<ISplashService>().EndSplash();
-                return;
-            }
-        }
+
+
         GetService<ISplashService>().CurrentProgress = 45;
 
         GetService<ISplashService>().SetDetailedStatus("正在加载档案");
@@ -762,7 +706,7 @@ public partial class App : AppBase, IAppHost
         // _ = GetService<WallpaperPickingService>().GetWallpaperAsync();
         
         _ = IAppHost.Host.StartAsync();
-        IAppHost.GetService<IPluginMarketService>().LoadPluginSource();
+
         
         if (!Settings.IsWelcomeWindowShowed || ApplicationCommand.Refreshing || ApplicationCommand.Onboarding)
         {
@@ -824,7 +768,7 @@ public partial class App : AppBase, IAppHost
         Settings.IsMainWindowDebugEnabled = false;
         #endif
         
-        var spanLoadMainWindow = spanLaunching.StartChild("span-loading-mainWindow");
+
         Logger.LogInformation("正在初始化MainWindow。");
         GetService<ISplashService>().SetDetailedStatus("正在启动主界面所需的服务");
         GetService<ISplashService>().CurrentProgress = 55;
@@ -839,21 +783,11 @@ public partial class App : AppBase, IAppHost
             GetService<ISplashService>().SetDetailedStatus("正在进行启动后操作");
             // 由于在应用启动时调用 WMI 会导致无法使用触摸，故在应用启动完成后再获取设备统计信息。
             // https://github.com/dotnet/wpf/issues/9752
-            if (IsSentryEnabled)
-            {
-                DiagnosticService.GetDeviceInfo(out var name, out var vendor);
-                SentrySdk.ConfigureScope(s =>
-                {
-                    s.SetTag("deviceDesktop.name", name);
-                    s.SetTag("deviceDesktop.vendor", vendor);
-                });
-            }
+
             AppStarted?.Invoke(this, EventArgs.Empty);
             GetService<IIpcService>().IpcProvider.StartServer();
             GetService<IIpcService>().JsonRoutedProvider.StartServer();
-            spanLoadMainWindow.Finish();
-            transaction.Finish();
-            SentrySdk.ConfigureScope(s => s.Transaction = null);
+
             GetService<IAutomationService>();
             GetService<IRulesetService>().NotifyStatusChanged();
             File.Delete(startupCountFilePath);
@@ -904,7 +838,7 @@ public partial class App : AppBase, IAppHost
                     ImportName = "YcyzClass"
                 };
                 dtWindow.Show();
-                dtWindow.ImportComplete(ApplicationCommand.ImportV1Complete);
+                dtWindow.ImportComplete();
             }
         };
 #if DEBUG
@@ -938,25 +872,7 @@ public partial class App : AppBase, IAppHost
             Logger.LogError(ex, "无法创建自动备份。");
         }
 
-        if (ApplicationCommand.UpdateDeleteTarget != null)
-        {
-            GetService<SettingsService>().Settings.LastUpdateStatus = UpdateStatus.UpToDate;
-            var content = new DesktopToastContent()
-            {
-                Title = "更新完成。",
-                Body = $"应用已更新到版本{AppVersion}。",
-                Buttons =
-                {
-                    {
-                        "查看更新日志",
-                        () => uriNavigationService.NavigateWrapped(new Uri("ycyzclass://app/settings/update"))
-                    }
-                }
-            };
-            content.Activated += (_, _) =>
-                uriNavigationService.NavigateWrapped(new Uri("ycyzclass://app/settings/update"));
-            await PlatformServices.DesktopToastService.ShowToastAsync(content);
-        }
+
         
         var needsStop = await IAppHost.GetService<IRefreshingService>().Initialize();
         if (needsStop)

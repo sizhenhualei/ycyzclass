@@ -152,7 +152,6 @@ public partial class DataTransferPage : UserControl
             throw new Exception("源 ClassIsland 版本必须在 1.7.0.x，才能进行导入。");
         }
         settings.MainWindowFont = MainWindow.DefaultFontFamilyKey;
-        settings.AutoInstallUpdateNextStartup = false;
         settings.ShowEchoCaveWhenSettingsPageLoading = false;
         if (settings.WeatherIconId == "ycyzclass.weatherIcons.materialDesign")
         {
@@ -240,7 +239,7 @@ public partial class DataTransferPage : UserControl
                 }
             });
             
-            AppBase.Current.Restart(["-m", "--importComplete", "--importV1Complete"]);
+            AppBase.Current.Restart(["-m", "--importComplete"]);
         }
         catch (Exception e)
         {
@@ -775,20 +774,6 @@ public partial class DataTransferPage : UserControl
     }
 
     #endregion
-
-    public async void ImportComplete(bool importV1)
-    {
-        if (importV1)
-        {
-            await PlatformServices.DesktopToastService.ShowToastAsync(new DesktopToastContent()
-            {
-                Title = "正在升级插件",
-                Body = "正在升级从 ClassIsland 1 导入的插件到兼容 ClassIsland 2 的版本，这可能需要一定的时间，应用将在升级完成后显示一条通知。部分插件可能暂不支持 ClassIsland 2。"
-            });
-            await IAppHost.GetService<IPluginMarketService>().RefreshPluginSourceAsync();
-            IAppHost.GetService<IPluginMarketService>().UpdateAllPlugins(true);
-        }
-    }
 
     private void ButtonFinish_OnClick(object? sender, RoutedEventArgs e)
     {

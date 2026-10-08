@@ -135,20 +135,6 @@
                             <CheckBox Content="已启用" Margin="0 0 6  0"
                                                       VerticalAlignment="Center"
                                                       IsChecked="{Binding IsEnabled}"/>
-                            <Button Click="ButtonInstallPlugin_OnClick" Classes="accent"
-                                    VerticalAlignment="Center"
-                                    Margin="0 0 6 0"
-                                    IsEnabled="{Binding DownloadProgress.IsDownloading, Converter={StaticResource InvertBooleanConverter}}">
-                                <Button.IsVisible>
-                                    <MultiBinding Converter="{x:Static BoolConverters.And}">
-                                        <Binding Path="IsLocal" />
-                                        <Binding Path="IsUpdateAvailable" />
-                                        <Binding Path="IsAvailableOnMarket"/>
-                                        <Binding Path="RestartRequired" Converter="{StaticResource InvertBooleanConverter}" Mode="OneWay"/>
-                                    </MultiBinding>
-                                </Button.IsVisible>
-                                <ci:IconText Glyph="&#xE1A0;" Text="更新"/>
-                            </Button>
                             <Button VerticalAlignment="Center"
                                     Margin="0 0 6  0"
                                     Click="ButtonUninstall_OnClick"
@@ -160,20 +146,6 @@
                                     Click="ButtonUndoUninstall_OnClick"
                                     IsVisible="{Binding IsUninstalling}">
                                 <ci:IconText Glyph="&#xE625;" Text="撤销移除"/>
-                            </Button>
-                        </WrapPanel>
-                        <!-- Market Operations -->
-                        <WrapPanel Orientation="Horizontal" IsEnabled="{Binding DownloadProgress.IsDownloading, Converter={StaticResource InvertBooleanConverter}}"
-                                   Margin="0 0 0 4" Classes="accent">
-                            <WrapPanel.IsVisible>
-                                <MultiBinding Converter="{x:Static BoolConverters.And}">
-                                    <Binding Path="IsLocal" Converter="{StaticResource InvertBooleanConverter}"/>
-                                    <Binding Path="IsAvailableOnMarket"/>
-                                    <Binding Path="RestartRequired" Converter="{StaticResource InvertBooleanConverter}"/>
-                                </MultiBinding>
-                            </WrapPanel.IsVisible>
-                            <Button Click="ButtonInstallPlugin_OnClick" Classes="accent">
-                                <ci:IconText Glyph="&#xE0D3;" Text="安装"/>
                             </Button>
                         </WrapPanel>
                         <WrapPanel Orientation="Horizontal"
@@ -189,17 +161,6 @@
                         <controls2:InfoBar Message="此插件未声明支持当前所运行的操作系统。此插件可能不能正常按预期工作。"
                                            Severity="Warning"
                                            IsOpen="{Binding IsNotSupportCurrentOS}"> 
-                        </controls2:InfoBar>
-                        <!-- Download Progresses -->
-                        <DockPanel Margin="0 4 0 0" IsVisible="{Binding DownloadProgress.IsDownloading, FallbackValue={x:False}}">
-                            <ProgressBar Value="{Binding DownloadProgress.Progress}"/>
-                        </DockPanel>
-                        <controls2:InfoBar Message="无法安装插件，请检查您的网络连接。更换插件镜像源可能可以解决此问题。"
-                                           Severity="Error"
-                                           IsOpen="{Binding DownloadProgress.Exception, Mode=OneWay, Converter={x:Static ObjectConverters.IsNotNull}}">
-                            <controls2:InfoBar.ActionButton>
-                                <HyperlinkButton Click="MenuItemManagePluginSources_OnClick">更换插件镜像源</HyperlinkButton>
-                            </controls2:InfoBar.ActionButton>
                         </controls2:InfoBar>
                         
                     </StackPanel>
@@ -294,95 +255,7 @@
             </Grid>
         </DataTemplate>
         
-        <ScrollViewer x:Key="PluginUpdateSettingsDrawer" Width="320"
-              HorizontalAlignment="Stretch"
-              Margin="16" >
-            <StackPanel Grid.Row="0">
-                <TextBlock Text="插件更新设置" Theme="{StaticResource SubtitleTextBlockStyle}"/>
-                
-                <CheckBox IsChecked="{Binding ViewModel.SettingsService.Settings.IsPluginsUpdateNotificationEnabled}"
-                          Content="插件有更新时通知我"/>
-                <CheckBox IsChecked="{Binding ViewModel.SettingsService.Settings.IsPluginsAutoUpdateEnabled}"
-                          Content="自动更新插件"/>
-            </StackPanel>
-        </ScrollViewer>
 
-        <Grid x:Key="PluginSourceManageDrawer" Width="500"
-              HorizontalAlignment="Stretch"
-              Margin="16" RowDefinitions="Auto,*">
-            <StackPanel Grid.Row="0">
-                <TextBlock Text="管理插件源" Theme="{StaticResource SubtitleTextBlockStyle}"/>
-                
-                <ci:IconText Glyph="&#xE99E;" Text="内置插件源" Margin="0 12 0 8"/>
-                <ci:Field Label="内置插件源镜像" Margin="0 -4">
-                    <ComboBox SelectedValue="{Binding ViewModel.SettingsService.Settings.OfficialSelectedMirror, Mode=TwoWay}"
-                              SelectedValueBinding="{Binding Key}"
-                              ItemsSource="{Binding ViewModel.OfficialPluginMirrors.List}">
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Key}" />
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                    </ComboBox>
-                </ci:Field>
-                <CheckBox Content="忽略 SSL/TLS 证书错误"
-                          Margin="0 8 0 0"
-                          VerticalAlignment="Center"
-                          ToolTip.Tip="禁用插件镜像证书校验, 将降低安全性。"
-                          IsChecked="{Binding ViewModel.SettingsService.Settings.IgnoreSslForPluginMirrors, Mode=TwoWay}"/>
-                <Separator Margin="0 16 0 8"/>
-                <ci:IconText Glyph="&#xE99A;" Text="自定义插件源" Margin="0 0 0 8"/>
-                <WrapPanel Margin="0 0 0 0">
-                    <Button Theme="{StaticResource TransparentButton}" Click="ButtonAddPluginSource_OnClick">
-                        <ci:IconText Glyph="&#xE00D;" Text="添加"/>
-                    </Button>
-                    <Button Theme="{StaticResource TransparentButton}" Click="ButtonRemovePluginSource_OnClick">
-                        <ci:IconText Glyph="&#xE61D;" Text="删除"/>
-                    </Button>
-                </WrapPanel>
-            </StackPanel>
-            <DataGrid Grid.Row="1" GridLinesVisibility="All"
-                      CanUserSortColumns="False"
-                      AutoGenerateColumns="False"
-                      SelectionMode="Single"
-                      ItemsSource="{Binding ViewModel.SettingsService.Settings.PluginIndexes}"
-                      SelectedItem="{Binding ViewModel.SelectedPluginIndexInfo}">
-                <DataGrid.Styles>
-                    <Style Selector="TextBlock" >
-                        <Setter Property="FontSize" Value="14"/>
-                    </Style>
-                </DataGrid.Styles>
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="Url" Binding="{Binding Url, Mode=TwoWay}"
-                                        Width="4*"/>
-                    <DataGridTemplateColumn Header="镜像"
-                                            Width="*">
-                        <DataGridTemplateColumn.CellEditingTemplate>
-                            <DataTemplate>
-                                <ComboBox SelectedValue="{Binding SelectedMirror, Mode=TwoWay}"
-                                          SelectedValueBinding="{Binding Key}"
-                                          Margin="0 -4"
-                                          HorizontalAlignment="Stretch"
-                                          VerticalAlignment="Center"
-                                          ItemsSource="{Binding MirrorsList.List}">
-                                    <ComboBox.ItemTemplate>
-                                        <DataTemplate>
-                                            <TextBlock Text="{Binding Key}"/>
-                                        </DataTemplate>
-                                    </ComboBox.ItemTemplate>
-                                </ComboBox>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellEditingTemplate>
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding SelectedMirror}"/>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                </DataGrid.Columns>
-            </DataGrid>
-        </Grid>
-        <converters:LargeNumberToFriendlyNumberConverter x:Key="LargeNumberToFriendlyNumberConverter" />
         <converters:SupportedOSPlatformsToBooleanConverter x:Key="SupportedOSPlatformsToBooleanConverter" />
         <DataTemplate x:Key="InstallPluginConfirmTemplate">
             <DockPanel>
@@ -467,48 +340,25 @@
                                        StickerToolTip="光辉矢愿_不可以看"
                                        FallbackIcon="{ci:FluentIconSource &#xE262;, FontSize=72}"/>
                     <TextBlock Margin="0 0 0 6">
-                        <Classes.LocalPlugins>
-                            <Binding Path="ViewModel.PluginCategoryIndex" Converter="{x:Static ObjectConverters.Equal}">
-                                <Binding.ConverterParameter>
-                                    <system:Int32>1</system:Int32>
-                                </Binding.ConverterParameter>
-                            </Binding>
-                        </Classes.LocalPlugins>
                         <Classes.NoPlugins>
                             <Binding Path="!!!Count" Source="{x:Static services:IPluginService.LoadedPlugins}"/>
                         </Classes.NoPlugins>
                         <TextBlock.Styles>
                             <Style Selector="TextBlock">
                                 <Setter Property="Text" Value="找不到符合条件的插件，请调整筛选条件后重试" />
-                                <Style Selector="^.LocalPlugins.NoPlugins">
-                                    <Setter Property="Text" Value="还没有安装任何插件，不妨去插件市场看看吧" />
+                                <Style Selector="^.NoPlugins">
+                                    <Setter Property="Text" Value="还没有安装任何插件。" />
                                 </Style>
                             </Style>
                         </TextBlock.Styles>
                     </TextBlock>
-                    <Button HorizontalAlignment="Center" Click="ButtonOpenMarket_OnClick">
-
-                        <Button.IsVisible>
-                            <MultiBinding Converter="{x:Static BoolConverters.And}">
-                                <Binding Path="ViewModel.PluginCategoryIndex" Converter="{x:Static ObjectConverters.Equal}">
-                                    <Binding.ConverterParameter>
-                                        <system:Int32>1</system:Int32>
-                                    </Binding.ConverterParameter>
-                                </Binding>
-                                <Binding Path="!!!Count" Source="{x:Static services:IPluginService.LoadedPlugins}"/>
-                            </MultiBinding>
-                        </Button.IsVisible>
-                        <ci:IconText Glyph="&#xF08B;" Text="前往插件市场" />
-                    </Button>
                 </StackPanel>
             </Grid>
         </ControlTemplate>
     </ci:SettingsPageBase.Resources>
     <Grid DragDrop.AllowDrop="True" DragDrop.DragEnter="Grid_DragEnter" DragDrop.DragOver="Grid_DragEnter" DragDrop.Drop="Grid_Drop" DragDrop.DragLeave="Grid_DragLeave">
         <Grid Margin="8 12 0 12">
-            <controls1:ListDetailView IsEnabled="{Binding ViewModel.SettingsService.Settings.IsPluginMarketWarningVisible, Converter={StaticResource InvertBooleanConverter}}"
-                                      IsPanelOpened="{Binding ViewModel.IsDetailsShown, Mode=TwoWay}"
-                                      IsVisible="{Binding !ViewModel.SettingsService.Settings.IsPluginMarketWarningVisible}">
+            <controls1:ListDetailView IsPanelOpened="{Binding ViewModel.IsDetailsShown, Mode=TwoWay}">
             <controls1:ListDetailView.TitleElement>
                 <TextBlock Text="插件详细" VerticalAlignment="Center"
                            Theme="{StaticResource SubtitleTextBlockStyle}"/>
@@ -530,12 +380,6 @@
                                            IsHitTestVisible="False"/>
                         </Grid>
                         <DockPanel Dock="Left" LastChildFill="False">
-                            <TabStrip SelectedIndex="{Binding ViewModel.PluginCategoryIndex}"
-                                      Classes="compact"
-                                      SelectionChanged="ListBoxCategory_OnSelectionChanged">
-                                <TabStripItem Content="市场"/>
-                                <TabStripItem Content="已安装"/>
-                            </TabStrip>
 
                             <Button Content="{ci:FluentIcon &#xEBAC;}"
                                     Theme="{StaticResource TransparentButton}"
@@ -543,16 +387,6 @@
                                     DockPanel.Dock="Right">
                                 <Button.Flyout>
                                     <MenuFlyout>
-                                        <MenuItem Icon="{ci:FluentIcon &#xE0B5;}" Header="从缓存重载插件源" 
-                                                  Click="MenuItemReloadFromCache_OnClick"
-                                                  IsEnabled="{Binding ViewModel.PluginMarketService.IsLoadingPluginSource, Converter={StaticResource InvertBooleanConverter}}"/>
-                                        <MenuItem Icon="{ci:FluentIcon &#xE99A;}" Header="管理插件源…"
-                                                  Click="MenuItemManagePluginSources_OnClick"
-                                                  IsEnabled="{Binding ViewModel.PluginMarketService.IsLoadingPluginSource, Converter={StaticResource InvertBooleanConverter}}"/>
-                                        <MenuItem Icon="{ci:FluentIcon &#xE161;}" Header="插件更新设置…"
-                                                  Click="MenuItemPluginUpdateSettings_OnClick"
-                                                  IsEnabled="{Binding ViewModel.PluginMarketService.IsLoadingPluginSource, Converter={StaticResource InvertBooleanConverter}}"/>
-                                        <Separator/>
                                         <MenuItem Icon="{ci:FluentIcon &#xE071;}" Header="从本地安装…"
                                                   Click="ButtonInstallFromLocal_OnClick"/>
                                         <Separator/>
@@ -563,16 +397,8 @@
                                 </Button.Flyout>
                             </Button>
                             
-                            <Button DockPanel.Dock="Right" 
-                                    Theme="{StaticResource TransparentButton}"
-                                    Click="ButtonBaseRefreshPlugins_OnClick"
-                                    IsEnabled="{Binding ViewModel.PluginMarketService.IsLoadingPluginSource, Converter={StaticResource InvertBooleanConverter}}">
-                                <ci:IconText Glyph="&#xE0B5;" Text="刷新"/>
-                            </Button>
 
                         </DockPanel>
-                        <ProgressBar IsVisible="{Binding ViewModel.PluginMarketService.IsLoadingPluginSource}"
-                                     IsIndeterminate="True"/>
                     </StackPanel>
                     <ListBox Grid.Row="1"
                              ItemsSource="{Binding ViewModel.MergedPluginsFiltered.Items}"
@@ -636,18 +462,6 @@
                                                Grid.RowSpan="2" 
                                                Orientation="Horizontal"
                                                VerticalAlignment="Top" HorizontalAlignment="Right">
-                                        <StackPanel Orientation="Horizontal" ToolTip.Tip="下载量" Margin="2 0 0 0">
-                                            <ci:FluentIcon Width="16" Height="16" FontSize="16"
-                                                           Glyph="&#xE0D2;" VerticalAlignment="Center"/>
-                                            <TextBlock Text="{Binding Value.DownloadCount, Converter={StaticResource LargeNumberToFriendlyNumberConverter}}"
-                                                       FontSize="12" VerticalAlignment="Center"/>
-                                        </StackPanel>
-                                        <StackPanel Orientation="Horizontal" ToolTip.Tip="Stars" Margin="4 0 0 0">
-                                            <ci:FluentIcon Width="16" Height="16" FontSize="16"
-                                                           Glyph="&#xF05A;" VerticalAlignment="Center"/>
-                                            <TextBlock Text="{Binding Value.StarsCount, Converter={StaticResource LargeNumberToFriendlyNumberConverter}}"
-                                                       FontSize="12" VerticalAlignment="Center"/>
-                                        </StackPanel>
                                         <ci:FluentIcon ToolTip.Tip="此插件将在重启后被移除。"
                                                          Foreground="Orange"
                                                          Width="16" Height="16"
@@ -669,12 +483,6 @@
                                                        VerticalAlignment="Center"
                                                        Glyph="&#xE808;"
                                                        IsVisible="{Binding Value.Exception, Converter={x:Static ObjectConverters.IsNotNull}}"/>
-                                        <ci:FluentIcon ToolTip.Tip="更新可用。"
-                                                       Width="16" Height="16"
-                                                       VerticalAlignment="Center"
-                                                       IsVisible="{Binding Value.IsUpdateAvailable}"
-                                                       Margin="2 0 0 0"
-                                                       Glyph="&#xE1A0;"/>
                                         <ci:FluentIcon ToolTip.Tip="此插件已安装。"
                                                        Width="16" Height="16"
                                                        VerticalAlignment="Center"
@@ -689,50 +497,7 @@
                                           Grid.RowSpan="2" 
                                           Orientation="Horizontal"
                                           Margin="4 0 0 0"
-                                          IsEnabled="{Binding Value.DownloadProgress.IsDownloading, Converter={StaticResource InvertBooleanConverter}}"
                                           VerticalAlignment="Bottom" HorizontalAlignment="Right">
-                                        <Panel>
-                                            
-                                            <Button
-                                                ToolTip.Tip="安装"
-                                                Classes="accent"
-                                                CornerRadius="14"
-                                                Width="28" Height="28"
-                                                Padding="0"
-                                                CommandParameter="{Binding Value.Manifest.Id}"
-                                                Command="{Binding InstallPluginCommand, RelativeSource={RelativeSource AncestorType=local:PluginsSettingsPage}}"
-                                                Content="{ci:FluentIcon &#xE0D2;}">
-                                                <Button.IsVisible>
-                                                    <MultiBinding Converter="{x:Static BoolConverters.And}">
-                                                        <Binding Path="Value.IsLocal" Converter="{StaticResource InvertBooleanConverter}"/>
-                                                        <Binding Path="Value.IsAvailableOnMarket"/>
-                                                        <Binding Path="Value.RestartRequired" Converter="{StaticResource InvertBooleanConverter}"/>
-                                                    </MultiBinding>
-                                                </Button.IsVisible>
-                                            </Button>
-                                            <Button
-                                                ToolTip.Tip="更新"
-                                                Classes="accent"
-                                                CornerRadius="14"
-                                                Width="28" Height="28"
-                                                Padding="0"
-                                                CommandParameter="{Binding Value.Manifest.Id}"
-                                                Command="{Binding InstallPluginCommand, RelativeSource={RelativeSource AncestorType=local:PluginsSettingsPage}}"
-                                                Content="{ci:FluentIcon &#xE1A0;}">
-                                                <Button.IsVisible>
-                                                    <MultiBinding Converter="{x:Static BoolConverters.And}">
-                                                        <Binding Path="Value.IsLocal"/>
-                                                        <Binding Path="Value.IsAvailableOnMarket"/>
-                                                        <Binding Path="Value.IsUpdateAvailable"/>
-                                                        <Binding Path="Value.RestartRequired" Converter="{StaticResource InvertBooleanConverter}"/>
-                                                    </MultiBinding>
-                                                </Button.IsVisible>
-                                            </Button>
-                                            <controls2:ProgressRing Width="28" Height="28" MinWidth="0" MinHeight="0" IsIndeterminate="False"
-                                                                    IsVisible="{Binding Value.DownloadProgress.IsDownloading, FallbackValue={x:False}}"
-                                                                    Value="{Binding Value.DownloadProgress.Progress}"
-                                                                    Maximum="100"/>
-                                        </Panel>
                                         <Button
                                             ToolTip.Tip="重启以应用更改"
                                             CornerRadius="14"
@@ -765,62 +530,6 @@
                 </Grid>
             </controls1:ListDetailView.RightContent>
             </controls1:ListDetailView>
-            <Border IsVisible="{Binding ViewModel.SettingsService.Settings.IsPluginMarketWarningVisible}">
-            <ScrollViewer>
-                <StackPanel VerticalAlignment="Center"
-                            HorizontalAlignment="Center">
-                    <Grid HorizontalAlignment="Center" ColumnDefinitions="75,Auto,75">
-                        <Image Grid.Column="0" Source="/Assets/AppLogo.png" />
-                        <ci:FluentIcon Grid.Column="1"
-                                         VerticalAlignment="Center"
-                                         Width="25" Height="25"
-                                         FontSize="25"
-                                         Margin="16 0"
-                                         Glyph="&#xE00C;" />
-                        <ci:FluentIcon Grid.Column="2" Glyph="&#xE070;"
-                                       VerticalAlignment="Stretch"
-                                       HorizontalAlignment="Stretch"
-                                       FontSize="75"
-                                       Height="75"
-                                       Width="75" />
-                    </Grid>
-                    <TextBlock Text="插件"
-                               HorizontalAlignment="Center"
-                               TextAlignment="Center"
-                               Margin="0 8 0 0"
-                               Theme="{StaticResource SubtitleTextBlockStyle}" />
-                    <TextBlock Margin="0 6 0 0"
-                               TextAlignment="Center"
-                               HorizontalAlignment="Center"
-                               TextWrapping="Wrap"
-                               Width="320">
-                        <Run Text="欢迎使用插件！插件可以扩展 YcyzClass 的功能，比如添加一个组件，或者和其它软件联动，等等。" />
-
-                    </TextBlock>
-                    <Border Width="320"
-                            Background="{DynamicResource SystemFillColorCautionBackgroundBrush}"
-                            Margin="0 8 0 0"
-                            CornerRadius="4"
-                            Padding="8">
-                        <StackPanel>
-                            <ci:FluentIcon Glyph="&#xF430;"
-                                             Margin="0 0 0 4"
-                                             HorizontalAlignment="Center"/>
-                            <TextBlock TextAlignment="Center"
-                                       HorizontalAlignment="Center"
-                                       TextWrapping="Wrap"
-                                       Text="需要注意，插件可以以 YcyzClass 的身份使用各项系统资源并请求任意权限，还可以自由访问设备上的所有文件。请不要安装来路不明的插件，开发者也无法保证市场所提供的插件都是绝对安全的。YcyzClass 开发团队对使用插件造成的一切后果概不负责。" />
-                        </StackPanel>
-                    </Border>
-
-                    <Button HorizontalAlignment="Center"
-                            Margin="0 16 0 0"
-                            Classes="accent"
-                            Click="ButtonAgreePluginNotice_OnClick">
-                        <ci:IconText Glyph="&#xE424;" Text="同意并开始使用插件"/>
-                    </Button>
-                </StackPanel></ScrollViewer>
-            </Border>
         </Grid>
         <Grid IsVisible="{Binding ViewModel.IsInstallingLocalPlugin}">
             <Border Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"

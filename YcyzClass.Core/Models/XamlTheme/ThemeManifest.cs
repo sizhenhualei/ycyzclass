@@ -1,6 +1,5 @@
 ﻿using Octokit;
 using System.Security.Policy;
-using YcyzClass.Core.Abstractions.Models.Marketplace;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace YcyzClass.Core.Models.XamlTheme;
@@ -8,7 +7,7 @@ namespace YcyzClass.Core.Models.XamlTheme;
 /// <summary>
 /// 代表主题清单信息
 /// </summary>
-public class ThemeManifest : ObservableRecipient, IMarketplaceItemManifest
+public class ThemeManifest : ObservableRecipient
 {
     private string _name = "";
     private string _author = "";

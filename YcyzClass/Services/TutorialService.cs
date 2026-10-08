@@ -31,7 +31,6 @@ using Microsoft.Extensions.Logging;
 using MoonSharp.Interpreter;
 using ReactiveUI;
 using Tmds.DBus.Protocol;
-using WebSocketSharp;
 
 namespace YcyzClass.Services;
 

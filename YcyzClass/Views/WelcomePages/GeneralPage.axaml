@@ -29,13 +29,6 @@
                 </StackPanel>
             </controls:SettingsExpander.Footer>
         </controls:SettingsExpander>
-        <controls:SettingsExpander IconSource="{ci:FluentIconSource &#xE4E8;}"
-                                   Header="匿名使用情况分析"
-                                   Description="本应用将通过 SentrySDK 来收集本应用中的使用情况与错误信息，以改进本应用。您的信息会匿名上传，不会包含您的个人信息。您可以自行启用或禁用此功能。">
-            <controls:SettingsExpander.Footer>
-                <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsSentryEnabled}"/>
-            </controls:SettingsExpander.Footer>
-        </controls:SettingsExpander>
         
         <StackPanel Orientation="Horizontal" Spacing="4" HorizontalAlignment="Center">
             <Button Click="ButtonNext_OnClick"

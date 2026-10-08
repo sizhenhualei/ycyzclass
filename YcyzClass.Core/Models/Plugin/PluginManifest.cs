@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using System.Runtime.InteropServices;
-using YcyzClass.Core.Abstractions.Models.Marketplace;
 using CommunityToolkit.Mvvm.ComponentModel;
 using YamlDotNet.Serialization;
 
@@ -9,7 +8,7 @@ namespace YcyzClass.Core.Models.Plugin;
 /// <summary>
 /// 插件元数据
 /// </summary>
-public class PluginManifest : ObservableRecipient, IMarketplaceItemManifest
+public class PluginManifest : ObservableRecipient
 {
     /// <summary>
     /// 入口程序集。加载插件时，将在此入口程序集中搜索插件类。

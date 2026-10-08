@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using System.Text.Json.Serialization;
-using YcyzClass.Core.Abstractions.Models.Marketplace;
 using CommunityToolkit.Mvvm.ComponentModel;
 using YamlDotNet.Serialization;
 
@@ -9,20 +8,15 @@ namespace YcyzClass.Core.Models.XamlTheme;
 /// <summary>
 /// 代表主题信息
 /// </summary>
-public class ThemeInfo : ObservableRecipient, IMarketplaceItemInfo
+public class ThemeInfo : ObservableRecipient
 {
     private bool _isLoaded = false;
     private bool _isError = false;
     private Exception? _error;
     private string _path = "";
     private ThemeManifest _manifest = new();
-    private bool _isAvailableOnMarket = false;
     private bool _isLocal = false;
-    private DownloadProgress? _downloadProgress;
     private string _realBannerPath = "";
-    private long _downloadCount = 0;
-    private long _starsCount = 0;
-    private bool _isUpdateAvailable = false;
     private bool _restartRequired = false;
     private bool _isExternal = true;
     private Uri? _themeUri;
@@ -38,7 +32,6 @@ public class ThemeInfo : ObservableRecipient, IMarketplaceItemInfo
             if (Equals(value, _manifest)) return;
             _manifest = value;
             OnPropertyChanged();
-            OnPropertyChanged(nameof(ManifestReadonly));
         }
     }
 
@@ -133,24 +126,6 @@ public class ThemeInfo : ObservableRecipient, IMarketplaceItemInfo
         }
     }
 
-    /// <inheritdoc />
-    [JsonIgnore] public IMarketplaceItemManifest ManifestReadonly => Manifest;
-
-    /// <summary>
-    /// 主题是否在市场上可用
-    /// </summary>
-    [JsonIgnore]
-    public bool IsAvailableOnMarket
-    {
-        get => _isAvailableOnMarket;
-        set
-        {
-            if (value == _isAvailableOnMarket) return;
-            _isAvailableOnMarket = value;
-            OnPropertyChanged();
-        }
-    }
-
     /// <summary>
     /// 主题是否存在于本地
     /// </summary>
@@ -162,21 +137,6 @@ public class ThemeInfo : ObservableRecipient, IMarketplaceItemInfo
         {
             if (value == _isLocal) return;
             _isLocal = value;
-            OnPropertyChanged();
-        }
-    }
-
-    /// <summary>
-    /// 关联的下载进度
-    /// </summary>
-    [JsonIgnore]
-    public DownloadProgress? DownloadProgress
-    {
-        get => _downloadProgress;
-        set
-        {
-            if (Equals(value, _downloadProgress)) return;
-            _downloadProgress = value;
             OnPropertyChanged();
         }
     }
@@ -195,48 +155,6 @@ public class ThemeInfo : ObservableRecipient, IMarketplaceItemInfo
         }
     }
     
-    /// <summary>
-    /// 主题下载量
-    /// </summary>
-    public long DownloadCount
-    {
-        get => _downloadCount;
-        set
-        {
-            if (value == _downloadCount) return;
-            _downloadCount = value;
-            OnPropertyChanged();
-        }
-    }
-
-    /// <summary>
-    /// 主题 Stars 数量
-    /// </summary>
-    public long StarsCount
-    {
-        get => _starsCount;
-        set
-        {
-            if (value == _starsCount) return;
-            _starsCount = value;
-            OnPropertyChanged();
-        }
-    }
-
-    /// <summary>
-    /// 更新可用
-    /// </summary>
-    public bool IsUpdateAvailable
-    {
-        get => _isUpdateAvailable;
-        set
-        {
-            if (value == _isUpdateAvailable) return;
-            _isUpdateAvailable = value;
-            OnPropertyChanged();
-        }
-    }
-
     /// <summary>
     /// 是否需要重启
     /// </summary>

@@ -17,7 +17,6 @@ using YcyzClass.Shared.IPC;
 using YcyzClass.Shared.IPC.Abstractions.Services;
 using dotnetCampus.Ipc.CompilerServices.GeneratedProxies;
 using HotAvalonia;
-using Sentry;
 using System.Diagnostics;
 using YcyzClass.Core.Abstractions.Services;
 using YcyzClass.Core.Models.Tutorial;
@@ -42,15 +41,12 @@ public static class Program
 
         var command = new RootCommand
         {
-            new Option<string>(["--updateReplaceTarget", "-urt"], "更新时要替换的文件"),
-            new Option<string>(["--updateDeleteTarget", "-udt"], "更新完成要删除的文件"),
             new Option<string>(["--uri"], "启动时要导航到的Uri"),
             new Option<bool>(["--waitMutex", "-m"], "重复启动应用时，等待上一个实例退出而非直接退出应用。"),
             new Option<bool>(["--quiet", "-q"], "静默启动，启动时不显示Splash，并且启动后10秒内不显示任何通知。"),
             new Option<bool>(["-prevSessionMemoryKilled", "-psmk"], "上个会话因MLE结束。"),
             new Option<bool>(["-disableManagement", "-dm"], "在本次会话禁用集控。"),
             new Option<string>(["-externalPluginPath", "-epp"], "外部插件路径"),
-            new Option<bool>(["--enableSentryDebug", "-esd"], "启用 Sentry 调试"),
             new Option<bool>(["--verbose", "-v"], "启用详细输出"),
             new Option<bool>(["--showOssWatermark", "-ossw"], "显示开源地址水印"),
             new Option<bool>(["--recovery", "-r"], "启动时进入恢复模式"),
@@ -61,7 +57,6 @@ public static class Program
             new Option<string>(["--importV2"], "指定要导入的 ClassIsland 2.x 配置目录"),
             new Option<string>(["--importEntries"], "指定要导入的 ClassIsland 1.7 配置信息"),
             new Option<bool>(["--importComplete"], "启动时显示导入完成窗口"),
-            new Option<bool>(["--importV1Complete"], "从 ClassIsland 1 导入成功"),
             new Option<bool>(["--refreshing"], "应用将继续翻新向导"),
             new Option<bool>(["--onboarding"], "应用将继续迎新向导"),
             new Option<bool>(["--autostartup", "-au"], "自启动模式，检测到程序已运行时直接退出"),
@@ -109,13 +104,6 @@ public static class Program
             }
         }
 
-        // YcyzClass 分支未部署遥测服务端（无可用 Sentry DSN），因此默认不启用遥测上报；
-        // 用户仍可在“隐私”设置中手动开关，但本分支开启后不会实际上报。
-        var sentryEnabled = GlobalStorageService.GetValue("IsSentryEnabled") is "1";
-        if (sentryEnabled )
-        {
-            SentrySdk.Init(ConfigureSentry);
-        }
         try {
             if (Environment.GetEnvironmentVariable("YcyzClass_ProcessPriority") is { } priorityStr && uint.TryParse(priorityStr, out uint priority))
             {
@@ -135,8 +123,7 @@ public static class Program
         return () => new App()
         {
             Mutex = mutex,
-            IsMutexCreateNew = createNew,
-            IsSentryEnabled = sentryEnabled
+            IsMutexCreateNew = createNew
         };
     }
     
@@ -158,44 +145,6 @@ public static class Program
         {
             // ignored
         }
-    }
-    
-    /// <summary>
-    /// 配置 Sentry SDK 的运行时选项。
-    /// 在启用 Sentry 时由 <see cref="AppEntry"/> 调用以初始化全局监控参数。
-    /// </summary>
-    private static void ConfigureSentry(SentryOptions options)
-    {
-        // A Sentry Data Source Name (DSN) is required.
-        // See https://docs.sentry.io/product/sentry-basics/dsn-explainer/
-        // You can set it in the SENTRY_DSN environment variable, or you can set it in code here.
-        // 本分支未部署自建 Sentry 服务端：DSN 置空，遥测不会上报（Sentry 对空 DSN 视为未启用）。
-        options.Dsn = "";
-        // When debug is enabled, the Sentry client will emit detailed debugging information to the console.
-        // This might be helpful, or might interfere with the normal operation of your application.
-        // We enable it here for demonstration purposes when first trying Sentry.
-        // You shouldn't do this in your applications unless you're troubleshooting issues with Sentry.
-        options.Debug = App.ApplicationCommand.EnableSentryDebug;
-        // This option is recommended. It enables Sentry's "Release Health" feature.
-        options.AutoSessionTracking = true;
-        options.Release = App.AppVersion;
-        options.SendClientReports = false;
-        // Enabling this option is recommended for client applications only. It ensures all threads use the same global scope.
-        options.IsGlobalModeEnabled = true;
-        // Example sample rate for your transactions: captures 10% of transactions
-        if (App.ApplicationCommand.EnableSentryDebug)
-        {
-            options.TracesSampleRate = 1.0;
-            // options.ProfilesSampleRate = 1.0;
-        }
-        else
-        {
-            options.TracesSampleRate = 0.05;
-            // options.ProfilesSampleRate = 0.016;
-        }
-        options.EnableLogs = false;
-        options.EnableMetrics = true;
-        options.SetBeforeSendLog(log => log.Level < SentryLogLevel.Info || log is { Template: "当前内存使用: {}" } ? null : log);
     }
     
     /// <summary>

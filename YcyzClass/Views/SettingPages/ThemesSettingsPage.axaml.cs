@@ -39,20 +39,8 @@ public partial class ThemesSettingsPage : SettingsPageBase
 
     public ThemesSettingsPage()
     {
-
         InitializeComponent();
         DataContext = this;
-        ViewModel.PluginMarketService.ObservableForProperty(x => x.Exception)
-            .Subscribe(_ =>
-            {
-                if (ViewModel.PluginMarketService.Exception == null)
-                {
-                    return;
-                }
-
-                this.ShowErrorToast("无法刷新市场", ViewModel.PluginMarketService.Exception);
-            });
-
     }
 
     private void ButtonLoadThemes_OnClick(object sender, RoutedEventArgs e)
@@ -87,28 +75,10 @@ public partial class ThemesSettingsPage : SettingsPageBase
         });
     }
 
-    private void ListBoxCategory_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-        ViewModel.UpdateMergedThemes();
-    }
-
     private void ButtonRestart_OnClick(object sender, RoutedEventArgs e)
     {
         RequestRestart();
     }
-
-    [RelayCommand]
-    private void InstallTheme(string id)
-    {
-        ViewModel.XamlThemeService.RequestDownloadTheme(id);
-    }
-
-    private async void ButtonBase_OnClick(object sender, RoutedEventArgs e)
-    {
-        await ViewModel.PluginMarketService.RefreshPluginSourceAsync();
-        ViewModel.UpdateMergedThemes();
-    }
-    
 
     [RelayCommand]
     private void UninstallTheme(ThemeInfo info)
