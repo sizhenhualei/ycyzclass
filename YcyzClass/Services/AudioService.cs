@@ -19,7 +19,21 @@ namespace YcyzClass.Services;
 
 public class AudioService(ILogger<AudioService> logger) : IAudioService
 {
-    private readonly AudioEngine _audioEngine = Task.Run((() => new MiniAudioEngine())).Result;
+    // MiniAudioEngine 依赖原生库 miniaudio（在 Windows 上还依赖 MSVC 运行时 vcruntime140.dll）。
+    // 当这些文件缺失或无法加载时，构造函数会抛出异常；这里捕获并降级为「无音频」，
+    // 避免整个应用因为音频后端不可用而无法启动。
+    private readonly AudioEngine? _audioEngine = Task.Run<AudioEngine?>(() =>
+    {
+        try
+        {
+            return new MiniAudioEngine();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "音频引擎初始化失败，本次运行将不播放任何音频。");
+            return null;
+        }
+    }).Result;
     private ILogger<AudioService> Logger { get; } = logger;
 
     private RefCounted<AudioPlaybackDevice>? _sharedAudioPlaybackDevice;
@@ -35,6 +49,12 @@ public class AudioService(ILogger<AudioService> logger) : IAudioService
                 throw new InvalidOperationException(
                     "出于线程安全考虑，禁止在非 MTA 线程上调用 AudioEngine。请在 MTA 线程上调用 AudioEngine。详细请见 https://github.com/ClassIsland/ClassIsland/issues/1333#issuecomment-3505591836");
             }
+
+            if (_audioEngine is null)
+            {
+                throw new InvalidOperationException("音频引擎不可用（初始化失败），可能缺少原生库 miniaudio。");
+            }
+
             return _audioEngine;
         }
     }
@@ -137,6 +157,12 @@ public class AudioService(ILogger<AudioService> logger) : IAudioService
 
     public void Dispose()
     {
+        if (_audioEngine is null)
+        {
+            GC.SuppressFinalize(this);
+            return;
+        }
+
         AudioEngine.Dispose();
         GC.SuppressFinalize(this);
     }

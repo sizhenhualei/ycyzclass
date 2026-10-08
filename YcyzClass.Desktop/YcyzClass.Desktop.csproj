@@ -123,6 +123,50 @@
         <WriteLinesToFile File="$(PackageTypeFilePath)" Lines="@(PackageTypeFilePathWriteArgLine)" Overwrite="true"/>
     </Target>
     
+    <!--
+        SoundFlow（MiniAudio 后端）在运行时通过 DllImportResolver 从 <AppContext.BaseDirectory>/runtimes/<rid>/native/ 加载原生库 miniaudio。
+        但带 RuntimeIdentifier 的自包含发布会把 runtimes 下的原生库平铺到发布根目录（RID 匹配时 DestinationSubDirectory 为空），
+        导致启动时抛出 DllNotFoundException: Unable to load DLL '...\runtimes\win-x64\native\miniaudio.dll'。
+        另外 miniaudio.dll 依赖 MSVC 运行时 vcruntime140.dll，该文件不由 Windows 提供，需要随应用一起分发（app-local 部署）。
+        可通过 -p:VcRuntime140Path=<path> 指定该文件的来源（默认取系统目录；若系统目录不可读会自动跳过并给出警告）。
+        此目标在发布后补齐上述原生库布局；即使原生库仍然不可用，应用也会降级为「无音频」而不是崩溃。
+    -->
+    <Target Name="RestoreNativeRuntimeLayout" AfterTargets="Publish" Condition="'$(RuntimeIdentifier)' != ''">
+        <PropertyGroup>
+            <VcRuntime140Path Condition="'$(VcRuntime140Path)' == ''">$(SystemRoot)\System32\vcruntime140.dll</VcRuntime140Path>
+        </PropertyGroup>
+        <ItemGroup>
+            <_MiniAudioNativeAsset Include="@(RuntimeTargetsCopyLocalItems)"
+                                   Condition="'%(RuntimeTargetsCopyLocalItems.AssetType)' == 'native' and '%(RuntimeTargetsCopyLocalItems.Filename)' == 'miniaudio'" />
+            <_MiniAudioFlattened Include="$(PublishDir)miniaudio.dll" Condition="Exists('$(PublishDir)miniaudio.dll')" />
+            <_MiniAudioFlattened Include="$(PublishDir)libminiaudio.so" Condition="Exists('$(PublishDir)libminiaudio.so')" />
+            <_MiniAudioFlattened Include="$(PublishDir)libminiaudio.dylib" Condition="Exists('$(PublishDir)libminiaudio.dylib')" />
+            <_VcRuntimeAppLocal Include="$(VcRuntime140Path)" Condition="Exists('$(VcRuntime140Path)')" />
+        </ItemGroup>
+        <Copy SourceFiles="@(_MiniAudioNativeAsset)"
+              DestinationFolder="$(PublishDir)runtimes\$(RuntimeIdentifier)\native"
+              SkipUnchangedFiles="true"
+              Condition="'@(_MiniAudioNativeAsset)' != ''" />
+        <Copy SourceFiles="@(_MiniAudioFlattened)"
+              DestinationFolder="$(PublishDir)runtimes\$(RuntimeIdentifier)\native"
+              SkipUnchangedFiles="true"
+              Condition="'@(_MiniAudioNativeAsset)' == '' and '@(_MiniAudioFlattened)' != ''" />
+        <Copy SourceFiles="@(_VcRuntimeAppLocal)"
+              DestinationFolder="$(PublishDir)"
+              SkipUnchangedFiles="true"
+              ContinueOnError="WarnAndContinue"
+              Condition="'@(_VcRuntimeAppLocal)' != '' and $(RuntimeIdentifier.StartsWith('win'))" />
+        <Copy SourceFiles="@(_VcRuntimeAppLocal)"
+              DestinationFolder="$(PublishDir)runtimes\$(RuntimeIdentifier)\native"
+              SkipUnchangedFiles="true"
+              ContinueOnError="WarnAndContinue"
+              Condition="'@(_VcRuntimeAppLocal)' != '' and $(RuntimeIdentifier.StartsWith('win'))" />
+        <Warning Text="发布输出中缺少原生库 miniaudio，音频功能将不可用。"
+                 Condition="$(RuntimeIdentifier.StartsWith('win')) and !Exists('$(PublishDir)runtimes\$(RuntimeIdentifier)\native\miniaudio.dll')" />
+        <Warning Text="发布输出中缺少 vcruntime140.dll（MSVC 运行时），在未安装 VC++ 运行库的机器上音频功能将不可用。"
+                 Condition="$(RuntimeIdentifier.StartsWith('win')) and !Exists('$(PublishDir)vcruntime140.dll')" />
+    </Target>
+
     <Import Project="../Global.props"/>
     <Import Project="../AvaloniaShared.props"/>
     <Import Project="../CrossPlatformProps.props"/>
