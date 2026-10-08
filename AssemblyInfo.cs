@@ -13,6 +13,8 @@ using ClassIsland;
 
 [assembly: AssemblyTitle("YcyzClass")]
 [assembly: AssemblyProduct("YcyzClass")]
+[assembly: AssemblyCompany("司振华蕾 x DeepSeekV4.1")]
+[assembly: AssemblyCopyright("Copyright (c) 2026 司振华蕾 x DeepSeekV4.1; based on ClassIsland, Copyright (c) 2024 HelloWRC")]
 #if NETCOREAPP
 // [assembly: SupportedOSPlatform("Windows")]
 #endif
