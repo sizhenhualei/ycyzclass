@@ -51,6 +51,26 @@ public class PluginLoadContext : AssemblyLoadContext
     /// </summary>
     protected override Assembly? Load(AssemblyName assemblyName)
     {
+        // 插件如果要引用应用自身的程序集（YcyzClass.*），一律复用宿主已加载的实例。
+        // 原因：插件是按上游 ClassIsland ABI 编译后做二进制改写的，其程序集引用版本可能是 1.x 或 2.x，
+        // 与当前宿主的程序集版本不一致；.NET 的默认绑定会因版本不匹配抛出 FileNotFoundException。
+        // 复用宿主实例既能绕过版本校验，也能保证 PluginBase 等类型的标识与宿主一致。
+        if (assemblyName.Name is { } hostAssemblyName &&
+            (hostAssemblyName == "YcyzClass" || hostAssemblyName.StartsWith("YcyzClass.", StringComparison.Ordinal)))
+        {
+            var hostAssembly = AssemblyLoadContext.Default.Assemblies
+                .FirstOrDefault(x => x.GetName().Name == hostAssemblyName);
+            if (hostAssembly != null)
+            {
+                return hostAssembly;
+            }
+
+            var hostAssemblyPath = Path.Combine(AppContext.BaseDirectory, hostAssemblyName + ".dll");
+            return File.Exists(hostAssemblyPath)
+                ? AssemblyLoadContext.Default.LoadFromAssemblyPath(hostAssemblyPath)
+                : null;
+        }
+
         if (WinRTDeps.Contains(assemblyName.Name))
         {
             // 为了防止因引用 WinRT 依赖导致重复初始化 WinRT 相关运行时使应用代码无法正常调用 WinRT，
