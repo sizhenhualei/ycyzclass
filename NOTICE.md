@@ -15,7 +15,17 @@
 - 上游版本：`master` 分支，提交 `235914a2fac1733cc2a169457c7bad4edb2ca2f6`
 - 上游许可证：GNU General Public License v3.0（见 [LICENSE.txt](LICENSE.txt)）
 
-本作品保留上游项目的全部版权声明与许可证文本。相对于上游，本作品所做的改动包括：重命名（ClassIsland → YcyzClass）、更新作者与品牌信息，以及移除了自动更新、遥测（Sentry）、插件市场与在线主题市场、上游公告服务、在线语音合成（Edge TTS / GPT-SoVITS）等依赖上游服务的模块（仅保留系统 TTS 与本地插件）。除上述改动外，上游的其余功能与设计均归原作者及 ClassIsland 贡献者所有。
+本作品保留上游项目的全部版权声明与许可证文本。相对于上游，本作品所做的改动包括：重命名（ClassIsland → YcyzClass）、更新作者与品牌信息，移除了自动更新、遥测（Sentry）、插件市场与在线主题市场、上游公告服务、在线语音合成（Edge TTS / GPT-SoVITS）等依赖上游服务的模块（仅保留系统 TTS 与本地插件），并新增了「上游插件二进制兼容」支持（把按上游 ABI 编译的插件重定向到本项目的程序集/命名空间，见 [tools/plugin-compat](tools/plugin-compat)）。除上述改动外，上游的其余功能与设计均归原作者及 ClassIsland 贡献者所有。
+
+## 随发行包分发的第三方插件
+
+便携版发行包（`Plugins/` 目录）内置以下三个插件作为默认插件。它们由各自作者独立开发，版权归其作者所有；本项目仅对二进制做了**机械性的程序集/命名空间重定向**（`ClassIsland.*` → `YcyzClass.*`，工具见 [tools/plugin-compat](tools/plugin-compat)），未修改插件的功能逻辑。各插件的对应源码请访问其上游仓库。
+
+| 插件 | 插件 id | 作者 | 上游仓库 | 许可证 |
+| --- | --- | --- | --- | --- |
+| 以管理员身份自启动 | `classisland.startUpAsAdmin` | ClassIsland | <https://github.com/ClassIsland/StartUpAsAdmin> | GPL-3.0 |
+| UIAccess 提权 | `grantUiAccess` | HelloWRC、Doubx690i | <https://github.com/HelloWRC/GrantUiAccess> | GPL-3.0 |
+| ExtraIsland | `ink.lipoly.ext.extraisland` | LiPolymer | <https://gitlab.com/LiPolymer/ExtraIsland>（镜像 <https://github.com/LiPolymer/ExtraIsland>） | AGPL-3.0 |
 
 ## 许可证
 
