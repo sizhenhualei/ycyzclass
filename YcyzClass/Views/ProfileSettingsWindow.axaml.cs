@@ -70,18 +70,12 @@ public partial class ProfileSettingsWindow : MyWindow
     public ProfileSettingsWindow()
     {
         DataContext = this;
-        if (ViewModel.ManagementService.Policy.DisableProfileEditing)
-        {
-            ViewModel.MasterPageTabSelectIndex = 3;
-        }
         InitializeComponent();
         TimeLineListControl.SelectionChanged += TimeLineListControl_OnSelectionChanged;
         TimeLineListControl.KeyDown += OnKeyDown;
         ListViewTimePoints.KeyDown += OnKeyDown;
         // 撤销/重做使用窗口级快捷键，避免依赖时间点列表是否获得焦点
         AddHandler(KeyDownEvent, OnGlobalUndoRedoKeyDown, RoutingStrategies.Tunnel);
-        ViewModel.ObservableForProperty(x => x.IsDrawerOpen)
-            .Subscribe(_ => OnDrawerStateChanged());
         ViewModel.ObservableForProperty(x => x.SelectedTimeLayout)
             .Subscribe(_ => TimeLineListControl?.ScrollIntoViewCentered(ViewModel.SelectedTimeLayout?.Layouts.FirstOrDefault()));
         ViewModel.ObservableForProperty(x => x.SelectedTimeLayout)
@@ -165,14 +159,6 @@ public partial class ProfileSettingsWindow : MyWindow
 
     #region Misc
 
-    private void OnDrawerStateChanged()
-    {
-        if (!ViewModel.IsDrawerOpen)
-        {
-            ViewModel.TutorialService.PushToNextSentenceByTag("ycyzclass.profileSettingsWindow.drawer.close");
-        }
-    }
-
     public void OpenDrawer(string key)
     {
         ViewModel.IsDrawerOpen = true;
@@ -182,46 +168,12 @@ public partial class ProfileSettingsWindow : MyWindow
         }
     }
 
-    public async void Open(Uri? uri = null)
+    public void Open(Uri? uri = null)
     {
         if (!_isOpen)
         {
-            if (!await ViewModel.ManagementService.AuthorizeByLevel(ViewModel.ManagementService.CredentialConfig
-                    .EditProfileAuthorizeLevel))
-            {
-                return;
-            }
-
             _isOpen = true;
             Show();
-            if (ViewModel.ManagementService.Policy is
-                {
-                    DisableProfileEditing: false, DisableProfileClassPlanEditing: false,
-                    DisableProfileSubjectsEditing: false, DisableProfileTimeLayoutEditing: false
-                })
-            {
-                Dispatcher.UIThread.Post(() =>
-                {
-                    if (ViewModel.ProfileService.Profile.TimeLayouts.Count > 0)
-                    {
-                        if (ViewModel.ProfileService.Profile.ClassPlans.Count <= 0)
-                        {
-                            ViewModel.TutorialService.BeginNotCompletedTutorials("ycyzclass.getStarted.profileEditing/setup-classplans");
-                        }
-                        if (!ViewModel.ProfileService.Profile.ClassPlans.Any(x => x.Value.TimeRule.WeekCountDiv > 0)
-                            && ViewModel.ProfileService.Profile.ClassPlans.Count > 0)
-                        {
-                            ViewModel.TutorialService.BeginNotCompletedTutorials("ycyzclass.getStarted.profileEditing/multiweek-classplans");
-                        }
-                    }
-                    else
-                    {
-                        ViewModel.TutorialService.BeginNotCompletedTutorials(
-                            "ycyzclass.getStarted.profileEditing/concepts",
-                            "ycyzclass.getStarted.profileEditing/setup-timeLayout");
-                    }
-                });
-            }
         }
         else
         {
@@ -232,9 +184,6 @@ public partial class ProfileSettingsWindow : MyWindow
 
             Activate();
         }
-        
-        ViewModel.TutorialService.PushToNextSentenceByTag("ycyzclass.profileSettingsWindow.open");
-
         if (uri == null || uri.Segments.Length < 3)
         {
             return;
@@ -243,18 +192,11 @@ public partial class ProfileSettingsWindow : MyWindow
         var page = uri.Segments[2];
         ViewModel.MasterPageTabSelectIndex = page.ToLower() switch 
         {
-            "classplans" when !ViewModel.ManagementService.Policy.DisableProfileEditing => 0,
-            "timelayouts" when !ViewModel.ManagementService.Policy.DisableProfileEditing => 1,
-            "subjects" when !ViewModel.ManagementService.Policy.DisableProfileEditing => 2,
-            "forbidden" => 3,
-            "adjustment" => 4,
-            "transfer" when ViewModel.ManagementService.Policy is
-            {
-                DisableProfileEditing: false,
-                DisableProfileClassPlanEditing: false,
-                DisableProfileTimeLayoutEditing: false,
-                DisableProfileSubjectsEditing: false
-            } => 5,
+            "classplans" => 0,
+            "timelayouts" => 1,
+            "subjects" => 2,
+            "adjustment" => 3,
+            "transfer" => 4,
             _ => ViewModel.MasterPageTabSelectIndex
         };
     }
@@ -269,18 +211,6 @@ public partial class ProfileSettingsWindow : MyWindow
         _isOpen = false;
         ViewModel.ProfileService.SaveProfile();
         Hide();
-    }
-    
-    private void MasterTabControl_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
-    {
-        Dispatcher.UIThread.Post(() =>
-        {
-            if (ViewModel.MasterPageTabSelectIndex == 0 && ViewModel.ProfileService.Profile.TimeLayouts.Count > 0
-                                                        && ViewModel.ProfileService.Profile.ClassPlans.Count <= 0)
-            {
-                ViewModel.TutorialService.BeginNotCompletedTutorials("ycyzclass.getStarted.profileEditing/setup-classplans");
-            }
-        });
     }
     
     private void ButtonHelp_OnClick(object? sender, RoutedEventArgs e)
@@ -497,7 +427,7 @@ public partial class ProfileSettingsWindow : MyWindow
     
     private void ButtonOpenProfileImportPage_OnClick(object? sender, RoutedEventArgs e)
     {
-        ViewModel.MasterPageTabSelectIndex = 5;
+        ViewModel.MasterPageTabSelectIndex = 4;
     }
 
     #endregion
@@ -697,23 +627,6 @@ public partial class ProfileSettingsWindow : MyWindow
         if (ViewModel.SelectedClassIndex + 1 >= ViewModel.SelectedClassPlan?.Classes.Count)
         {
             ViewModel.IsClassPlanEditComplete = true;
-            var targetDate = ViewModel.ScheduleCalendarSelectedDate.AddDays(1);
-            if (ViewModel.SettingsService.Settings.ClassPlanEditModeIndex == 1)
-            {
-                if (targetDate.DayOfWeek < ViewModel.ScheduleCalendarSelectedDate.DayOfWeek)
-                {
-                    this.ShowSuccessToast("已完成本周课表的录入。");
-                    return;
-                }
-                if (ViewModel.LessonsService.GetClassPlanByDate(targetDate) != null)
-                {
-                    ViewModel.ScheduleCalendarSelectedDate = targetDate;
-                    ViewModel.SelectedClassIndex = 0;
-                    ScheduleDataGrid.ScrollIntoCurrentView();
-                    this.ShowToast("已跳转到次日课表。");
-                    return;
-                }
-            }
             if (ViewModel.CurrentClassPlanEditDoneToast != null)
             {
                 return;
@@ -732,15 +645,7 @@ public partial class ProfileSettingsWindow : MyWindow
             actionButton.Click += (o, args) =>
             {
                 ViewModel.CurrentClassPlanEditDoneToast?.Close();
-                if (ViewModel.SettingsService.Settings.ClassPlanEditModeIndex == 0)
-                {
-                    CreateClassPlan();
-                }
-                else
-                {
-                    ScheduleDataGrid.CreateClassPlanByDate(targetDate);
-                    ScheduleDataGrid.ScrollIntoCurrentView();
-                }
+                CreateClassPlan();
             };
             ViewModel.CurrentClassPlanEditDoneToast.ClosedCancellationTokenSource.Token.Register(() =>
                 ViewModel.CurrentClassPlanEditDoneToast = null);
@@ -749,27 +654,10 @@ public partial class ProfileSettingsWindow : MyWindow
         }
         ViewModel.SelectedClassIndex++;
 
-        if (DataGridClassPlans.IsLoaded && ViewModel.SettingsService.Settings.ClassPlanEditModeIndex == 0)
+        if (DataGridClassPlans.IsLoaded)
         {
             DataGridClassPlans.ScrollIntoView(DataGridClassPlans.SelectedItem, DataGridClassPlans.Columns.LastOrDefault());
-        } else if (ScheduleDataGrid.IsLoaded && ViewModel.SettingsService.Settings.ClassPlanEditModeIndex == 1)
-        {
-            ScheduleDataGrid.ScrollIntoCurrentView();
         }
-    }
-    
-    private void ButtonRefreshScheduleDataGrid_OnClick(object? sender, RoutedEventArgs e)
-    {
-        ScheduleDataGrid.RefreshWeekScheduleRows();
-        ScheduleCalendarControl2.UpdateSchedule();
-    }
-    
-    private void ScheduleDataGrid_OnOpenClassPlanSettingsRequested(object? sender, ScheduleDataGridClassPlanEventArgs e)
-    {
-        ViewModel.SelectClassPlanByInstance(e.ClassPlan);
-        // ViewModel.ScheduleCalendarSelectedDate = e.Date;
-        UpdateClassPlanInfoEditorTimeLayoutComboBox();
-        OpenDrawer("ClassPlansInfoEditor");
     }
 
     #endregion
@@ -799,7 +687,6 @@ public partial class ProfileSettingsWindow : MyWindow
         ViewModel.ProfileService.Profile.TimeLayouts.Add(Guid.NewGuid(), timeLayout);
         OpenDrawer("TimeLayoutInfoEditor");
         ViewModel.SelectedTimeLayout = timeLayout;
-        ViewModel.TutorialService.PushToNextSentence("ycyzclass.getStarted.profileEditing/setup-timeLayout");
     }
     
     private void ButtonDuplicateTimeLayout_OnClick(object sender, RoutedEventArgs e)
@@ -1048,7 +935,6 @@ public partial class ProfileSettingsWindow : MyWindow
         ViewModel.SelectedTimePoint = newItem;
         PushAddUndo(newItem, timeLayout);
         //OpenDrawer("TimePointEditor");
-        ViewModel.TutorialService.PushToNextSentence();
     }
 
     
