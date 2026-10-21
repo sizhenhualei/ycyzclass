@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -7,7 +7,6 @@ using System.Reactive;
 using System.Reactive.Linq;
 using YcyzClass.Core.Abstractions.Controls;
 using YcyzClass.Core.Abstractions.Services;
-using YcyzClass.Core.Abstractions.Services.Management;
 using YcyzClass.Core.ComponentModels;
 using YcyzClass.Core.Models.Profile;
 using YcyzClass.Core.Models.UI;
@@ -30,13 +29,11 @@ namespace YcyzClass.ViewModels;
 public partial class ProfileSettingsViewModel : ObservableRecipient
 {
     public IProfileService ProfileService { get; }
-    public IManagementService ManagementService { get; }
     public SettingsService SettingsService { get; }
     public ILessonsService LessonsService { get; }
     public IExactTimeService ExactTimeService { get; }
     public IActionService ActionService { get; }
     public ILogger<ProfileSettingsWindow> Logger { get; }
-    public ITutorialService TutorialService { get; }
 
     public SyncDictionaryList<Guid, ClassPlan> ClassPlans { get; }
     public SyncDictionaryList<Guid, TimeLayout> TimeLayouts { get; }
@@ -120,20 +117,17 @@ public partial class ProfileSettingsViewModel : ObservableRecipient
     }
 
     /// <inheritdoc/>
-    public ProfileSettingsViewModel(IProfileService profileService, IManagementService managementService,
+    public ProfileSettingsViewModel(IProfileService profileService,
         SettingsService settingsService, ILessonsService lessonsService, IExactTimeService exactTimeService,
         IActionService actionService,
-        ILogger<ProfileSettingsWindow> logger,
-        ITutorialService tutorialService)
+        ILogger<ProfileSettingsWindow> logger)
     {
         ProfileService = profileService;
-        ManagementService = managementService;
         SettingsService = settingsService;
         LessonsService = lessonsService;
         ExactTimeService = exactTimeService;
         ActionService = actionService;
         Logger = logger;
-        TutorialService = tutorialService;
 
         ClassPlans = new SyncDictionaryList<Guid, ClassPlan>(ProfileService.Profile.ClassPlans, Guid.NewGuid);
         TimeLayouts = new SyncDictionaryList<Guid, TimeLayout>(ProfileService.Profile.TimeLayouts, Guid.NewGuid);

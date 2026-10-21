@@ -1,7 +1,6 @@
 #if false
 using System.Windows;
 using YcyzClass.Core;
-using YcyzClass.Core.Abstractions.Services.Management;
 using YcyzClass.Shared;
 using YcyzClass.Shared.Models;
 using CommunityToolkit.Mvvm.Input;
@@ -25,13 +24,8 @@ public partial class ConfigErrorsWindow
         Clipboard.SetDataObject(error.Exception.ToString(), false);
     }
 
-    private async void ButtonRestoreBackups_OnClick(object sender, RoutedEventArgs e)
+    private void ButtonRestoreBackups_OnClick(object sender, RoutedEventArgs e)
     {
-        var managementService = IAppHost.GetService<IManagementService>();
-        if (!await managementService.AuthorizeByLevel(managementService.CredentialConfig.ExitApplicationAuthorizeLevel))
-        {
-            return;
-        }
         AppBase.Current.Restart(["-m", "-r"]);
     }
 }

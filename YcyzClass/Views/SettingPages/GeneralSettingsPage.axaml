@@ -173,8 +173,7 @@
                 <controls3:SettingsExpander.Footer>
                     <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.IsSplashEnabled}"/>
                 </controls3:SettingsExpander.Footer>
-                <controls3:SettingsExpanderItem Content="启动图标"
-                                                IsVisible="{Binding !ViewModel.ManagementService.Policy.DisableSplashCustomize, Mode=OneWay}">
+                <controls3:SettingsExpanderItem Content="启动图标">
                     <controls3:SettingsExpanderItem.Footer>
                         <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal"
                                     HorizontalAlignment="Right" VerticalAlignment="Center">
@@ -191,8 +190,7 @@
                         </StackPanel>
                     </controls3:SettingsExpanderItem.Footer>
                 </controls3:SettingsExpanderItem>
-                <controls3:SettingsExpanderItem Content="启动文字"
-                                                IsVisible="{Binding !ViewModel.ManagementService.Policy.DisableSplashCustomize, Mode=OneWay}">
+                <controls3:SettingsExpanderItem Content="启动文字">
                     <controls3:SettingsExpanderItem.Footer>
                         <TextBox MinWidth="200" MaxWidth="300"
                                  Watermark="正在启动…"
@@ -201,14 +199,11 @@
                     </controls3:SettingsExpanderItem.Footer>
                 </controls3:SettingsExpanderItem>
                 <controls3:SettingsExpanderItem Content="显示详细状态信息"
-                                                IsVisible="{Binding !ViewModel.ManagementService.Policy.DisableSplashCustomize, Mode=OneWay}"
                                                 Description="注意：在不启用【禁用动画等待】的情况下，此选项会拖慢启动速度。">
                     <controls3:SettingsExpanderItem.Footer>
                         <ToggleSwitch IsChecked="{Binding ViewModel.SettingsService.Settings.ShowDetailedStatusOnSplash}"/>
                     </controls3:SettingsExpanderItem.Footer>
                 </controls3:SettingsExpanderItem>
-                <controls3:SettingsExpanderItem IsVisible="{Binding ViewModel.ManagementService.Policy.DisableSplashCustomize, Mode=OneWay}"
-                                                Content="自定义启动界面功能已被您所在的组织禁用。"/>
                 <controls3:SettingsExpanderItem ActionIconSource="{ci:FluentIconSource &#xE44E;}"
                                             IsClickEnabled="True"
                                             Content="预览启动界面"

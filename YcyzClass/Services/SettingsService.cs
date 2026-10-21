@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -8,7 +8,6 @@ using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading.Tasks;
 using YcyzClass.Core;
-using YcyzClass.Core.Abstractions.Services.Management;
 using YcyzClass.Shared.Helpers;
 using YcyzClass.Models;
 using Microsoft.Extensions.Logging;
@@ -18,13 +17,10 @@ using YcyzClass.Core.Abstractions.Services.SpeechService;
 using YcyzClass.Helpers;
 using YcyzClass.Platforms.Abstraction;
 using YcyzClass.Services.Automation.Actions;
-using YcyzClass.Services.Management;
-using YcyzClass.Shared.Protobuf.AuditEvent;
-using YcyzClass.Shared.Protobuf.Enum;
 
 namespace YcyzClass.Services;
 
-public class SettingsService(ILogger<SettingsService> Logger, IManagementService ManagementService)
+public class SettingsService(ILogger<SettingsService> Logger)
     : INotifyPropertyChanged
 {
     private Settings _settings = new();
@@ -40,25 +36,6 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
     public event PropertyChangedEventHandler? PropertyChanged;
 
     public bool WillMigrateProfileTrustedState { get; set; } = false;
-
-    public bool WillMigrateInitTutorial { get; set; } = false;
-
-    private async Task LoadManagementSettingsAsync()
-    {
-        if (!ManagementService.Manifest.DefaultSettingsSource.IsNewerAndNotNull(ManagementService.Versions
-                .DefaultSettingsVersion) ||
-            ManagementService.Connection == null)
-        {
-            return;
-        }
-
-        Logger.LogInformation("拉取集控默认设置");
-        var url = ManagementService.Manifest.DefaultSettingsSource.Value!;
-        var settings = await ManagementService.Connection.GetJsonAsync<Settings>(url);
-        Settings = settings;
-        Settings.PropertyChanged += (sender, args) => SettingsChanged(args.PropertyName!);
-        Logger.LogTrace("拉取集控默认设置成功！");
-    }
 
     public async Task LoadSettingsAsync()
     {
@@ -81,12 +58,6 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
                 var r = ConfigureFileHelper.LoadConfig<Settings>(Path.Combine(CommonDirectories.AppRootFolderPath, "Settings.json"));
                 Settings = r;
                 Settings.PropertyChanged += (sender, args) => SettingsChanged(args.PropertyName!);
-            }
-
-            // 当还没有初始化应用且启用集控时，从集控拉取设置。
-            if (ManagementService.IsManagementEnabled && !Settings.IsWelcomeWindowShowed)
-            {
-                await LoadManagementSettingsAsync();
             }
 
             ISpeechService.GlobalSettings = Settings;
@@ -146,7 +117,6 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
         
         if (Settings.LastAppVersion < Version.Parse("2.0.3.0") )
         {
-            WillMigrateInitTutorial = true;
             Logger.LogInformation("成功迁移了 2.0.3.0 以前的设置。");
         }
 
@@ -265,13 +235,6 @@ public class SettingsService(ILogger<SettingsService> Logger, IManagementService
             return;
 
         SaveSettings(propertyName);
-        if (ManagementService is { IsManagementEnabled: true, Connection: ManagementServerConnection connection })
-        {
-            connection.LogAuditEvent(AuditEvents.AppSettingsUpdated, new AppSettingsUpdated()
-            {
-                PropertyName = propertyName
-            });
-        }
     }
 
     protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)

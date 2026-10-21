@@ -10,8 +10,7 @@
         <Setter Property="Template">
             <ControlTemplate>
                 <Grid RowDefinitions="Auto *" DataContext="{Binding RelativeSource={RelativeSource TemplatedParent}}">
-                    <ci:TutorialBarrier Grid.Row="0" ExcludedTags="ycyzclass.sdg.weekSwitcher.next,ycyzclass.sdg.weekSwitcher.previous">
-                        <StackPanel Grid.Row="0" Orientation="Horizontal"
+                    <StackPanel Grid.Row="0" Orientation="Horizontal"
                                     Spacing="4">
                             <CalendarDatePicker
                                 SelectedDate="{Binding SelectedDate, Mode=TwoWay}"
@@ -30,8 +29,7 @@
                                        Margin="4 0 0 0">
                                 <Run Text="第" /><Run Text="{Binding WeekIndex}" /><Run Text="周" />
                             </TextBlock>
-                        </StackPanel>
-                    </ci:TutorialBarrier>
+                    </StackPanel>
                     
                     <DataGrid Grid.Row="1"
                               Margin="0 2 0 0"

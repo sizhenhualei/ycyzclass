@@ -2,7 +2,6 @@
 using System.Speech.Synthesis;
 using YcyzClass.Core.Abstractions.Services.SpeechService;
 using YcyzClass.Core.Attributes;
-using YcyzClass.Shared.Abstraction.Services;
 
 using Microsoft.Extensions.Logging;
 

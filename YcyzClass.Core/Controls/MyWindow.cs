@@ -15,7 +15,6 @@ using Avalonia.Media.Imaging;
 using Avalonia.Rendering;
 using YcyzClass.Shared;
 using YcyzClass.Core.Abstractions.Services;
-using YcyzClass.Core.Abstractions.Services.Management;
 using YcyzClass.Core.Assists;
 using YcyzClass.Core.Commands;
 using YcyzClass.Core.Helpers;
@@ -90,11 +89,6 @@ public partial class MyWindow : AppWindow
         window.PointerPressed += OnPointerUpdated;
         window.Closed += WindowOnClosed;
 
-        var managementService = IAppHost.Host?.Services.GetService(typeof(IManagementService)) as IManagementService;
-        if (managementService?.Policy.DisableEasterEggs == true)
-        {
-            GetPseudoClasses(window).Add(":no-easter-eggs");
-        }
         
         return;
 

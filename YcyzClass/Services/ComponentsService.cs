@@ -10,7 +10,6 @@ using System.Threading.Tasks;
 using YcyzClass.Core;
 using YcyzClass.Core.Abstractions.Controls;
 using YcyzClass.Core.Abstractions.Services;
-using YcyzClass.Core.Abstractions.Services.Management;
 using YcyzClass.Core.Models.Components;
 using YcyzClass.Core.Services.Registry;
 using YcyzClass.Shared;
@@ -58,15 +57,13 @@ public class ComponentsService : ObservableRecipient, IComponentsService
 
     private SettingsService SettingsService { get; }
     public ILogger<ComponentsService> Logger { get; }
-    public IManagementService ManagementService { get; }
 
     private string CurrentConfigName { get; set; } = "Default";
 
-    public ComponentsService(SettingsService settingsService, ILogger<ComponentsService> logger, IManagementService managementService)
+    public ComponentsService(SettingsService settingsService, ILogger<ComponentsService> logger)
     {
         SettingsService = settingsService;
         Logger = logger;
-        ManagementService = managementService;
         SettingsService.Settings.PropertyChanged += SettingsOnPropertyChanged;
 
         if (!Directory.Exists(ComponentSettingsPath))
@@ -87,50 +84,16 @@ public class ComponentsService : ObservableRecipient, IComponentsService
         LoadConfig();
     }
 
-    public async Task LoadManagementConfig()
-    {
-        if (!ManagementService.IsManagementEnabled || ManagementService.Connection == null)
-        {
-            return;
-        }
-        
-        IsManagementMode = true;
-        try
-        {
-            if (!ManagementService.Manifest.ComponentsSource.IsNewerAndNotNull(ManagementService.Versions
-                    .ComponentsVersion))
-            {
-                return;
-            }
-            CurrentComponents = await ManagementService.Connection
-                .SaveJsonAsync<ComponentProfile>(ManagementService.Manifest.ComponentsSource.Value!,
-                    Management.ManagementService.ManagementComponentsPath);
-            ManagementService.Versions.ComponentsVersion = ManagementService.Manifest.ComponentsSource.Version;
-        }
-        catch (Exception e)
-        {
-            Logger.LogError(e, "无法从集控拉取组件配置");
-            CurrentComponents =
-                ConfigureFileHelper.LoadConfig<ComponentProfile>(Management.ManagementService
-                    .ManagementComponentsPath);
-        }
-        LoadConfig();
-    
-    }
-
     private void LoadConfig()
     {
-        if (!IsManagementMode)
+        if (!File.Exists(SelectedConfigFullPath))
         {
-            if (!File.Exists(SelectedConfigFullPath))
-            {
-                CurrentComponents = ConfigureFileHelper.CopyObject(DefaultComponentProfile);
-                SaveConfig();
-            }
-            else
-            {
-                CurrentComponents = ConfigureFileHelper.LoadConfig<ComponentProfile>(SelectedConfigFullPath);
-            }
+            CurrentComponents = ConfigureFileHelper.CopyObject(DefaultComponentProfile);
+            SaveConfig();
+        }
+        else
+        {
+            CurrentComponents = ConfigureFileHelper.LoadConfig<ComponentProfile>(SelectedConfigFullPath);
         }
         
         CurrentConfigName = SettingsService.Settings.CurrentComponentConfig;
@@ -179,9 +142,6 @@ public class ComponentsService : ObservableRecipient, IComponentsService
     {
         ComponentConfigs = Directory.GetFiles(ComponentSettingsPath, "*.json").Select(Path.GetFileNameWithoutExtension).SkipWhile(x => x is null).ToList()!;
     }
-
-    public bool IsManagementMode { get; set; } = false;
-
 
     public ComponentProfile CurrentComponents
     {

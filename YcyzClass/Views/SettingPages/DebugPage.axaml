@@ -12,8 +12,7 @@
       d:DataContext="{d:DesignInstance local:DebugPage}">
 
     <ScrollViewer>
-        <StackPanel Classes="settings-container animated-intro" 
-                    IsVisible="{Binding !ViewModel.ManagementService.Policy.DisableDebugMenu}">
+        <StackPanel Classes="settings-container animated-intro" >
             <controls3:InfoBar Severity="Error"
                                Message="仅供调试，除非你能知道您在做什么，请不要使用以下按钮。"
                                IsOpen="True"
@@ -80,12 +79,6 @@
                                                 IsClickEnabled="True"/>
                 <controls3:SettingsExpanderItem Content="测试定位" Click="MenuItemTryGetLocation_OnClick"
                                                 IsClickEnabled="True"/>
-                <controls3:SettingsExpanderItem Content="正在集控管理">
-                    <controls3:SettingsExpanderItem.Footer>
-                        <ToggleSwitch IsChecked="{Binding ViewModel.ManagementService.IsManagementEnabled}"
-                                      IsEnabled="{Binding !ViewModel.ManagementService.IsManagementEnabled, Mode=OneTime}" />
-                    </controls3:SettingsExpanderItem.Footer>
-                </controls3:SettingsExpanderItem>
                 
             </controls3:SettingsExpander>
             <controls3:SettingsExpander Header="垃圾回收" IconSource="{ci:FluentIconSource &#xe1fd;}"

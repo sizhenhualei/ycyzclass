@@ -17,7 +17,6 @@ using YcyzClass.Core.Abstractions.Services;
 using YcyzClass.Core.Enums;
 using YcyzClass.Core.Models.Plugin;
 using YcyzClass.Services.Logging;
-using YcyzClass.Services.Management;
 
 using Microsoft.Extensions.Logging;
 
@@ -117,13 +116,8 @@ public class DiagnosticService(SettingsService settingsService, FileFolderServic
             File.Copy(Path.Combine(CommonDirectories.AppRootFolderPath, "Settings.json"), Path.Combine(temp, "Settings.json"));
             var profile = App.GetService<IProfileService>().CurrentProfilePath;
             Directory.CreateDirectory(Path.Combine(temp, "Profiles/"));
-            Directory.CreateDirectory(Path.Combine(temp, "Management/"));
             Directory.CreateDirectory(Path.Combine(temp, "Config/"));
             Directory.CreateDirectory(Path.Combine(temp, "Logs/"));
-            foreach (var file in Directory.GetFiles(ManagementService.ManagementConfigureFolderPath))
-            {
-                File.Copy(file, Path.Combine(temp, "Management/", Path.GetFileName(file)));
-            }
             File.Copy(Path.Combine(CommonDirectories.AppRootFolderPath, "./Profiles", profile), Path.Combine(temp, "Profiles/", profile));
             FileFolderService.CopyFolder(Path.Combine(CommonDirectories.AppConfigPath), Path.Combine(temp, "Config/"));
             FileFolderService.CopyFolder(Path.Combine(CommonDirectories.AppLogFolderPath), Path.Combine(temp, "Logs/"));

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -41,10 +41,6 @@ public partial class EditModeView : UserControl
     {
         InitializeComponent();
         DataContext = this;
-        ViewModel.TutorialService.Context["ycyzclass.mainWindow.editMode.mainDrawer.getState"] =
-            () => ViewModel.MainDrawerState;
-        ViewModel.TutorialService.Context["ycyzclass.mainWindow.editMode.secondaryDrawer.getState"] =
-            () => ViewModel.SecondaryDrawerState;
     }
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
@@ -54,14 +50,7 @@ public partial class EditModeView : UserControl
         _selectedComponentObserver ??= ViewModel.MainViewModel.ObservableForProperty(x => x.SelectedComponentSettings)
             .Subscribe(_ => UpdateComponentSettingsTabIndex());
         _mainDrawerStateObserver ??= ViewModel.ObservableForProperty(x => x.MainDrawerState)
-            .Subscribe(_ =>
-            {
-                if (ViewModel.MainDrawerState <= VerticalDrawerOpenState.Collapsed)
-                {
-                    ViewModel.TutorialService.PushToNextSentenceByTag("ycyzclass.mainwindow.editMode.componentsLib.closed");
-                }
-                UpdateComponentSettingsTabIndex();
-            });
+            .Subscribe(_ => UpdateComponentSettingsTabIndex());
     }
 
     private void UpdateComponentSettingsTabIndex()
@@ -132,7 +121,6 @@ public partial class EditModeView : UserControl
         // 重载组件库列表项目，修复切换视图后无法拖拽的问题。
         ViewModel.ComponentGroups = [];
         ViewModel.ComponentGroups = ComponentRegistryService.GetGroupedSortedComponents();
-        ViewModel.TutorialService.PushToNextSentenceByTag("ycyzclass.mainwindow.editMode.componentsLib.open");
     }
     
     public void OpenAppearanceSettingsDrawer()
@@ -188,7 +176,6 @@ public partial class EditModeView : UserControl
         OpenDrawerCore(this.FindResource("ComponentSettingsDrawer"), 
             this.FindResource("ComponentSettingsDrawerTitle"));
         UpdateComponentSettingsTabIndex();
-        ViewModel.TutorialService.PushToNextSentenceByTag("ycyzclass.mainwindow.editMode.componentSettings.open");
     }
     
     public void OpenChildComponents(ComponentSettings? settings, IReadOnlyList<ComponentSettings> stack, Point pos)
@@ -207,11 +194,6 @@ public partial class EditModeView : UserControl
         {
             ViewModel.MainViewModel.ContainerComponents.Add(info);
         }
-        Dispatcher.UIThread.Post(() =>
-        {
-            ViewModel.TutorialService.PushToNextSentenceByTag(
-                "ycyzclass.mainwindow.editMode.childrenComponent.open");
-        });
     }
     
     private void ButtonOpenRulesetForComponent_OnClick(object? sender, RoutedEventArgs e)

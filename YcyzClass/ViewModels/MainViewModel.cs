@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -382,6 +382,4 @@ public partial class MainViewModel : ObservableRecipient
     [ObservableProperty] private ObservableCollection<EditModeContainerComponentInfo> _containerComponents = [];
     [ObservableProperty] private Dictionary<EditModeContainerComponentInfo, EditableComponentsListBox> _containerComponentListBoxCache = new();
     [ObservableProperty] private Dictionary<EditableComponentsListBox, EditModeContainerComponentInfo> _containerComponentListBoxCacheReversed = new();
-
-    [ObservableProperty] private int _editModeTutorialPhase = -1;
 }

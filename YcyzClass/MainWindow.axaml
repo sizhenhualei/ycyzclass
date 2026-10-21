@@ -1,4 +1,4 @@
-﻿<Window x:Class="YcyzClass.MainWindow"
+<Window x:Class="YcyzClass.MainWindow"
         xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -56,14 +56,6 @@
                     </OnPlatform>
                 </NativeMenuItem.Icon>
             </NativeMenuItem>
-            <NativeMenuItem Header="教学…"
-                            ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xE959;}"
-                            Click="NativeMenuItemTutorials_OnClick" 
-                            IsVisible="{Binding ViewModel.Settings.IsWelcomeWindowShowed}"/>
-            <NativeMenuItem Header="帮助文档…"
-                            ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xE23C;}"
-                            Click="MenuItemHelps_OnClick" 
-                            IsVisible="{Binding ViewModel.Settings.IsWelcomeWindowShowed}"/>
             <NativeMenuItemSeparator/>
             <NativeMenuItem Header="显示主界面" Click="MenuItemSwitchMainWindowVisibility_OnClick"
                             ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xE813;}">
@@ -121,12 +113,9 @@
                     <NativeMenuItem Header="DevTools" Click="NativeMenuItemDebugDevTools_OnClick"/>
                     <NativeMenuItem Header="DevPortal" Click="NativeMenuItemDebugDevPortal_OnClick"/>
                     <NativeMenuItem Header="截图工具" Click="NativeMenuItemDebugOpenScreenshotWindow_OnClick"/>
-                    <NativeMenuItem Header="教程编辑器" Click="NativeMenuItemOpenTutorialEditor_OnClick"/>
                     <NativeMenuItemSeparator/>
                     <NativeMenuItem  Header="启用课表" Click="NativeMenuItemDebugEnableTempClassPlan_OnClick"/>
                     <NativeMenuItem  Header="显示崩溃窗口" Click="NativeMenuItemDebugCrashTest_OnClick"/>
-                    <NativeMenuItem  Header="WelcomeWindow" Click="NativeMenuItemDebugOpenWelcomeWindow_OnClick"/>
-                    <NativeMenuItem  Header="WelcomeWindow (full)" Click="NativeMenuItemDebugOpenWelcomeWindowFull_OnClick"/>
                 </NativeMenu>
             </NativeMenuItem>
         </NativeMenu>
@@ -228,12 +217,6 @@
                     </Panel.Styles>
                     <!-- ROOT -->
                     <VisualLayerManager>
-                        <VisualLayerManager.IsEnabled>
-                            <MultiBinding Converter="{x:Static BoolConverters.Or}">
-                                <Binding Path="!ViewModel.IsEditMode"/>
-                                <Binding Path="!ManagementService.Policy.DisableSettingsEditing"/>
-                            </MultiBinding>
-                        </VisualLayerManager.IsEnabled>
                         <StackPanel x:Name="StackPanelRootContainer"
                                     SizeChanged="StackPanelRootContainer_OnSizeChanged">
                             <StackPanel.Styles>
@@ -361,10 +344,7 @@
                                                                            Opacity="0.75"
                                                                            StrokeDashArray="1, 1.5"
                                                                            IsVisible="{Binding $self.(ci:MainWindowStylesAssist.MainWindowInEditMode)}" />
-                                                                <ci:TutorialBarrier Grid.Column="0">
-                                                                    <ci:TouchDragThumb
-                                                                        IsVisible="{Binding $self.(ci:MainWindowStylesAssist.MainWindowInEditMode)}" />
-                                                                </ci:TutorialBarrier>
+                                                                <ci:TouchDragThumb Grid.Column="0" IsVisible="{Binding $self.(ci:MainWindowStylesAssist.MainWindowInEditMode)}" />
                                                                 <controls:MainWindowLine Grid.Column="1"
                                                                         WindowDockingLocation="{Binding ViewModel.Settings.WindowDockingLocation, Mode=OneWay, RelativeSource={RelativeSource AncestorType=local:MainWindow}}"
                                                                         LastStoryboardName="{Binding ViewModel.LastStoryboardName, Mode=OneWay, RelativeSource={RelativeSource AncestorType=local:MainWindow}}"
@@ -398,9 +378,7 @@
                                                                         </editMode:EditableComponentsListBox.ItemTemplate>
                                                                     </editMode:EditableComponentsListBox>
                                                                 </controls:MainWindowLine>
-                                                                <ci:TutorialBarrier Grid.Column="2"
-                                                                        IsVisible="{Binding $self.(ci:MainWindowStylesAssist.MainWindowInEditMode)}">
-                                                                    <StackPanel Orientation="Horizontal"
+                                                                <StackPanel Grid.Column="2" IsVisible="{Binding $self.(ci:MainWindowStylesAssist.MainWindowInEditMode)}" Orientation="Horizontal"
                                                                             Classes="items-valign-center"
                                                                             Spacing="2"
                                                                             TextElement.FontSize="14">
@@ -440,8 +418,7 @@
                                                                             CommandParameter="{Binding}"
                                                                             Theme="{StaticResource TransparentButton}"
                                                                             Content="{ci:FluentIcon &#xE61D;}" />
-                                                                    </StackPanel>
-                                                                </ci:TutorialBarrier>
+                                                                </StackPanel>
                                                             </Grid>
                                                         </DataTemplate>
                                                     </ItemsControl.ItemTemplate>
@@ -498,13 +475,11 @@
                                                                             Classes="items-valign-center"
                                                                             Orientation="Horizontal" Spacing="4"
                                                                             Margin="4 0 0 0">
-                                                                    <ci:TutorialBarrier>
-                                                                        <Button Content="{ci:FluentIcon &#xE671;}"
-                                                                                ToolTip.Tip="关闭"
-                                                                                Theme="{StaticResource TransparentButton}"
-                                                                                Command="{Binding $parent[local:MainWindow].CloseContainerComponentCommand}"
-                                                                                CommandParameter="{Binding}" />
-                                                                    </ci:TutorialBarrier>
+                                                                    <Button Content="{ci:FluentIcon &#xE671;}"
+                                                                            ToolTip.Tip="关闭"
+                                                                            Theme="{StaticResource TransparentButton}"
+                                                                            Command="{Binding $parent[local:MainWindow].CloseContainerComponentCommand}"
+                                                                            CommandParameter="{Binding}" />
                                                                     <controls1:IconSourceElement
                                                                         IconSource="{Binding Settings.AssociatedComponentInfo.IconSource}"
                                                                         VerticalAlignment="Center" Height="16"
@@ -600,8 +575,7 @@
                 Padding="4"
                 BorderBrush="{DynamicResource CommandBarOverflowPresenterBorderBrush}"
                 BorderThickness="1">
-            <ci:TutorialBarrier ExcludedTags="ycyzclass.mainwindow.editMode.componentsLib.open,ycyzclass.mainwindow.editMode.exit">
-                <StackPanel Orientation="Horizontal" Spacing="6">
+            <StackPanel Orientation="Horizontal" Spacing="6">
                     <Button Theme="{StaticResource TransparentButton}"
                             x:Name="ButtonResetView"
                             Command="{Binding #ZoomBorder.ResetMatrix}">
@@ -611,17 +585,14 @@
                           StrokeThickness="1"
                           HorizontalAlignment="Center" StartPoint="0,0" EndPoint="0,25">
                     </Line>
-                    <Button Click="ButtonOpenAppearanceSettings_OnClick" Theme="{StaticResource TransparentButton}"
-                            IsEnabled="{Binding !ManagementService.Policy.DisableSettingsEditing}">
+                    <Button Click="ButtonOpenAppearanceSettings_OnClick" Theme="{StaticResource TransparentButton}">
                         <ci:IconText Glyph="&#xE51E;" Text="外观" />
                     </Button>
                     <Button Click="ButtonOpenComponentsLib_OnClick" Theme="{StaticResource TransparentButton}"
-                            x:Name="ButtonOpenComponentsLib"
-                            IsEnabled="{Binding !ManagementService.Policy.DisableSettingsEditing}">
+                            x:Name="ButtonOpenComponentsLib">
                         <ci:IconText Glyph="&#xE071;" Text="添加组件" />
                     </Button>
-                    <Button Click="ButtonManageComponentLayouts_OnClick" Theme="{StaticResource TransparentButton}"
-                            IsEnabled="{Binding !ManagementService.Policy.DisableSettingsEditing}">
+                    <Button Click="ButtonManageComponentLayouts_OnClick" Theme="{StaticResource TransparentButton}">
                         <ci:IconText Glyph="&#xE699;" Text="{Binding ViewModel.Settings.CurrentComponentConfig}"
                                      MaxWidth="150" />
                     </Button>
@@ -629,8 +600,7 @@
                             x:Name="ButtonExitEditMode">
                         <ci:IconText Glyph="&#xE424;" Text="完成" />
                     </Button>
-                </StackPanel>
-            </ci:TutorialBarrier>
+            </StackPanel>
         </Border>
         
         <ContentPresenter x:Name="EditModeViewCp" />

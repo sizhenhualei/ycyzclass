@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using YcyzClass.Core.Abstractions.Services;
-using YcyzClass.Core.Abstractions.Services.Management;
 using YcyzClass.Shared;
 using CommunityToolkit.Mvvm.ComponentModel;
 
@@ -74,15 +73,9 @@ public class SplashService: ObservableRecipient, ISplashService
 
     private static string DefaultText { get; } = "正在启动…";
 
-    public SplashService(SettingsService settingsService, IManagementService managementService)
+    public SplashService(SettingsService settingsService)
     {
         SettingsService = settingsService;
-        if (managementService.Policy.DisableSplashCustomize)
-        {
-            SettingsService.Settings.SplashCustomLogoSource = "";
-            SettingsService.Settings.SplashCustomText = "";
-            SettingsService.Settings.ShowDetailedStatusOnSplash = false;
-        }
         ResetSplashText();
     }
 

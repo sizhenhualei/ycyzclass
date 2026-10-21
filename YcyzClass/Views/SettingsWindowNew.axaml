@@ -29,8 +29,7 @@
                 <TextBlock Text="正在开发/测试的不稳定功能，可能会出现Bug等问题，请谨慎使用。" TextWrapping="Wrap"
                            Margin="0 0 0 16" />
                 <CheckBox IsChecked="{Binding SettingsService.Settings.ShowEchoCaveWhenSettingsPageLoading}"
-                          Margin="0 0 0 6"
-                          IsEnabled="{Binding ManagementService.Policy.DisableEasterEggs, Converter={StaticResource BooleanToBooleanReConverter}}">
+                          Margin="0 0 0 6">
                     <TextBlock TextWrapping="Wrap">
                         在加载设置页面时显示回声洞
                         <Run TextDecorations="{x:Static TextDecorations.Strikethrough}">
@@ -77,7 +76,6 @@
                                 <MultiBinding Converter="{StaticResource BooleanAndExpressionMultiConverter}">
                                     <Binding Path="SettingsService.Settings.ShowEchoCaveWhenSettingsPageLoading"/>
                                     <Binding Path="ViewModel.IsNavigating"/>
-                                    <Binding Path="ManagementService.Policy.DisableEasterEggs" Converter="{StaticResource BooleanToBooleanReConverter}"/>
                                 </MultiBinding>
                             </Grid.IsVisible>
                             <commands:FluentIcon Glyph="&#xEA8A;" VerticalAlignment="Center"
@@ -211,19 +209,6 @@
                                     <MenuItem Icon="{commands:FluentIcon &#xe083;}"
                                               Header="数据迁移…"
                                               Click="MenuItemDataTransfer_OnClick"/>
-                                    <Separator />
-                                    <MenuItem Icon="{controls:FluentIcon &#xE2B4;}" Header="集控选项…"
-                                              Click="MenuItemOpenManagementSettingsPage_OnClick">
-                                    </MenuItem>
-                                    <MenuItem Icon="{controls:FluentIcon &#xE2B6;}" Header="加入管理…"
-                                              IsVisible="{Binding !ManagementService.IsManagementEnabled}"
-                                              Click="MenuItemJoinManagement_OnClick">
-
-                                    </MenuItem>
-                                    <MenuItem Icon="{controls:FluentIcon &#xE2B8;}" Header="退出管理…"
-                                              Click="MenuItemExitManagement_OnClick"
-                                              IsVisible="{Binding ManagementService.IsManagementEnabled}">
-                                    </MenuItem>
                                     <Separator />
                                     <MenuItem Icon="{controls:FluentIcon &#xE510;}"
                                               Header="日志…"

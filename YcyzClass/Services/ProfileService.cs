@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -11,8 +10,6 @@ using System.Windows;
 using Avalonia.Platform;
 using YcyzClass.Core;
 using YcyzClass.Core.Abstractions.Services;
-using YcyzClass.Core.Abstractions.Services.Management;
-using YcyzClass.Services.Management;
 using YcyzClass.Shared.Models.Profile;
 
 using Microsoft.Extensions.Logging;
@@ -22,8 +19,6 @@ using static YcyzClass.Shared.Helpers.ConfigureFileHelper;
 using Path = System.IO.Path;
 using YcyzClass.Shared;
 using YcyzClass.Shared.IPC.Abstractions.Services;
-using YcyzClass.Shared.Protobuf.AuditEvent;
-using YcyzClass.Shared.Protobuf.Enum;
 using dotnetCampus.Ipc.CompilerServices.GeneratedProxies;
 
 namespace YcyzClass.Services;
@@ -34,15 +29,6 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
         get; 
         set;
     } = "Default.json";
-
-    public static readonly string ManagementClassPlanPath =
-        Path.Combine(Management.ManagementService.ManagementConfigureFolderPath, "ClassPlans.json");
-
-    public static readonly string ManagementTimeLayoutPath =
-        Path.Combine(Management.ManagementService.ManagementConfigureFolderPath, "TimeLayouts.json");
-
-    public static readonly string ManagementSubjectsPath =
-        Path.Combine(Management.ManagementService.ManagementConfigureFolderPath, "Subjects.json");
 
     public static readonly string ProfilePath = Path.Combine(CommonDirectories.AppRootFolderPath, "Profiles");
 
@@ -55,16 +41,14 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
 
     private ILogger<ProfileService> Logger { get; }
 
-    private IManagementService ManagementService { get; }
     public IIpcService IpcService { get; }
 
     private bool _isProfileLoaded = false;
     private bool _isCurrentProfileTrusted = false;
 
-    public ProfileService(SettingsService settingsService, ILogger<ProfileService> logger, IManagementService managementService, IIpcService ipcService)
+    public ProfileService(SettingsService settingsService, ILogger<ProfileService> logger, IIpcService ipcService)
     {
         Logger = logger;
-        ManagementService = managementService;
         IpcService = ipcService;
         SettingsService = settingsService;
         IpcService.IpcProvider.CreateIpcJoint<IPublicProfileService>(this);
@@ -74,78 +58,22 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
         }
     }
 
-    private async Task MergeManagementProfileAsync()
-    {
-        Logger.LogInformation("正在拉取集控档案");
-        if (ManagementService.Connection == null)
-            return;
-        try
-        {
-            Profile? classPlan = null;
-            Profile? timeLayouts = null;
-            Profile? subjects = null;
-            if (ManagementService.Manifest.ClassPlanSource.IsNewerAndNotNull(ManagementService.Versions.ClassPlanVersion))
-            {
-                var cpOld = LoadConfig<Profile>(ManagementClassPlanPath);
-                var cpNew = classPlan = await ManagementService.Connection.GetJsonAsync<Profile>(ManagementService.Manifest.ClassPlanSource.Value!);
-                MergeDictionary(Profile.ClassPlans, cpOld.ClassPlans, cpNew.ClassPlans);
-                MergeDictionary(Profile.ClassPlanGroups, cpOld.ClassPlanGroups, cpNew.ClassPlanGroups);
-            }
-            if (ManagementService.Manifest.TimeLayoutSource.IsNewerAndNotNull(ManagementService.Versions.TimeLayoutVersion))
-            {
-                var tlOld = LoadConfig<Profile>(ManagementTimeLayoutPath);
-                var tlNew = timeLayouts = await ManagementService.Connection.GetJsonAsync<Profile>(ManagementService.Manifest.TimeLayoutSource.Value!);
-                MergeDictionary(Profile.TimeLayouts, tlOld.TimeLayouts, tlNew.TimeLayouts);
-            }
-            if (ManagementService.Manifest.SubjectsSource.IsNewerAndNotNull(ManagementService.Versions.SubjectsVersion))
-            {
-                var subjectOld = LoadConfig<Profile>(ManagementSubjectsPath);
-                var subjectNew = subjects = await ManagementService.Connection.GetJsonAsync<Profile>(ManagementService.Manifest.SubjectsSource.Value!);
-                MergeDictionary(Profile.Subjects, subjectOld.Subjects, subjectNew.Subjects);
-            }
-
-            SaveProfile("_management-profile.json");
-            ManagementService.Versions.ClassPlanVersion = ManagementService.Manifest.ClassPlanSource.Version;
-            ManagementService.Versions.TimeLayoutVersion = ManagementService.Manifest.TimeLayoutSource.Version;
-            ManagementService.Versions.SubjectsVersion = ManagementService.Manifest.SubjectsSource.Version;
-            ManagementService.SaveSettings();
-        }
-        catch (Exception exp)
-        {
-            Logger.LogError(exp, "拉取档案失败。");
-        }
-
-        //Profile = ConfigureFileHelper.CopyObject(Profile);
-        Profile.Subjects = CopyObject(Profile.Subjects);
-        Profile.TimeLayouts = CopyObject(Profile.TimeLayouts);
-        Profile.ClassPlans = CopyObject(Profile.ClassPlans);
-        Profile.RefreshTimeLayouts();
-        Logger.LogTrace("成功拉取集控档案！");
-    }
-
     public async Task LoadProfileAsync()
     {
-        var filename = ManagementService.IsManagementEnabled ? "_management-profile.json" : SettingsService.Settings.SelectedProfile;
+        var filename = SettingsService.Settings.SelectedProfile;
         var path = Path.Combine(ProfilePath, filename);
         Logger.LogInformation("加载档案中：{}", path);
         if (!File.Exists(path))
         {
             Logger.LogInformation("档案不存在：{}", path);
-            if (!ManagementService.IsManagementEnabled)  // 在集控模式下不需要默认科目
-            {
-                var subject = new StreamReader(AssetLoader.Open(new Uri("avares://YcyzClass/Assets/default-subjects.json"))).ReadToEnd();
-                Profile.Subjects = JsonSerializer.Deserialize<Profile>(subject)!.Subjects;
-            }
+            var subject = new StreamReader(AssetLoader.Open(new Uri("avares://YcyzClass/Assets/default-subjects.json"))).ReadToEnd();
+            Profile.Subjects = JsonSerializer.Deserialize<Profile>(subject)!.Subjects;
             SaveProfile(filename);
         }
 
         var r = LoadConfig<Profile>(path);
 
         Profile = r;
-        if (ManagementService.IsManagementEnabled)
-        {
-            await MergeManagementProfileAsync();
-        }
         Profile.PropertyChanged += (sender, args) => SaveProfile(filename);
 
         if (SettingsService.Settings.TrustedProfileIds.Contains(Profile.Id))
@@ -164,35 +92,6 @@ public class ProfileService : IProfileService, INotifyPropertyChanged
         CleanExpiredTempClassPlan();
         _isProfileLoaded = true;
 
-        Profile.ClassPlans.CollectionChanged += (sender, args) => AuditProfileChangeEvent(AuditEvents.ClassPlanUpdated, args);
-        Profile.TimeLayouts.CollectionChanged += (sender, args) => AuditProfileChangeEvent(AuditEvents.TimeLayoutUpdated, args);
-        Profile.Subjects.CollectionChanged += (sender, args) => AuditProfileChangeEvent(AuditEvents.SubjectUpdated, args);
-    }
-
-    public void AuditProfileChangeEvent(AuditEvents eventType, NotifyCollectionChangedEventArgs args)
-    {
-        if (ManagementService is { IsManagementEnabled: true, Connection: ManagementServerConnection connection })
-        {
-            connection.LogAuditEvent(eventType, new ProfileItemUpdated()
-            {
-                Operation = args.Action switch
-                {
-                    NotifyCollectionChangedAction.Add => ListItemUpdateOperations.Add,
-                    NotifyCollectionChangedAction.Remove => ListItemUpdateOperations.Remove,
-                    NotifyCollectionChangedAction.Replace => ListItemUpdateOperations.Update,
-                    NotifyCollectionChangedAction.Move => ListItemUpdateOperations.Update,
-                    NotifyCollectionChangedAction.Reset => ListItemUpdateOperations.Update,
-                    _ => throw new ArgumentOutOfRangeException()
-                },
-                ItemId = args.NewItems?[0] switch
-                {
-                    KeyValuePair<Guid, ClassPlan> cp => cp.Key.ToString(),
-                    KeyValuePair<Guid, TimeLayout> tl => tl.Key.ToString(),
-                    KeyValuePair<Guid, Subject> s => s.Key.ToString(),
-                    _ => throw new ArgumentOutOfRangeException()
-                },
-            });
-        }
     }
 
     public void SaveProfile()

@@ -1,6 +1,5 @@
 ﻿using System;
 using YcyzClass.Core.Abstractions.Services;
-using YcyzClass.Core.Abstractions.Services.Management;
 using YcyzClass.Platforms.Abstraction.Services;
 using YcyzClass.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -9,14 +8,12 @@ namespace YcyzClass.ViewModels.SettingsPages;
 
 public partial class DebugPageViewModel(
     SettingsService settingsService,
-    IManagementService managementService,
     ConsoleService consoleService,
     ILessonsService lessonsService,
     IProfileAnalyzeService profileAnalyzeService,
     ILocationService locationService) : ObservableRecipient
 {
     public SettingsService SettingsService { get; } = settingsService;
-    public IManagementService ManagementService { get; } = managementService;
     public ConsoleService ConsoleService { get; } = consoleService;
     public ILessonsService LessonsService { get; } = lessonsService;
     public IProfileAnalyzeService ProfileAnalyzeService { get; } = profileAnalyzeService;

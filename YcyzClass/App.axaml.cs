@@ -10,12 +10,10 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using YcyzClass.Core.Abstractions.Services;
-using YcyzClass.Core.Abstractions.Services.Management;
 using YcyzClass.Core.Controls;
 using YcyzClass.Shared;
 using YcyzClass.Models;
 using YcyzClass.Services;
-using YcyzClass.Services.Management;
 using YcyzClass.Services.SpeechService;
 using YcyzClass.Views;
 // using YcyzClass.Views.SettingPages;
@@ -253,13 +251,10 @@ public partial class App : AppBase, IAppHost
             UriSource = new Uri(args[0]),
             ShowAsMonochrome = args.Length >= 2  && bool.TryParse(args[2], out var r1) && r1
         });
-        IconExpressionHelper.RegisterHandler("sticker", args => 
-            IAppHost.TryGetService<IManagementService>()?.Policy.DisableEasterEggs == true
-            ? args.Length >= 2 ? IconExpressionHelper.TryParseOrNull(args[1]) : new FontIconSource()
-            : new AdvancedImageIconSource()
-            {
-                Uri = Uri.TryCreate(args[0], UriKind.Absolute, out var uri) ? uri.ToString() : $"avares://YcyzClass/Assets/HoYoStickers/{args[0]}.png"
-            });
+        IconExpressionHelper.RegisterHandler("sticker", args => new AdvancedImageIconSource()
+        {
+            Uri = Uri.TryCreate(args[0], UriKind.Absolute, out var uri) ? uri.ToString() : $"avares://YcyzClass/Assets/HoYoStickers/{args[0]}.png"
+        });
 
         Popup.IsOpenProperty.Changed.AddClassHandler<Popup>(PopupIsOpenChanged);
         base.Initialize();
@@ -371,14 +366,6 @@ public partial class App : AppBase, IAppHost
 
         var plugins = DiagnosticService.GetPluginsByStacktrace(e);
         var disabled = DiagnosticService.DisableCorruptPlugins(plugins);
-        var managementService = IAppHost.TryGetService<IManagementService>();
-        if (managementService is IManagementService { IsManagementEnabled: true, Connection: ManagementServerConnection connection })
-        {
-            connection.LogAuditEvent(AuditEvents.AppCrashed, new AppCrashed()
-            {
-                Stacktrace = e.ToString()
-            });
-        }
         if (!safe)
         {
             var crashInfo = e.ToString();
@@ -644,16 +631,9 @@ public partial class App : AppBase, IAppHost
             return;
         }
 
-        var successSetupMgmt = await GetService<IManagementService>().SetupManagement();
-
-        if (!successSetupMgmt)
-        {
-            Stop();
-            return;
-        }
-
         await GetService<SettingsService>().LoadSettingsAsync();
         Settings = GetService<SettingsService>().Settings;
+        Settings.IsWelcomeWindowShowed = true;
         Settings.IsSystemSpeechSystemExist = isSystemSpeechSystemExist;
         Settings.DiagnosticStartupCount++;
 
@@ -697,7 +677,6 @@ public partial class App : AppBase, IAppHost
         await GetService<IProfileService>().LoadProfileAsync();
         GetService<IWeatherService>();
         GetService<IExactTimeService>();
-        await GetService<IComponentsService>().LoadManagementConfig();
         
         if (ApplicationCommand.Diagnostic)
         {
@@ -708,61 +687,6 @@ public partial class App : AppBase, IAppHost
         _ = IAppHost.Host.StartAsync();
 
         
-        if (!Settings.IsWelcomeWindowShowed || ApplicationCommand.Refreshing || ApplicationCommand.Onboarding)
-        {
-            if (Settings.IsSplashEnabled)
-            {
-                await GetService<ISplashService>().EndSplash();
-            }
-
-            if (System.OperatingSystem.IsLinux() && GlobalStorageService.GetValue("IgnoreQtScaling") != "1")
-            {
-                var dialog = new TaskDialog()
-                {
-                    Title = "YcyzClass",
-                    Header = "当前界面缩放是否正常？",
-                    Content = "如果您发现当前界面缩放相对系统缩放过小，可点击【不正常】按钮使应用启用兼容缩放模式，以缓解在部分平台上的缩放异常的问题。",
-                    XamlRoot = GetRootWindow(),
-                    Buttons =
-                    [
-                        new TaskDialogButton("正常", false),
-                        new TaskDialogButton("不正常", true)
-                    ],
-                };
-                var r = await dialog.ShowAsync();
-                if (Equals(r, true))
-                {
-                    GlobalStorageService.SetValue("IgnoreQtScaling", "1");
-                    Restart();
-                    return;
-                }
-            }
-            var w = IAppHost.GetService<WelcomeWindow>();
-            if (ApplicationCommand.Refreshing)
-            {
-                w.SetWelcomeExperience(true, ApplicationCommand.Onboarding, true);
-            }
-            await w.ShowDialog(PhonyRootWindow);
-            if (w is { IsOnboarding: true, ViewModel.IsManuallyRestarted: false })
-            {
-                if (!w.ViewModel.IsWizardCompleted)
-                {
-                    Stop();
-                }
-                else
-                {
-                    Settings.IsWelcomeWindowShowed = true;
-                    Restart();
-                }
-                return;
-            }
-
-            if (w.ViewModel.IsManuallyRestarted)
-            {
-                return;
-            }
-        }
-
         // 如果不是开发构建, 则自动重置部分可能影响使用的调试选项
         #if !DEBUG
         Settings.IsMainWindowDebugEnabled = false;
@@ -825,10 +749,6 @@ public partial class App : AppBase, IAppHost
             {
                 App.GetService<ISplashService>().EndSplash();
             }
-            if (IAppHost.TryGetService<IManagementService>() is IManagementService { IsManagementEnabled: true, Connection: ManagementServerConnection connection })
-            {
-                connection.LogAuditEvent(AuditEvents.AppStarted, new Empty());
-            }
             _isStartedCompleted = true;
             AppBase.CurrentLifetime = YcyzClass.Core.Enums.ApplicationLifetime.Running;
             if (ApplicationCommand.ImportComplete)
@@ -870,15 +790,6 @@ public partial class App : AppBase, IAppHost
         catch (Exception ex)
         {
             Logger.LogError(ex, "无法创建自动备份。");
-        }
-
-
-        
-        var needsStop = await IAppHost.GetService<IRefreshingService>().Initialize();
-        if (needsStop)
-        {
-            Stop();
-            return;
         }
     }
 
@@ -1021,10 +932,6 @@ public partial class App : AppBase, IAppHost
             var partial = CurrentLifetime < Core.Enums.ApplicationLifetime.StartingOnline;
             CurrentLifetime = YcyzClass.Core.Enums.ApplicationLifetime.Stopping;
             Logger?.LogInformation("正在停止应用");
-            if (IAppHost.TryGetService<IManagementService>() is { IsManagementEnabled: true, Connection: ManagementServerConnection connection })
-            {
-                connection.LogAuditEvent(AuditEvents.AppExited, new Empty());
-            }
             AppStopping?.Invoke(this, EventArgs.Empty);
             if (!partial)
             {
@@ -1095,7 +1002,7 @@ public partial class App : AppBase, IAppHost
 
     private void NativeMenuItemOpenAbout_OnClick(object? sender, EventArgs e)
     {
-        if (CurrentLifetime != Core.Enums.ApplicationLifetime.Running || !Settings.IsWelcomeWindowShowed)
+        if (CurrentLifetime != Core.Enums.ApplicationLifetime.Running)
         {
             return;
         }

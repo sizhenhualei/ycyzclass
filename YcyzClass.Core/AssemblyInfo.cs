@@ -14,7 +14,6 @@ using Avalonia.Metadata;
 [assembly: XmlnsDefinition("http://ycyzclass.tech/schemas/xaml/core", "YcyzClass.Core.Controls.IconControl")]
 [assembly: XmlnsDefinition("http://ycyzclass.tech/schemas/xaml/core", "YcyzClass.Core.Controls.NavHyperlink")]
 [assembly: XmlnsDefinition("http://ycyzclass.tech/schemas/xaml/core", "YcyzClass.Core.Controls.Ruleset")]
-[assembly: XmlnsDefinition("http://ycyzclass.tech/schemas/xaml/core", "YcyzClass.Core.Controls.Tutorial")]
 [assembly: XmlnsDefinition("http://ycyzclass.tech/schemas/xaml/core", "YcyzClass.Core.Commands")]
 [assembly: XmlnsDefinition("http://ycyzclass.tech/schemas/xaml/core", "YcyzClass.Core.Abstractions.Controls")]
 [assembly: XmlnsDefinition("http://ycyzclass.tech/schemas/xaml/core", "YcyzClass.Core.Abstractions.Behaviors")]

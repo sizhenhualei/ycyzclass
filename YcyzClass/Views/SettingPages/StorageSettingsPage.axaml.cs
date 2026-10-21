@@ -4,7 +4,6 @@ using System.Windows;
 using Avalonia.Interactivity;
 using YcyzClass.Core;
 using YcyzClass.Core.Abstractions.Controls;
-using YcyzClass.Core.Abstractions.Services.Management;
 using YcyzClass.Core.Attributes;
 using YcyzClass.Core.Enums.SettingsWindow;
 using YcyzClass.Core.Helpers.UI;
@@ -70,12 +69,8 @@ public partial class StorageSettingsPage : SettingsPageBase
         }
     }
 
-    private async void ButtonRecoverBackup_OnClick(object sender, RoutedEventArgs e)
+    private void ButtonRecoverBackup_OnClick(object sender, RoutedEventArgs e)
     {
-        if (!await ViewModel.ManagementService.AuthorizeByLevel(ViewModel.ManagementService.CredentialConfig.ExitApplicationAuthorizeLevel))
-        {
-            return;
-        }
         AppBase.Current.Restart(["-m", "-r"]);
     }
 }

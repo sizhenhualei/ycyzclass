@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using YcyzClass.Controls.EditMode;
 using YcyzClass.Core.Abstractions.Services;
@@ -14,14 +14,12 @@ public partial class EditModeViewModel(
     MainWindow mainWindow,
     IComponentsService componentsService,
     SettingsService settingsService,
-    IUriNavigationService uriNavigationService,
-    ITutorialService tutorialService) : ObservableObject
+    IUriNavigationService uriNavigationService) : ObservableObject
 {
     public MainWindow MainWindow { get; } = mainWindow;
     public IComponentsService ComponentsService { get; } = componentsService;
     public SettingsService SettingsService { get; } = settingsService;
     public IUriNavigationService UriNavigationService { get; } = uriNavigationService;
-    public ITutorialService TutorialService { get; } = tutorialService;
 
     public MainViewModel MainViewModel => MainWindow.ViewModel;
 

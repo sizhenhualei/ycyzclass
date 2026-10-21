@@ -9,7 +9,6 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using YcyzClass.Core.Abstractions.Services;
-using YcyzClass.Core.Abstractions.Services.Management;
 using YcyzClass.Shared;
 using YcyzClass.Shared.Models.Profile;
 using YcyzClass.ViewModels;
@@ -75,11 +74,8 @@ public sealed partial class ClassPlanGroupItemControl : UserControl, INotifyProp
         InitializeComponent();
         this.GetObservable(KeyProperty).Subscribe(_ =>
         {
-            var policy = IAppHost.GetService<IManagementService>().Policy;
             IsProtected = Key == ClassPlanGroup.DefaultGroupGuid ||
-                          Key == ClassPlanGroup.GlobalGroupGuid ||
-                          policy.DisableProfileEditing ||
-                          policy.DisableProfileClassPlanEditing;
+                          Key == ClassPlanGroup.GlobalGroupGuid;
         });
     }
 

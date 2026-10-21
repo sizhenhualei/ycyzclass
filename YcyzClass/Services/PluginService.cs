@@ -1,13 +1,11 @@
 using YcyzClass.Core;
 using YcyzClass.Core.Abstractions;
 using YcyzClass.Core.Abstractions.Services;
-using YcyzClass.Core.Abstractions.Services.Management;
 using YcyzClass.Core.Attributes;
 using YcyzClass.Core.Enums;
 using YcyzClass.Core.Models.Plugin;
 using YcyzClass.Core.Services.Registry;
 using YcyzClass.Models.Plugins;
-using YcyzClass.Services.Management;
 using YcyzClass.Shared;
 using YcyzClass.Shared.Protobuf.AuditEvent;
 using YcyzClass.Shared.Protobuf.Enum;
@@ -234,33 +232,6 @@ public class PluginService : IPluginService
             }
         }
         
-        AppBase.Current.AppStarted += CurrentOnAppStarted;
-    }
-
-    private static void CurrentOnAppStarted(object? sender, EventArgs e)
-    {
-        if (IAppHost.TryGetService<IManagementService>() is not
-            { IsManagementEnabled: true, Connection: ManagementServerConnection connection })
-        {
-            return;
-        }
-
-        foreach (var i in InstalledPlugins)
-        {
-            connection.LogAuditEvent(AuditEvents.PluginInstalled, new PluginInstalled()
-            {
-                PluginId = i.Id,
-                Version = i.Version
-            });
-        }
-        foreach (var i in UninstalledPlugins)
-        {
-            connection.LogAuditEvent(AuditEvents.PluginUninstalled, new PluginUninstalled()
-            {
-                PluginId = i.Id,
-                Version = i.Version
-            });
-        }
     }
 
     /// <summary>

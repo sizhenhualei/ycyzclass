@@ -9,12 +9,10 @@ using Avalonia.Data.Converters;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
 using YcyzClass.Core.Abstractions.Services;
-using YcyzClass.Core.Abstractions.Services.Management;
 using YcyzClass.Core.Controls;
 using YcyzClass.Core.Helpers.UI;
 using YcyzClass.Shared.Models.Profile;
 using YcyzClass.Services;
-using YcyzClass.Services.Management;
 using YcyzClass.Shared;
 using YcyzClass.Shared.Protobuf.AuditEvent;
 using YcyzClass.Shared.Protobuf.Enum;
@@ -157,19 +155,6 @@ public partial class ClassChangingWindow : MyWindow
         }
 
         ViewModel.ProfileService.SaveProfile();
-        if (ViewModel.ManagementService is { IsManagementEnabled: true, Connection: ManagementServerConnection connection })
-        {
-            connection.LogAuditEvent(AuditEvents.ClassChangeCompleted, new ClassChangeCompleted()
-            {
-                ChangeMode = ViewModel.SettingsService.Settings.IsSwapMode ? 0 : 1,
-                ClassPlanId = key.ToString(),
-                SourceClassIndex = aI,
-                SourceClassSubjectId = a.ToString(),
-                TargetClassIndex = bI,
-                TargetClassSubjectId = b.ToString(),
-                WriteToSourceClassPlan = ViewModel.WriteToSourceClassPlan
-            });
-        }
         Close();
     }
 

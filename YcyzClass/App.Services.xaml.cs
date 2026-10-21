@@ -13,7 +13,6 @@ using YcyzClass.Controls.RuleSettingsControls;
 
 using YcyzClass.Controls.TriggerSettingsControls;
 using YcyzClass.Core.Abstractions.Services;
-using YcyzClass.Core.Abstractions.Services.Management;
 
 using YcyzClass.Core.Abstractions.Services.SpeechService;
 using YcyzClass.Core.Controls.Ruleset;
@@ -33,7 +32,6 @@ using YcyzClass.Services;
 using YcyzClass.Services.Automation.Actions;
 using YcyzClass.Services.Automation.Triggers;
 using YcyzClass.Services.Logging;
-using YcyzClass.Services.Management;
 
 using YcyzClass.Services.NotificationProviders;
 using YcyzClass.Services.SpeechService;
@@ -71,7 +69,6 @@ public partial class App
         services.AddSingleton<ConsoleService>();
         //services.AddHostedService<BootService>();
         services.AddSingleton<DiagnosticService>();
-        services.AddSingleton<IManagementService, ManagementService>();
         services.AddSingleton<AppLogService>();
         services.AddSingleton<IComponentsService, ComponentsService>();
         services.AddSingleton<ILessonsService, LessonsService>();
@@ -96,19 +93,14 @@ public partial class App
         services.AddSingleton<ILocationService>(PlatformServices.LocationService);
         services.AddSingleton<IXamlThemeService, XamlThemeService>();
         services.AddSingleton<IAudioService, AudioService>();
-        services.AddSingleton<ITutorialService, TutorialService>();
-        services.AddSingleton<IRefreshingService, RefreshingService>();
         // ViewModels
         services.AddTransient<ProfileSettingsViewModel>();
         services.AddTransient<DevPortalViewModel>();
         services.AddTransient<AppLogsViewModel>();
-        services.AddTransient<WelcomeViewModel>();
         services.AddTransient<ClassChangingViewModel>();
         services.AddTransient<DataTransferViewModel>();
         services.AddTransient<ScreenshotHelperViewModel>();
         services.AddTransient<EditModeViewModel>();
-        services.AddTransient<TutorialEditorViewModel>();
-        services.AddTransient<TutorialCenterViewModel>();
         // ViewModels/SettingsPages
         services.AddTransient<GeneralSettingsViewModel>();
         services.AddTransient<ClockSettingsViewModel>();
@@ -126,7 +118,6 @@ public partial class App
         services.AddTransient<ThemesSettingsViewModel>();
 
         services.AddTransient<DebugPageViewModel>();
-        services.AddTransient<RefreshingSettingsViewModel>();
         // Views
         services.AddTransient<ITopmostEffectPlayer>(x => x.GetRequiredService<TopmostEffectWindow>());
         services.AddSingleton<MainWindow>();
@@ -142,13 +133,9 @@ public partial class App
         services.AddTransient<TimeAdjustmentWindow>();
         // services.AddTransient<ExcelExportWindow>();
         services.AddTransient<DevPortalWindow>();
-        services.AddTransient<WelcomeWindow>();
         services.AddTransient<DataTransferWindow>();
         services.AddTransient<ScreenshotHelperWindow>();
         services.AddSingleton<EditModeView>();
-        services.AddTransient<TutorialEditorWindow>();
-        services.AddSingleton<TutorialCenterWindow>();
-        services.AddTransient<TutorialControllerWindow>();
         services.AddTransient<ISplashProvider, SplashWindow>();
         // 设置页面分组
         services.AddSettingsPageGroup("ycyzclass.general", "\uef27", "通用");
@@ -158,7 +145,6 @@ public partial class App
         services.AddSettingsPage<ClockSettingsPage>();
         services.AddSettingsPage<StorageSettingsPage>();
         services.AddSettingsPage<PrivacySettingsPage>();
-        services.AddSettingsPage<RefreshingSettingsPage>();
         services.AddSettingsPage<AdvancedSettingsPage>();
         services.AddSettingsPage<ComponentsSettingsPage>();
         services.AddSettingsPage<AppearanceSettingsPage>();
@@ -173,9 +159,6 @@ public partial class App
         services.AddSettingsPage<DebugPage>();
         // services.AddSettingsPage<DebugBrushesSettingsPage>();
         services.AddSettingsPage<AboutSettingsPage>();
-        services.AddSettingsPage<ManagementSettingsPage>();
-        services.AddSettingsPage<ManagementCredentialsSettingsPage>();
-        services.AddSettingsPage<ManagementPolicySettingsPage>();
         services.AddSettingsPage<ErrorSettingsPage>();
         // 主界面组件
         services.AddComponent<TextComponent, TextComponentSettingsControl>();
@@ -193,7 +176,6 @@ public partial class App
         services.AddNotificationProvider<ClassNotificationProvider, ClassNotificationProviderSettingsControl>();
         services.AddNotificationProvider<AfterSchoolNotificationProvider, AfterSchoolNotificationProviderSettingsControl>();
         services.AddNotificationProvider<WeatherNotificationProvider, WeatherNotificationProviderSettingsControl>();
-        services.AddNotificationProvider<ManagementNotificationProvider>();
         services.AddNotificationProvider<ActionNotificationProvider>();
         // // Transients
         // services.AddTransient<ExcelImportWindow>();
@@ -301,10 +283,6 @@ public partial class App
             Url = "https://github.com/sizhenhualei/ycyzclass",
             VerticalSafeAreaPx = 20
         });
-        // 教程
-        // services.AddTutorialGroupByUri(new Uri("avares://YcyzClass/Assets/Tutorials/ycyzclass.test.json"));
-        // services.AddTutorialGroupByUri(new Uri("avares://YcyzClass/Assets/Tutorials/ycyzclass.sp.json"));
-        services.AddTutorialGroupByUri(new Uri("avares://YcyzClass/Assets/Tutorials/ycyzclass.getStarted.json"));
         // Plugins
         if (!ApplicationCommand.Safe && string.IsNullOrWhiteSpace(ApplicationCommand.ImportV1) && string.IsNullOrWhiteSpace(ApplicationCommand.ImportV2))
         {

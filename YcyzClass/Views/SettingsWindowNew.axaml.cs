@@ -11,7 +11,6 @@ using System.Windows;
 using YcyzClass.Core;
 using YcyzClass.Core.Abstractions.Controls;
 using YcyzClass.Core.Abstractions.Services;
-using YcyzClass.Core.Abstractions.Services.Management;
 using YcyzClass.Core.Attributes;
 using YcyzClass.Core.Enums.SettingsWindow;
 using YcyzClass.Core.Services.Registry;
@@ -68,8 +67,6 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
 
     private bool IsOpened { get; set; } = false;
 
-    public IManagementService ManagementService { get; }
-
     private IHangService HangService { get; }
 
     private ILogger<SettingsWindowNew> Logger;
@@ -81,7 +78,6 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
     public static readonly string StartupSettingsPage = "general";
 
     private IComponentsService ComponentsService { get; }
-    private ITutorialService TutorialService { get; }
 
     private string LaunchSettingsPage { get; set; } = StartupSettingsPage;
 
@@ -99,16 +95,13 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
         return 0;
     });
 
-    public SettingsWindowNew(IManagementService managementService, IHangService hangService,
+    public SettingsWindowNew(IHangService hangService,
         ILogger<SettingsWindowNew> logger, DiagnosticService diagnosticService, SettingsService settingsService,
-        IComponentsService componentsService, IUriNavigationService uriNavigationService,
-        ITutorialService tutorialService)
+        IComponentsService componentsService, IUriNavigationService uriNavigationService)
     {
         Logger = logger;
         DataContext = this;
-        ManagementService = managementService;
         ComponentsService = componentsService;
-        TutorialService = tutorialService;
         DiagnosticService = diagnosticService;
         HangService = hangService;
         SettingsService = settingsService;
@@ -120,11 +113,6 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
         TitleBar.TitleBarHitTestType = TitleBarHitTestType.Complex;
         NavigationFrame.NavigationPageFactory = this;
         ViewModel.PropertyChanged += ViewModelOnPropertyChanged;
-
-        if (ManagementService.Policy.DisableSettingsEditing)
-        {
-            LaunchSettingsPage = "about";
-        }
 
         BuildNavigationMenuItems();
         SettingsService.Settings
@@ -148,10 +136,6 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
 
         var infosBase = SettingsWindowRegistryService.Registered
             .Where(x => !x.HideDefault)
-            .Where(x => !(ManagementService.Policy.DisableSettingsEditing && x.Category == SettingsPageCategory.Internal))
-            .Where(x => !(ManagementService.Policy.DisableSettingsEditing && x.Category == SettingsPageCategory.External))
-            .Where(x => !(ManagementService.Policy.DisableSettingsEditing && x.Category == SettingsPageCategory.External))
-            .Where(x => !(ManagementService.Policy.DisableDebugMenu && x.Category == SettingsPageCategory.Debug))
             .Where(x => !(!SettingsService.Settings.IsDebugOptionsEnabled && x.Category == SettingsPageCategory.Debug))
             .OrderBy(x => x.Category)
             .ToList();
@@ -334,16 +318,6 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
             return;
         }
 
-        switch (info.Category)
-        {
-            // 判断是否可以导航
-            case SettingsPageCategory.Internal or SettingsPageCategory.External when
-                ManagementService.Policy.DisableSettingsEditing:
-            case SettingsPageCategory.Debug when
-                ManagementService.Policy.DisableDebugMenu:
-                return;
-        }
-
         if (ViewModel.IsNavigating)
         {
             return;
@@ -444,10 +418,6 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
     {
         if (!IsOpened)
         {
-            if (!await ManagementService.AuthorizeByLevel(ManagementService.CredentialConfig.EditSettingsAuthorizeLevel))
-            {
-                return;
-            }
             IsOpened = true;
             Show();
         }
@@ -460,7 +430,6 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
 
             Activate();
         }
-        TutorialService.PushToNextSentence("ycyzclass.getStarted.welcome/systems");
     }
 
     public async void Open(string key, Uri? uri = null)
@@ -558,19 +527,6 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
     {
         ViewModel.IsPopupOpen = false;
         OpenDrawer("ExperimentalSettings");
-    }
-
-    private async void MenuItemExitManagement_OnClick(object sender, RoutedEventArgs e)
-    {
-        try
-        {
-            await ManagementService.ExitManagementAsync();
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "无法退出管理。");
-            _ = CommonTaskDialogs.ShowDialog("无法退出管理", $"无法退出管理：{ex.Message}", this);
-        }
     }
 
     private void MenuItemAppLogs_OnClick(object sender, RoutedEventArgs e)
@@ -758,10 +714,6 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
 
     private async void MenuItemRestartToRecovery_OnClick(object sender, RoutedEventArgs e)
     {
-        if (!await ManagementService.AuthorizeByLevel(ManagementService.CredentialConfig.ExitApplicationAuthorizeLevel))
-        {
-            return;
-        }
         AppBase.Current.Restart(["-m", "-r"]);
     }
 
@@ -807,17 +759,6 @@ public partial class SettingsWindowNew : MyWindow, INavigationPageFactory
     private void MenuItemDataTransfer_OnClick(object? sender, RoutedEventArgs e)
     {
         IAppHost.GetService<DataTransferWindow>().ShowDialog(this);
-    }
-
-    private void MenuItemOpenManagementSettingsPage_OnClick(object? sender, RoutedEventArgs e)
-    {
-        IAppHost.GetService<IUriNavigationService>().NavigateWrapped(new Uri("ycyzclass://app/settings/management?ci_keepHistory=true"));
-    }
-
-    private void MenuItemJoinManagement_OnClick(object? sender, RoutedEventArgs e)
-    {
-        var dialog = new JoinManagementDialog();
-        dialog.ShowDialog((TopLevel.GetTopLevel(this) as Window)!);
     }
 
     private void BackButton_OnClick(object? sender, RoutedEventArgs e)

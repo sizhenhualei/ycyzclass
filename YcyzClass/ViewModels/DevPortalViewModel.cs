@@ -10,14 +10,12 @@ public partial class DevPortalViewModel(
     INotificationHostService notificationHostService,
     SettingsService settingsService,
     IExactTimeService exactTimeService,
-    IWeatherService weatherService,
-    ITutorialService tutorialService) : ObservableObject
+    IWeatherService weatherService) : ObservableObject
 {
     public INotificationHostService NotificationHostService { get; } = notificationHostService;
     public SettingsService SettingsService { get; } = settingsService;
     public IExactTimeService ExactTimeService { get; } = exactTimeService;
     public IWeatherService WeatherService { get; } = weatherService;
-    public ITutorialService TutorialService { get; } = tutorialService;
 
     [ObservableProperty] private string _notificationMaskText = "";
     
@@ -35,7 +33,6 @@ public partial class DevPortalViewModel(
     [ObservableProperty] private string _toastMessage = "";
     [ObservableProperty] private bool _toastHaveActions = false;
     [ObservableProperty] private bool _toastCanUserClose = true;
-    [ObservableProperty] private object? _oobeIntroControlContent = new Border();
     [ObservableProperty] private string _markdownText =
         """
         # Welcome to YcyzClass!

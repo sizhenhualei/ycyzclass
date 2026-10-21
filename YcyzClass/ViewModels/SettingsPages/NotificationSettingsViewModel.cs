@@ -3,7 +3,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive.Linq;
 using YcyzClass.Core.Abstractions.Services;
-using YcyzClass.Core.Abstractions.Services.Management;
 using YcyzClass.Core.Abstractions.Services.SpeechService;
 using YcyzClass.Models;
 using YcyzClass.Models.Notification;
@@ -20,7 +19,6 @@ public partial class NotificationSettingsViewModel : ObservableRecipient
     public SettingsService SettingsService { get; }
     public INotificationHostService NotificationHostService { get; }
     public ISpeechService SpeechService { get; }
-    public IManagementService ManagementService { get; }
     public IComponentsService ComponentsService { get; }
 
     private bool _isNotificationSettingsPanelOpened = false;
@@ -81,13 +79,11 @@ public partial class NotificationSettingsViewModel : ObservableRecipient
     public NotificationSettingsViewModel(SettingsService settingsService,
         INotificationHostService notificationHostService,
         ISpeechService speechService,
-        IManagementService managementService,
         IComponentsService componentsService)
     {
         SettingsService = settingsService;
         NotificationHostService = notificationHostService;
         SpeechService = speechService;
-        ManagementService = managementService;
         ComponentsService = componentsService;
 
         var filtered = SettingsService.Settings.NotificationProvidersPriority

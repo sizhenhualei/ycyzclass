@@ -132,15 +132,6 @@ public class EditableComponentsListBoxDropHandler : DropHandlerBase
             ComponentsService.LoadComponentSettings(componentSettings,
                 componentSettings.AssociatedComponentInfo.ComponentType!.BaseType!);
             InsertItem(targetList, componentSettings, insertIndex);
-            if (data.SettingsType != null)
-            {
-                IAppHost.GetService<ITutorialService>().BeginNotCompletedTutorials(
-                    "ycyzclass.getStarted.componentsEditing/componentSettings");
-            } else if (data.IsComponentContainer)
-            {
-                IAppHost.GetService<ITutorialService>().BeginNotCompletedTutorials(
-                    "ycyzclass.getStarted.componentsEditing/containerComponent");
-            }
             listBox.SelectedItem = componentSettings;
         }
         return true;

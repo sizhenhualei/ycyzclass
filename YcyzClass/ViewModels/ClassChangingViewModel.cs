@@ -1,6 +1,5 @@
 ﻿using System;
 using YcyzClass.Core.Abstractions.Services;
-using YcyzClass.Core.Abstractions.Services.Management;
 using YcyzClass.Core.ComponentModels;
 using YcyzClass.Services;
 using YcyzClass.Shared.Models.Profile;
@@ -28,14 +27,12 @@ public partial class ClassChangingViewModel : ObservableRecipient
 
     public IProfileService ProfileService { get; }
 
-    public IManagementService ManagementService { get; }
     
     public SyncDictionaryList<Guid, Subject> Subjects { get; }
 
-    public ClassChangingViewModel(IProfileService profileService, IManagementService managementService, SettingsService settingsService)
+    public ClassChangingViewModel(IProfileService profileService, SettingsService settingsService)
     {
         ProfileService = profileService;
-        ManagementService = managementService;
         SettingsService = settingsService;
 
         Subjects = new SyncDictionaryList<Guid, Subject>(ProfileService.Profile.Subjects, Guid.NewGuid);

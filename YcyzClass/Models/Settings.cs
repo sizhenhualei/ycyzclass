@@ -12,7 +12,6 @@ using YcyzClass.Shared;
 using YcyzClass.Shared.Abstraction.Models;
 using YcyzClass.Shared.Enums;
 using YcyzClass.Shared.Models.Notification;
-using YcyzClass.Models.AllContributors;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Microsoft.Extensions.Logging;
 using YcyzClass.Core.Models;
@@ -21,7 +20,6 @@ using YcyzClass.Core.Attributes;
 using YcyzClass.Core.Services;
 using YcyzClass.Shared.ComponentModels;
 using System.Runtime.InteropServices;
-using YcyzClass.Models.Refreshing;
 using YcyzClass.Services;
 
 namespace YcyzClass.Models;
@@ -33,8 +31,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private Color _backgroundColor = Colors.Black;
     private Color _primaryColor = Colors.DeepSkyBlue;
     private Color _secondaryColor = Colors.Aquamarine;
-    private DateTime _singleWeekStartTime =
-        DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek); // 取周日
+    private DateTime _singleWeekStartTime = DateTime.Today;
     //  DateTime.Today.AddDays(-(DateTime.Today.DayOfWeek switch { // 取周一
     //         DayOfWeek.Sunday => 6,
     //         _ => (int)DateTime.Today.DayOfWeek - 1
@@ -138,7 +135,6 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private bool _isNotificationTopmostEnabled = true;
     private double _notificationEffectRenderingScale = 1.0;
     private bool _isNotificationEffectRenderingScaleAutoSet = false;
-    private AllContributorsRc _contributorsCache = new();
     private bool _allowNotificationSpeech = false;
     private bool _allowNotificationEffect = true;
     private bool _allowNotificationSound = false;
@@ -811,120 +807,6 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         {
             if (value == _reduceProgressAccuracy) return;
             _reduceProgressAccuracy = value;
-            OnPropertyChanged();
-        }
-    }
-
-    #endregion
-
-    #region Refreshing
-
-    public DateTime AppLastStartedTime
-    {
-        get => _appLastStartedTime;
-        set
-        {
-            if (value.Equals(_appLastStartedTime)) return;
-            _appLastStartedTime = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public bool IsRefreshingToastEnabled
-    {
-        get => _isRefreshingToastEnabled;
-        set
-        {
-            if (value == _isRefreshingToastEnabled) return;
-            _isRefreshingToastEnabled = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public int RefreshingToastThresholdDays
-    {
-        get => _refreshingToastThresholdDays;
-        set
-        {
-            if (value == _refreshingToastThresholdDays) return;
-            _refreshingToastThresholdDays = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public bool ShowRefreshingToastOnNextStart
-    {
-        get => _showRefreshingToastOnNextStart;
-        set
-        {
-            if (value == _showRefreshingToastOnNextStart) return;
-            _showRefreshingToastOnNextStart = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public int MaxRefreshingToastCounts
-    {
-        get => _maxRefreshingToastCounts;
-        set
-        {
-            if (value == _maxRefreshingToastCounts) return;
-            _maxRefreshingToastCounts = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public int LeftRefreshingToastCounts
-    {
-        get => _leftRefreshingToastCounts;
-        set
-        {
-            if (value == _leftRefreshingToastCounts) return;
-            _leftRefreshingToastCounts = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public bool RefreshingToastIsOnboardingGuide
-    {
-        get => _refreshingToastIsOnboardingGuide;
-        set
-        {
-            if (value == _refreshingToastIsOnboardingGuide) return;
-            _refreshingToastIsOnboardingGuide = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public string OnboardingToastTitle
-    {
-        get => _onboardingToastTitle;
-        set
-        {
-            if (value == _onboardingToastTitle) return;
-            _onboardingToastTitle = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public string OnboardingToastBody
-    {
-        get => _onboardingToastBody;
-        set
-        {
-            if (value == _onboardingToastBody) return;
-            _onboardingToastBody = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public RefreshingScopes RefreshingScopes
-    {
-        get => _refreshingScopes;
-        set
-        {
-            if (Equals(value, _refreshingScopes)) return;
-            _refreshingScopes = value;
             OnPropertyChanged();
         }
     }
@@ -1630,18 +1512,7 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private int _windowTopmostRecheckMode = 0;
     private bool _isScreenRecordingModeEnabled = false;
     private bool _isWindowCaptureBlockingEnabled = false;
-    private bool _hasEditModeTutorialShown = false;
     private int _classPlanEditModeIndex = 1;
-    private bool _isRefreshingToastEnabled = true;
-    private int _refreshingToastThresholdDays = 20;
-    private bool _showRefreshingToastOnNextStart = false;
-    private int _leftRefreshingToastCounts = 0;
-    private bool _refreshingToastIsOnboardingGuide = false;
-    private string _onboardingToastTitle = RefreshingService.DefaultOnboardingToastTitle;
-    private string _onboardingToastBody = RefreshingService.DefaultOnboardingToastBody;
-    private DateTime _appLastStartedTime = DateTime.Now;
-    private int _maxRefreshingToastCounts = 5;
-    private RefreshingScopes _refreshingScopes = new();
     private bool _isThemeSeparateInfoVisible = true;
 
     public bool IsIgnoreWorkAreaEnabled
@@ -2190,17 +2061,6 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-    public AllContributorsRc ContributorsCache
-    {
-        get => _contributorsCache;
-        set
-        {
-            if (Equals(value, _contributorsCache)) return;
-            _contributorsCache = value;
-            OnPropertyChanged();
-        }
-    }
-
     public Version LastAppVersion
     {
         get => _lastAppVersion;
@@ -2289,17 +2149,6 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
         }
     }
 
-
-    public bool HasEditModeTutorialShown
-    {
-        get => _hasEditModeTutorialShown;
-        set
-        {
-            if (value == _hasEditModeTutorialShown) return;
-            _hasEditModeTutorialShown = value;
-            OnPropertyChanged();
-        }
-    }
 
     public int ClassPlanEditModeIndex
     {

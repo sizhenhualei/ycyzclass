@@ -1,5 +1,4 @@
 ﻿using YcyzClass.Core.Abstractions.Services;
-using YcyzClass.Core.Abstractions.Services.Management;
 using YcyzClass.Core.Services;
 using YcyzClass.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -8,12 +7,10 @@ namespace YcyzClass.ViewModels.SettingsPages;
 
 public class GeneralSettingsViewModel(
     SettingsService settingsService,
-    IManagementService managementService,
     IExactTimeService exactTimeService,
     ISplashService splashService) : ObservableRecipient
 {
     public SettingsService SettingsService { get; } = settingsService;
-    public IManagementService ManagementService { get; } = managementService;
     public IExactTimeService ExactTimeService { get; } = exactTimeService;
     public ISplashService SplashService { get; } = splashService;
     private bool _isWeekOffsetSettingsOpen = false;

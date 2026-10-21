@@ -12,7 +12,6 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Reactive;
 using YcyzClass.Core.Abstractions.Services;
-using YcyzClass.Core.Abstractions.Services.Management;
 using YcyzClass.Core.Attributes;
 using YcyzClass.Core.Models.ProfileAnalyzing;
 using YcyzClass.Shared;

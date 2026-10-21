@@ -123,15 +123,6 @@ public partial class ScheduleDataGrid : TemplatedControl
         set => SetValue(SelectedClassPlanDateProperty, value);
     }
 
-    public static readonly StyledProperty<string> TutorialContextIdProperty = AvaloniaProperty.Register<ScheduleDataGrid, string>(
-        nameof(TutorialContextId), "");
-
-    public string TutorialContextId
-    {
-        get => GetValue(TutorialContextIdProperty);
-        set => SetValue(TutorialContextIdProperty, value);
-    }
-
     public static readonly AttachedProperty<Guid> SelectedNewTimeLayoutIdProperty =
         AvaloniaProperty.RegisterAttached<ScheduleDataGrid, Control, Guid>("SelectedNewTimeLayoutId", inherits: true);
 
@@ -178,7 +169,6 @@ public partial class ScheduleDataGrid : TemplatedControl
     public IProfileService ProfileService { get; } = IAppHost.GetService<IProfileService>(); 
     public ILessonsService LessonsService { get; } = IAppHost.GetService<ILessonsService>(); 
     public SettingsService SettingsService { get; } = IAppHost.GetService<SettingsService>();
-    public ITutorialService TutorialService { get; } = IAppHost.GetService<ITutorialService>();
 
     private DataGrid? _mainDataGrid;
 
@@ -251,14 +241,12 @@ public partial class ScheduleDataGrid : TemplatedControl
     {
         SelectedDate = AddDaysWithinSelectableRange(SelectedDate, 7);
         RefreshWeekScheduleRows(true);
-        Dispatcher.UIThread.Post(() => IAppHost.GetService<ITutorialService>().PushToNextSentenceByTag("ycyzclass.sdg.weekSwitcher.next"));
     }
 
     private void ButtonPreviousWeek_OnClick(object? sender, RoutedEventArgs e)
     {
         SelectedDate = AddDaysWithinSelectableRange(SelectedDate, -7);
         RefreshWeekScheduleRows(true);
-        Dispatcher.UIThread.Post(() => IAppHost.GetService<ITutorialService>().PushToNextSentenceByTag("ycyzclass.sdg.weekSwitcher.previous"));
     }
 
     private void Control_OnLoaded(object? sender, RoutedEventArgs e)
@@ -332,14 +320,6 @@ public partial class ScheduleDataGrid : TemplatedControl
             }
         }
 
-        if (!string.IsNullOrEmpty(TutorialContextId))
-        {
-            TutorialService.Context[$"ycyzclass.sdg.{TutorialContextId}.isCurrentWeekFull"] =
-                !ClassPlansCache.Contains(EmptyClassPlan);
-            TutorialService.Context[$"ycyzclass.sdg.{TutorialContextId}.isEmpty"] =
-                ClassPlansCache.All(x => x == EmptyClassPlan);
-        }
-        
         UpdateUiSelection();
 
         return;

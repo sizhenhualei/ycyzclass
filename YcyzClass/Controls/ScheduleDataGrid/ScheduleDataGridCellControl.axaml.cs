@@ -120,7 +120,6 @@ public class ScheduleDataGridCellControl : TemplatedControl
 
     private void InnerListBoxOnTapped(object? sender, TappedEventArgs e)
     {
-        IAppHost.GetService<ITutorialService>().PushToNextSentenceByTag("ycyzclass.sdg.cell.edit.complete_edited");
         if (e.Source is Visual source && source.FindAncestorOfType<ListBoxItem>() != null)
         {
             IsEditPopupOpen = false;
@@ -139,7 +138,6 @@ public class ScheduleDataGridCellControl : TemplatedControl
             return;
         }
         Console.WriteLine("begin edit");
-        IAppHost.GetService<ITutorialService>().PushToNextSentenceByTag("ycyzclass.sdg.cell.edit.open");
         if (ClassInfo != ClassInfo.Empty && ClassInfo != null)
         {
             IsEditPopupOpen = true;

@@ -41,7 +41,6 @@
 
     <controls1:ListDetailView Margin="12"
                               ShowTitleWhenNotCompressed="True"
-                              IsEnabled="{Binding ViewModel.ManagementService.Policy.DisableSettingsEditing, Converter={StaticResource InvertBooleanConverter}}"
                               IsPanelOpened="{Binding ViewModel.IsNotificationSettingsPanelOpened, Mode=TwoWay}">
 
         <controls1:ListDetailView.TitleElement>

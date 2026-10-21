@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="YcyzClass.Controls.TimeLine.TimeLineListItemExpandingAdornerControl"
+<UserControl x:Class="YcyzClass.Controls.TimeLine.TimeLineListItemExpandingAdornerControl"
              xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -73,7 +73,6 @@
                 VerticalAlignment="Top"
                 Padding="2"
                 CornerRadius="4">
-                <ci:TutorialBarrier>
                     <StackPanel Orientation="Horizontal" Classes="items-valign-center" Margin="4 0"
                                 Spacing="4">
                         <ci:IconText Glyph="&#xE448;" Text="添加" Classes="l-instructive" FontSize="13"
@@ -113,7 +112,6 @@
                             <ci:FluentIcon Glyph="&#xE671;"/>
                         </Button>
                     </StackPanel>
-                </ci:TutorialBarrier>
             </Border>
         </Panel>
     </Grid>

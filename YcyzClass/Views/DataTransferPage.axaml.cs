@@ -28,7 +28,6 @@ using YcyzClass.Platforms.Abstraction;
 using YcyzClass.Platforms.Abstraction.Models;
 using YcyzClass.Services;
 using YcyzClass.Services.Logging;
-using YcyzClass.Services.Management;
 using YcyzClass.Services.NotificationProviders;
 using YcyzClass.Shared;
 using YcyzClass.Shared.Helpers;

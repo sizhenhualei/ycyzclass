@@ -19,7 +19,6 @@ using dotnetCampus.Ipc.CompilerServices.GeneratedProxies;
 using HotAvalonia;
 using System.Diagnostics;
 using YcyzClass.Core.Abstractions.Services;
-using YcyzClass.Core.Models.Tutorial;
 using YcyzClass.Core.Services;
 using YcyzClass.Shared.JsonConverters;
 using YcyzClass.Shared.Models.Profile;
@@ -45,20 +44,16 @@ public static class Program
             new Option<bool>(["--waitMutex", "-m"], "重复启动应用时，等待上一个实例退出而非直接退出应用。"),
             new Option<bool>(["--quiet", "-q"], "静默启动，启动时不显示Splash，并且启动后10秒内不显示任何通知。"),
             new Option<bool>(["-prevSessionMemoryKilled", "-psmk"], "上个会话因MLE结束。"),
-            new Option<bool>(["-disableManagement", "-dm"], "在本次会话禁用集控。"),
             new Option<string>(["-externalPluginPath", "-epp"], "外部插件路径"),
             new Option<bool>(["--verbose", "-v"], "启用详细输出"),
             new Option<bool>(["--showOssWatermark", "-ossw"], "显示开源地址水印"),
             new Option<bool>(["--recovery", "-r"], "启动时进入恢复模式"),
             new Option<bool>(["--diagnostic", "-d"], "启用诊断模式(包括详细输出)，并在桌面上生成一份诊断数据"),
             new Option<bool>(["--safe", "-s"], "启用安全模式"),
-            new Option<bool>(["--skip-oobe", "-so"], "跳过 OOBE 启动"),
             new Option<string>(["--importV1"], "指定要导入的 ClassIsland 1.7 配置目录"), 
             new Option<string>(["--importV2"], "指定要导入的 ClassIsland 2.x 配置目录"),
             new Option<string>(["--importEntries"], "指定要导入的 ClassIsland 1.7 配置信息"),
             new Option<bool>(["--importComplete"], "启动时显示导入完成窗口"),
-            new Option<bool>(["--refreshing"], "应用将继续翻新向导"),
-            new Option<bool>(["--onboarding"], "应用将继续迎新向导"),
             new Option<bool>(["--autostartup", "-au"], "自启动模式，检测到程序已运行时直接退出"),
         };
         command.Handler = CommandHandler.Create((ApplicationCommand c) => { App.ApplicationCommand = c; });
@@ -117,7 +112,6 @@ public static class Program
         }
 
         UserData.RegisterAssembly(typeof(Program).Assembly);
-        UserData.RegisterAssembly(typeof(Tutorial).Assembly);
         UserData.RegisterAssembly(typeof(Profile).Assembly);
         
         return () => new App()

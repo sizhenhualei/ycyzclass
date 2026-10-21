@@ -3,7 +3,6 @@ using YcyzClass.Core.Abstractions.Services.NotificationProviders;
 using YcyzClass.Core.Abstractions.Services.SpeechService;
 using YcyzClass.Core.Attributes;
 using YcyzClass.Core.Services.Registry;
-using YcyzClass.Shared.Abstraction.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace YcyzClass.Core.Extensions.Registry;

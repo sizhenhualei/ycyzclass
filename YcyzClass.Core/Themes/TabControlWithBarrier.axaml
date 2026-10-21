@@ -1,6 +1,5 @@
 <Styles xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:ci="http://ycyzclass.tech/schemas/xaml/core">
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Design.PreviewWith>
         <Border Padding="20">
             <!-- Add Controls for Previewer Here -->
@@ -17,10 +16,9 @@
                         HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
                         VerticalAlignment="{TemplateBinding VerticalAlignment}">
                     <DockPanel>
-                        <ci:TutorialBarrier DockPanel.Dock="{TemplateBinding TabStripPlacement}">
-                            <ItemsPresenter Name="PART_ItemsPresenter"
-                                            ItemsPanel="{TemplateBinding ItemsPanel}"/>
-                        </ci:TutorialBarrier>
+                        <ItemsPresenter Name="PART_ItemsPresenter"
+                                        DockPanel.Dock="{TemplateBinding TabStripPlacement}"
+                                        ItemsPanel="{TemplateBinding ItemsPanel}"/>
                         <ContentPresenter Name="PART_SelectedContentHost"
                                           Margin="{TemplateBinding Padding}"
                                           HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"

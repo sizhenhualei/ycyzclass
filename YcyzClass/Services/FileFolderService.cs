@@ -6,7 +6,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using YcyzClass.Core;
-using YcyzClass.Services.Management;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Path = System.IO.Path;
@@ -21,7 +20,6 @@ public class FileFolderService(SettingsService settingsService, ILogger<FileFold
     private static List<string> Folders =
     [
         CommonDirectories.AppDataFolderPath,
-        ManagementService.ManagementConfigureFolderPath,
         CommonDirectories.AppTempFolderPath,
         CommonDirectories.AppCacheFolderPath,
         PluginService.PluginsPkgRootPath,
@@ -31,7 +29,6 @@ public class FileFolderService(SettingsService settingsService, ILogger<FileFold
         Path.Combine(CommonDirectories.AppRootFolderPath, "Backups"),
         CommonDirectories.AppLogFolderPath,
         AutomationService.AutomationConfigsFolderPath,
-        ManagementService.LocalManagementConfigureFolderPath,
         XamlThemeService.ThemesPath,
         XamlThemeService.ThemesPkgRootPath
     ];

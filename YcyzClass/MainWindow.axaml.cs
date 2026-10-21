@@ -25,7 +25,6 @@ using Avalonia.VisualTree;
 using YcyzClass.Controls.EditMode;
 using YcyzClass.Core;
 using YcyzClass.Core.Abstractions.Services;
-using YcyzClass.Core.Abstractions.Services.Management;
 using YcyzClass.Core.Abstractions.Services.SpeechService;
 using YcyzClass.Core.Assists;
 using YcyzClass.Core.Controls;
@@ -34,14 +33,12 @@ using YcyzClass.Core.Helpers.Native;
 using YcyzClass.Core.Helpers.UI;
 using YcyzClass.Core.Models.Components;
 using YcyzClass.Core.Models.Notification;
-using YcyzClass.Core.Models.Tutorial;
 using YcyzClass.Helpers;
 using YcyzClass.Models.EventArgs;
 using YcyzClass.Platforms.Abstraction;
 using YcyzClass.Platforms.Abstraction.Enums;
 using YcyzClass.Platforms.Abstraction.Models;
 using YcyzClass.Shared.Abstraction.Models;
-using YcyzClass.Shared.Abstraction.Services;
 using YcyzClass.Shared.Interfaces;
 using YcyzClass.Shared.Models.Notification;
 using YcyzClass.Services;
@@ -146,11 +143,9 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     private IUriNavigationService UriNavigationService { get; }
     public IRulesetService RulesetService { get; }
     public IWindowRuleService WindowRuleService { get; }
-    public IManagementService ManagementService { get; }
     public TopmostEffectWindow TopmostEffectWindow { get; }
     
     public IXamlThemeService XamlThemeService { get; }
-    private ITutorialService TutorialService { get; }
 
     public event EventHandler<MousePosChangedEventArgs>? MousePosChanged;
 
@@ -205,10 +200,8 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         IUriNavigationService uriNavigationService,
         IRulesetService rulesetService,
         IWindowRuleService windowRuleService,
-        IManagementService managementService,
         TopmostEffectWindow topmostEffectWindow,
-        IXamlThemeService xamlThemeService,
-        ITutorialService tutorialService)
+        IXamlThemeService xamlThemeService)
     {
         Logger = logger;
         SpeechService = speechService;
@@ -223,10 +216,8 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         UriNavigationService = uriNavigationService;
         RulesetService = rulesetService;
         WindowRuleService = windowRuleService;
-        ManagementService = managementService;
         TopmostEffectWindow = topmostEffectWindow;
         XamlThemeService = xamlThemeService;
-        TutorialService = tutorialService;
         
         ViewModel = new MainViewModel();
         DataContext = this;
@@ -257,11 +248,6 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         {
             PseudoClasses.Set(":no-windowed-transparent", true);
         }
-
-#pragma warning disable CS8974 // 将方法组转换为非委托类型
-        TutorialService.Context["ycyzclass.mainWindow.hasComponentWithSettings"] = HasComponentWithSettings;
-        TutorialService.Context["ycyzclass.mainWindow.hasContainerComponent"] = HasContainerComponent;
-#pragma warning restore CS8974 // 将方法组转换为非委托类型
     }
 
     private void PostInit()
@@ -330,7 +316,6 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
 #if DEBUG
         MemoryProfiler.GetSnapshot("MainWindow OnContentRendered");
 #endif
-        TutorialService.BeginNotCompletedTutorials("ycyzclass.getStarted.welcome/init");
     }
 
     public override void Show()
@@ -526,12 +511,6 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         
         if (e.PropertyName == nameof(ViewModel.IsWindowMode))
         {
-            var shouldReattachTutorialAdorners = TutorialService.IsTutorialRunning && TutorialService.AttachedToplevel == this;
-            if (shouldReattachTutorialAdorners)
-            {
-                TutorialService.DetachCurrentAdornersForHostChange(this);
-            }
-
             PseudoClasses.Set(":windowed", ViewModel.IsWindowMode);
             UpdateTheme();
             if (ViewModel.IsEditMode && ViewModel.IsWindowMode)
@@ -541,22 +520,6 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
                 // 延后一帧激活，确保窗口保持在前台可操作。
                 _ = Dispatcher.UIThread.InvokeAsync(Activate, DispatcherPriority.Background);
             }
-
-            if (shouldReattachTutorialAdorners)
-            {
-                _ = Dispatcher.UIThread.InvokeAsync(() =>
-                    TutorialService.ReattachCurrentAdornersAfterHostChange(this), DispatcherPriority.Background);
-            }
-        }
-
-        if (e.PropertyName == nameof(ViewModel.SelectedComponentSettings))
-        {
-            TutorialService.Context["ycyzclass.mainWindow.editMode.isComponentsSelected"] =
-                ViewModel.SelectedComponentSettings != null;
-            TutorialService.Context["ycyzclass.mainWindow.editMode.selectedComponent.hasSettings"] =
-                ViewModel.SelectedComponentSettings is { AssociatedComponentInfo.SettingsType: not null };
-            TutorialService.Context["ycyzclass.mainWindow.editMode.selectedComponent.isContainer"] =
-                ViewModel.SelectedComponentSettings is { AssociatedComponentInfo.IsComponentContainer: true };
         }
     }
 
@@ -893,10 +856,6 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         
         var dockingTop = ViewModel.Settings.WindowDockingLocation is 0 or 1 or 2;
         var verticalSafeAreaPx = XamlThemeService.ActualVerticalSafeAreaPx;
-        if (TutorialService.IsTutorialRunning && TutorialService.AttachedToplevel == this)
-        {
-            verticalSafeAreaPx = Math.Max(verticalSafeAreaPx, 150);
-        }
         var safeT = Math.Max(dockingTop ? Math.Min(verticalSafeAreaPx, oy) : verticalSafeAreaPx, 0) * scale;
         var safeB = Math.Max(dockingTop ? verticalSafeAreaPx : Math.Min(verticalSafeAreaPx, -oy), 0) * scale;
         var x = screen.WorkingArea.X + ox;
@@ -1110,11 +1069,6 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
 
     private async void MenuItemExitApp_OnClick(object sender, EventArgs e)
     {
-        if (!await ManagementService.AuthorizeByLevel(ManagementService.CredentialConfig.ExitApplicationAuthorizeLevel))
-        {
-            return;
-        }
-        
         ViewModel.IsClosing = true;
         Close();
         AppBase.Current.Stop();
@@ -1133,27 +1087,6 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     private void MenuItemAbout_OnClick(object sender, EventArgs e)
     {
         App.GetService<SettingsWindowNew>().Open("about");
-    }
-
-    private void MenuItemDebugWelcomeWindow_OnClick(object sender, RoutedEventArgs e)
-    {
-        // var ww = new WelcomeWindow();
-        // ww.ShowDialog();
-    }
-
-    private void MenuItemDebugWelcomeWindow2_OnClick(object sender, EventArgs e)
-    {
-        ViewModel.Settings.IsWelcomeWindowShowed = false;
-    }
-
-    private void MenuItemHelps_OnClick(object sender, EventArgs e)
-    {
-        UriNavigationService.Navigate(new Uri("https://docs.classisland.tech/app/"));
-    }
-
-    private void MenuItemUpdates_OnClick(object sender, EventArgs e)
-    {
-        // App.GetService<SettingsWindowNew>().Open("update");
     }
 
     private void GridRoot_OnSizeChanged(object sender, SizeChangedEventArgs e)
@@ -1237,30 +1170,9 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         IAppHost.GetService<DevPortalWindow>().Show();
     }
     
-    private void NativeMenuItemDebugOpenWelcomeWindow_OnClick(object? sender, EventArgs e)
-    {
-        IAppHost.GetService<WelcomeWindow>().Show();
-    }
-
-    private void NativeMenuItemDebugOpenWelcomeWindowFull_OnClick(object? sender, EventArgs e)
-    {
-        ViewModel.Settings.IsWelcomeWindowShowed = false;
-        AppBase.Current.Restart();
-    }
-    
-    private void NativeMenuItemOpenTutorialEditor_OnClick(object? sender, EventArgs e)
-    {
-        IAppHost.GetService<TutorialEditorWindow>().Show();
-    }
-
     private void NativeMenuItemDebugOpenScreenshotWindow_OnClick(object? sender, EventArgs e)
     {
         IAppHost.GetService<ScreenshotHelperWindow>().Show();
-    }
-    
-    private void NativeMenuItemTutorials_OnClick(object? sender, EventArgs e)
-    {
-        IAppHost.GetService<TutorialCenterWindow>().Open();
     }
     #endregion
 
@@ -1273,10 +1185,6 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
 
     private async void OpenClassSwapWindow()
     {
-        if (!await ManagementService.AuthorizeByLevel(ManagementService.CredentialConfig.ChangeLessonsAuthorizeLevel))
-        {
-            return;
-        }
         if (LessonsService.CurrentClassPlan == null) // 如果今天没有课程，则选择临时课表
         {
             App.GetService<ProfileSettingsWindow>().OpenDrawer("TemporaryClassPlan");
@@ -1332,52 +1240,19 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
 
     #region Edit Mode
 
-    private bool HasComponentWithSettings()
-    {
-        return ComponentsService.CurrentComponents.Lines
-            .SelectMany(x => x.Children)
-            .Any(x => x.AssociatedComponentInfo.SettingsType != null);
-    }
-    
-    private bool HasContainerComponent()
-    {
-        return ComponentsService.CurrentComponents.Lines
-            .SelectMany(x => x.Children)
-            .Any(x => x.AssociatedComponentInfo.IsComponentContainer);
-    }
-
     private void NativeMenuItemEnterEditMode_OnClick(object? sender, EventArgs e)
     {
         EnterEditMode();
     }
 
-    private async void EnterEditMode()
+    private void EnterEditMode()
     {
-        if (ViewModel.IsEditMode || !await ManagementService.AuthorizeByLevel(ManagementService.CredentialConfig.EditSettingsAuthorizeLevel))
+        if (ViewModel.IsEditMode)
         {
             return;
         }
 
         ViewModel.IsEditMode = true;
-        TutorialService.PushToNextSentenceByTag("ycyzclass.mainwindow.editMode.enter");
-        if (ManagementService.Policy.DisableSettingsEditing)
-        {
-            return;
-        }
-        TutorialService.BeginNotCompletedTutorials(
-            "ycyzclass.getStarted.componentsEditing/introduction",
-            "ycyzclass.getStarted.componentsEditing/addComponent");
-        if (HasComponentWithSettings())
-        {
-            TutorialService.BeginNotCompletedTutorials(
-                "ycyzclass.getStarted.componentsEditing/componentSettings");
-        }
-        if (HasContainerComponent())
-        {
-            TutorialService.BeginNotCompletedTutorials(
-                "ycyzclass.getStarted.componentsEditing/containerComponent");
-        }
-        TutorialService.BeginNotCompletedTutorials("ycyzclass.getStarted.componentsEditing/mainWindowLine");
     }
 
     private void ButtonExitEditMode_OnClick(object? sender, RoutedEventArgs e)
@@ -1393,10 +1268,8 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
             ViewModel.EditModeView.ViewModel.SecondaryDrawerState = VerticalDrawerOpenState.Closed;
         }
         ViewModel.IsEditMode = false;
-        ViewModel.EditModeTutorialPhase = -1;
         MyWindow.GetState(this)?.AppToastAdorner?.Messages.Clear();
         ComponentsService.SaveConfig();
-        TutorialService.PushToNextSentenceByTag("ycyzclass.mainwindow.editMode.exit");
     }
 
     private void ButtonOpenComponentsLib_OnClick(object? sender, RoutedEventArgs e)
@@ -1499,10 +1372,6 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
             listBox.SelectedItem = null;
         }
         ViewModel.SelectedComponentSettings = settings;
-        Dispatcher.UIThread.Post(() =>
-        {
-            TutorialService.PushToNextSentenceByTag("ycyzclass.mainwindow.editMode.selection.changed");
-        });
     }
 
     private void MainWindowEditSurface_OnPointerPressed(object? sender, PointerPressedEventArgs e)
@@ -1617,7 +1486,6 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     private void ButtonNewMainWindowLine_OnClick(object? sender, RoutedEventArgs e)
     {
         ComponentsService.CurrentComponents.Lines.Add(new MainWindowLineSettings());
-        TutorialService.PushToNextSentenceByTag("ycyzclass.mainwindow.editMode.mainWindowLine.create");
     }
     
     private void ButtonManageComponentLayouts_OnClick(object? sender, RoutedEventArgs e)
@@ -1628,22 +1496,6 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     private void EditableComponentsListBox_OnRequestAddComponent(object? sender, RequestAddComponentEventArgs e)
     {
         ViewModel.EditModeView?.OpenComponentsLibDrawer(e.ComponentList);
-    }
-
-    [RelayCommand]
-    private void SetEditModeTutorialPhase(int phase)
-    {
-        ViewModel.EditModeTutorialPhase = phase;
-    }
-    
-    private void ButtonShowTutorial_OnClick(object? sender, RoutedEventArgs e)
-    {
-        ViewModel.EditModeTutorialPhase = 0;
-    }
-    
-    private void TeachingTipEditModeP4_OnCloseButtonClick(TeachingTip sender, EventArgs args)
-    {
-        ViewModel.Settings.HasEditModeTutorialShown = true;
     }
     #endregion
 }

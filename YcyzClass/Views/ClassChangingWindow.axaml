@@ -199,12 +199,6 @@
                               ToolTip.Tip="如果选择，将不会在换课时创建临时层课表，而会直接应用到原课表上。"
                               IsChecked="{Binding ViewModel.WriteToSourceClassPlan}"
                               IsVisible="{Binding !ClassPlan.IsOverlay}">
-                        <CheckBox.IsEnabled>
-                            <MultiBinding Converter="{StaticResource InvertBooleanOrExpressionMultiConverter}" Mode="OneWay">
-                                <Binding Path="ViewModel.ManagementService.Policy.DisableProfileTimeLayoutEditing" Mode="OneWay"/>
-                                <Binding Path="ViewModel.ManagementService.Policy.DisableProfileEditing" Mode="OneWay"/>
-                            </MultiBinding>
-                        </CheckBox.IsEnabled>
                     </CheckBox>
                     <Button Margin="12 0 0 0" ToolTip.Tip="确认并应用换课。"
                             Click="ButtonConfirmClassChanging_OnClick"

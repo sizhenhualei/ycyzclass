@@ -8,10 +8,8 @@ using Avalonia.Markup.Xaml;
 using YcyzClass.Controls;
 using YcyzClass.Core.Abstractions.Services;
 using YcyzClass.Core.Controls;
-using YcyzClass.Core.Enums.Tutorial;
 using YcyzClass.Core.Helpers.UI;
 using YcyzClass.Core.Models.Notification;
-using YcyzClass.Core.Models.Tutorial;
 using YcyzClass.Core.Models.UI;
 using YcyzClass.Shared;
 using YcyzClass.ViewModels;
@@ -110,11 +108,6 @@ public partial class DevPortalWindow : MyWindow
         });
     }
 
-    private void ButtonPlayOobeAnimation_OnClick(object? sender, RoutedEventArgs e)
-    {
-        ViewModel.OobeIntroControlContent = new OobeIntroAnimationControl();
-    }
-
     private void MarkdownEditor_OnTextChanged(object? sender, EventArgs e)
     {
         ViewModel.MarkdownText = MarkdownEditor.Text;
@@ -130,61 +123,6 @@ public partial class DevPortalWindow : MyWindow
         var selector = SelectorHelpers.Parse(ViewModel.StyleSelector, new Dictionary<string, string>());
         // Debugger.Break();
         await CommonTaskDialogs.ShowDialog("Success", selector.ToString());
-    }
-
-    private void ButtonTestTutorial_OnClick(object? sender, RoutedEventArgs e)
-    {
-        ViewModel.TutorialService.BeginTutorial(new Tutorial()
-        {
-            Paragraphs =
-            {
-                new TutorialParagraph()
-                {
-                    TopLevelClassName = "YcyzClass.Views.DevPortalWindow",
-                    Content =
-                    {
-                        new TutorialSentence()
-                        {
-                            Title = "Hello world!",
-                            Content = "Welcome to YcyzClass!",
-                            HeroImage = "https://res.classisland.tech/banners/banner-v2.webp"
-                        },
-                        new TutorialSentence()
-                        {
-                            Title = "Hello world!",
-                            Content = "Welcome to YcyzClass!",
-                        }
-                    }
-                },
-                new TutorialParagraph()
-                {
-                    TopLevelClassName = "YcyzClass.Views.ProfileSettingsWindow",
-                    InitializeActions =
-                    {
-                        new TutorialAction()
-                        {
-                            Kind = TutorialActionKind.InvokeUri,
-                            StringParameter = "ycyzclass://app/profile/timeLayouts"
-                        }  
-                    },
-                    Content =
-                    {
-                        new TutorialSentence()
-                        {
-                            Title = "Hello world!",
-                            Content = "Welcome to YcyzClass!",
-                            HeroImage = "https://res.classisland.tech/banners/banner-v2.webp",
-                            TargetSelector = "TabControl.compact TabItem"
-                        },
-                        new TutorialSentence()
-                        {
-                            Title = "Hello world!",
-                            Content = "Welcome to YcyzClass!",
-                        }
-                    }
-                }
-            }
-        });
     }
 
     private void ButtonStartSplash_OnClick(object? sender, RoutedEventArgs e)
