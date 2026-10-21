@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using YcyzClass.Controls.EditMode;
 using YcyzClass.Core.Abstractions.Services;

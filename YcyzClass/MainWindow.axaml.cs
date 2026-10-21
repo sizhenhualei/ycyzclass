@@ -1117,8 +1117,6 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     {
         OpenClassSwapWindow();
     }
-    
-    
 
     private void NativeMenuItemDebugDevTools_OnClick(object? sender, EventArgs e)
     {

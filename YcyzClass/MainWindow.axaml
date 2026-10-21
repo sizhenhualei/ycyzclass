@@ -56,6 +56,7 @@
                     </OnPlatform>
                 </NativeMenuItem.Icon>
             </NativeMenuItem>
+
             <NativeMenuItemSeparator/>
             <NativeMenuItem Header="显示主界面" Click="MenuItemSwitchMainWindowVisibility_OnClick"
                             ci:NativeMenuItemAssist.IconSource="{ci:FluentIconSource &#xE813;}">
