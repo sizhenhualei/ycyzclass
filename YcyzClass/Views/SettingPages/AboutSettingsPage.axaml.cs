@@ -17,7 +17,6 @@ using Avalonia.Platform;
 using YcyzClass.Core;
 using YcyzClass.Core.Abstractions.Controls;
 using YcyzClass.Core.Abstractions.Services;
-using YcyzClass.Core.Abstractions.Services.Management;
 using YcyzClass.Core.Attributes;
 using YcyzClass.Core.Controls;
 using YcyzClass.Core.Enums.SettingsWindow;
@@ -25,7 +24,6 @@ using YcyzClass.Core.Helpers.UI;
 using YcyzClass.Core.Models.UI;
 using YcyzClass.Helpers;
 using YcyzClass.Models;
-using YcyzClass.Models.AllContributors;
 using YcyzClass.Services;
 using YcyzClass.Shared;
 using YcyzClass.ViewModels.SettingsPages;
@@ -114,43 +112,33 @@ public partial class AboutSettingsPage : SettingsPageBase
         }
     }
 
-    private async void ButtonContributors_OnClick(object sender, RoutedEventArgs e)
+    private async void ButtonCopyEmail_OnClick(object sender, RoutedEventArgs e)
     {
-        OpenDrawer("ContributorsDrawer");
-        await RefreshContributors();
+        await CopyTextToClipboard("sizhenhualei@163.com", "邮箱地址");
+    }
+
+    private async void ButtonCopyQQ_OnClick(object sender, RoutedEventArgs e)
+    {
+        await CopyTextToClipboard("1150556671", " QQ 号");
+    }
+
+    private async Task CopyTextToClipboard(string text, string name)
+    {
+        try
+        {
+            await TopLevel.GetTopLevel(this)?.Clipboard?.SetTextAsync(text);
+            this.ShowSuccessToast($"已复制{name}。");
+        }
+        catch (Exception ex)
+        {
+            App.GetService<ILogger<AboutSettingsPage>>().LogError(ex, "复制{Name}失败。", name);
+            this.ShowErrorToast($"复制{name}失败，请手动记录：{text}");
+        }
     }
 
     private void ButtonThirdPartyLibs_OnClick(object sender, RoutedEventArgs e)
     {
         OpenDrawer("ThirdPartyLibs");
-    }
-
-    private async Task RefreshContributors()
-    {
-        ViewModel.IsRefreshingContributors = true;
-        try
-        {
-            ViewModel.SettingsService.Settings.ContributorsCache =
-                await WebRequestHelper.Default.GetJson<AllContributorsRc>(new Uri(
-                    "https://ghfast.top/https://raw.githubusercontent.com/YcyzClass/YcyzClass/master/.all-contributorsrc"));
-        }
-        catch (Exception ex)
-        {
-            App.GetService<ILogger<AboutSettingsPage>>().LogError(ex, "无法获取贡献者名单。");
-            this.ShowToast(new ToastMessage()
-            {
-                Severity = InfoBarSeverity.Error,
-                Title = "无法获取贡献者名单",
-                Message = ex.Message,
-                AutoClose = false
-            });
-        }
-        ViewModel.IsRefreshingContributors = false;
-    }
-
-    private async void ButtonRefreshContributors_OnClick(object sender, RoutedEventArgs e)
-    {
-        await RefreshContributors();
     }
 
     private void ButtonPrivacy_OnClick(object sender, RoutedEventArgs e)
@@ -218,12 +206,6 @@ public partial class AboutSettingsPage : SettingsPageBase
         }
         if (ViewModel.AppIconClickCount >= 10)
         {
-            if (ViewModel.ManagementService.Policy.DisableDebugMenu)
-            {
-                _ = CommonTaskDialogs.ShowDialog("调试菜单已禁用", "您的组织禁用了调试菜单。", this);
-                return;
-            }
-
 #if !DEBUG
             var textBox = new TextBox();
             var textBlock = new TextBlock {
@@ -276,7 +258,7 @@ public partial class AboutSettingsPage : SettingsPageBase
     private async void InputElementReunion_OnPointerPressed(object? sender, PointerPressedEventArgs e)
     {
         ViewModel.AppInfoClickCount++;
-        if (ViewModel.AppInfoClickCount < 20 || ViewModel.ManagementService.Policy.DisableEasterEggs) 
+        if (ViewModel.AppInfoClickCount < 20) 
             return;
         TopLevel.GetTopLevel(this)?.Clipboard?
             .SetTextAsync("5oS/5oiR5Lus5Zyo6YKj6bKc6Iqx6Iqs6Iqz55qE6KW/6aOO5bC95aS06YeN6YCi44CC");

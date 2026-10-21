@@ -1,20 +1,17 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using YcyzClass.Core.Abstractions.Services.Management;
 using YcyzClass.Models;
 using YcyzClass.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace YcyzClass.ViewModels.SettingsPages;
 
-public class AboutSettingsViewModel(IManagementService managementService, SettingsService settingsService, DiagnosticService diagnosticService) : ObservableRecipient
+public class AboutSettingsViewModel(SettingsService settingsService, DiagnosticService diagnosticService) : ObservableRecipient
 {
-    public IManagementService ManagementService { get; } = managementService;
     public SettingsService SettingsService { get; } = settingsService;
     public DiagnosticService DiagnosticService { get; } = diagnosticService;
     private int _appIconClickCount = 0;
     private string _diagnosticInfo = "";
-    private bool _isRefreshingContributors;
     private string _license = "";
     private string _sayings = "点击此处可以查看 YcyzClass 用户群里沙雕群友们的发言";
     private ObservableCollection<string> _sayingsCollection = [];
@@ -41,17 +38,6 @@ public class AboutSettingsViewModel(IManagementService managementService, Settin
         {
             if (value == _diagnosticInfo) return;
             _diagnosticInfo = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public bool IsRefreshingContributors
-    {
-        get => _isRefreshingContributors;
-        set
-        {
-            if (value == _isRefreshingContributors) return;
-            _isRefreshingContributors = value;
             OnPropertyChanged();
         }
     }
