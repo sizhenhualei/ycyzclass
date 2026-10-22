@@ -75,7 +75,7 @@ ArchitecturesInstallIn64BitMode=x64compatible
 [Messages]
 SetupWindowTitle={#AppName} {#AppVersion} 安装程序
 WelcomeLabel1=欢迎安装 [name]
-WelcomeLabel2=安装程序将把 [name] 安装到本机（需要管理员权限）。%n%n· 自动创建桌面图标与「快捷换课」图标%n· 自动创建开机自启任务，登录后静默以管理员身份启动%n· 随包内置 3 个默认插件：以管理员身份自启动、UIAccess 提权、ExtraIsland%n· 用户数据（课表、配置、日志）保存在 %APPDATA%\YcyzClass\Data，卸载时不会被删除
+WelcomeLabel2=安装程序将把 [name] 安装到本机（需要管理员权限）。%n%n· 自动创建桌面图标与「快捷换课」图标%n· 自动创建开机自启任务，登录后静默以管理员身份启动%n· 随包内置 3 个默认插件：以管理员身份自启动、UIAccess 提权、ExtraIsland%n· 安装时会信任本程序的自签名代码签名证书（消除「未知发布者」提示）%n· 用户数据（课表、配置、日志）保存在 %APPDATA%\YcyzClass\Data，卸载时不会被删除
 
 [Languages]
 Name: "chinesesimplified"; MessagesFile: "languages\ChineseSimplified.isl"
@@ -83,6 +83,10 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Files]
 Source: "{#SourceDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+; 随包附带代码签名证书，安装时导入本机受信任存储（见下方 [Run]）
+#if FileExists(AddBackslash(RepoRoot) + "installer\signing\YcyzClass-CodeSigning.cer")
+Source: "{#RepoRoot}\installer\signing\YcyzClass-CodeSigning.cer"; DestDir: "{app}\signing"; Flags: ignoreversion
+#endif
 
 [Icons]
 ; 内部使用：桌面图标与开始菜单项一律创建，不提供勾选项
@@ -90,6 +94,9 @@ Name: "{autoprograms}\{#AppName}"; Filename: "{app}\{#AppExeName}"
 Name: "{autodesktop}\{#AppName}"; Filename: "{app}\{#AppExeName}"
 
 [Run]
+; 信任自签名代码签名证书：装完后主程序与后续安装包显示发布者名称、不再提示「未知发布者」
+Filename: "{sys}\certutil.exe"; Parameters: "-addstore -f Root ""{app}\signing\YcyzClass-CodeSigning.cer"""; Flags: runhidden;
+Filename: "{sys}\certutil.exe"; Parameters: "-addstore -f TrustedPublisher ""{app}\signing\YcyzClass-CodeSigning.cer"""; Flags: runhidden;
 Filename: "{app}\{#AppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(AppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
 
 [UninstallRun]
@@ -100,6 +107,7 @@ Filename: "{sys}\schtasks.exe"; Parameters: "/Delete /TN YcyzClass /F"; Flags: r
 ; PackageType 与桌面「快捷换课」图标由脚本在安装结束时写入，不属于安装清单，卸载时需显式清理
 Type: files; Name: "{app}\PackageType"
 Type: files; Name: "{autodesktop}\快捷换课.url"
+Type: filesandordirs; Name: "{app}\signing"
 Type: dirifempty; Name: "{app}"
 
 [Code]

@@ -6,7 +6,6 @@ using YcyzClass.Controls.ActionSettingsControls;
 using YcyzClass.Controls.AttachedSettingsControls;
 using YcyzClass.Controls.AuthorizeProvider;
 using YcyzClass.Controls.Components;
-using YcyzClass.Controls.EditMode;
 using YcyzClass.Controls.NotificationProviders;
 using YcyzClass.Controls.ProfileTransferProviders;
 using YcyzClass.Controls.RuleSettingsControls;
@@ -36,7 +35,6 @@ using YcyzClass.Services.Logging;
 using YcyzClass.Services.NotificationProviders;
 using YcyzClass.Services.SpeechService;
 using YcyzClass.ViewModels;
-using YcyzClass.ViewModels.EditMode;
 using YcyzClass.ViewModels.SettingsPages;
 using YcyzClass.Views;
 using YcyzClass.Views.SettingPages;
@@ -100,7 +98,6 @@ public partial class App
         services.AddTransient<ClassChangingViewModel>();
         services.AddTransient<DataTransferViewModel>();
         services.AddTransient<ScreenshotHelperViewModel>();
-        services.AddTransient<EditModeViewModel>();
         // ViewModels/SettingsPages
         services.AddTransient<GeneralSettingsViewModel>();
         services.AddTransient<ClockSettingsViewModel>();
@@ -135,7 +132,6 @@ public partial class App
         services.AddTransient<DevPortalWindow>();
         services.AddTransient<DataTransferWindow>();
         services.AddTransient<ScreenshotHelperWindow>();
-        services.AddSingleton<EditModeView>();
         services.AddTransient<ISplashProvider, SplashWindow>();
         // 设置页面分组
         services.AddSettingsPageGroup("ycyzclass.general", "\uef27", "通用");

@@ -4,13 +4,13 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using Avalonia;
 using Avalonia.Controls;
-using YcyzClass.Controls.EditMode;
 using YcyzClass.Core.Abstractions.Services;
 using YcyzClass.Core.Models.Components;
 using YcyzClass.Core.Models.Notification;
 using YcyzClass.Shared.Models.Profile;
 using YcyzClass.Models;
 using YcyzClass.Services;
+using YcyzClass.Controls.EditMode;
 
 using CommunityToolkit.Mvvm.ComponentModel;
 
@@ -44,9 +44,6 @@ public partial class MainViewModel : ObservableRecipient
     private double _actualRootOffsetY = 0.0;
     private Rect _actualClientBound = new();
     private ObservableCollection<Control> _effectControls = [];
-    private bool _isEditMode = false;
-    private bool _editModeIsWindowMode = true;
-    private EditModeView? _editModeView = null;
 
 
     public Profile Profile
@@ -336,50 +333,8 @@ public partial class MainViewModel : ObservableRecipient
         }
     }
 
-    public bool IsEditMode
-    {
-        get => _isEditMode;
-        set
-        {
-            if (value == _isEditMode) return;
-            _isEditMode = value;
-            OnPropertyChanged();
-            OnPropertyChanged(nameof(IsWindowMode));
-        }
-    }
-
-    public bool EditModeIsWindowMode
-    {
-        get => _editModeIsWindowMode;
-        set
-        {
-            if (value == _editModeIsWindowMode) return;
-            _editModeIsWindowMode = value;
-            OnPropertyChanged();
-            OnPropertyChanged(nameof(IsWindowMode));
-        }
-    }
-
-    public bool IsWindowMode => EditModeIsWindowMode && IsEditMode;
-
-    public EditModeView? EditModeView
-    {
-        get => _editModeView;
-        set
-        {
-            if (Equals(value, _editModeView)) return;
-            _editModeView = value;
-            OnPropertyChanged();
-        }
-    }
-    
-    [ObservableProperty] private MainWindowLineSettings? _selectedMainWindowLineSettings;
-    [ObservableProperty] private ObservableCollection<EditableComponentsListBox> _componentsListBoxCache = [];
     [ObservableProperty] private Dictionary<MainWindowLineSettings, EditableComponentsListBox> _mainWindowLineListBoxCache = new();
     [ObservableProperty] private Dictionary<EditableComponentsListBox, MainWindowLineSettings> _mainWindowLineListBoxCacheReversed = new();
     [ObservableProperty] private ComponentSettings? _selectedComponentSettings;
     
-    [ObservableProperty] private ObservableCollection<EditModeContainerComponentInfo> _containerComponents = [];
-    [ObservableProperty] private Dictionary<EditModeContainerComponentInfo, EditableComponentsListBox> _containerComponentListBoxCache = new();
-    [ObservableProperty] private Dictionary<EditableComponentsListBox, EditModeContainerComponentInfo> _containerComponentListBoxCacheReversed = new();
 }

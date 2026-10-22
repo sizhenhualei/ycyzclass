@@ -1512,7 +1512,6 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     private int _windowTopmostRecheckMode = 0;
     private bool _isScreenRecordingModeEnabled = false;
     private bool _isWindowCaptureBlockingEnabled = false;
-    private int _classPlanEditModeIndex = 1;
     private bool _isThemeSeparateInfoVisible = true;
 
     public bool IsIgnoreWorkAreaEnabled
@@ -2150,14 +2149,4 @@ public class Settings : ObservableRecipient, ILessonControlSettings, INotificati
     }
 
 
-    public int ClassPlanEditModeIndex
-    {
-        get => _classPlanEditModeIndex;
-        set
-        {
-            if (value == _classPlanEditModeIndex) return;
-            _classPlanEditModeIndex = value;
-            OnPropertyChanged();
-        }
-    }
 }

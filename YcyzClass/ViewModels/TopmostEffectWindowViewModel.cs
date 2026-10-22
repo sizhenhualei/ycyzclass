@@ -20,5 +20,4 @@ public partial class TopmostEffectWindowViewModel : ObservableRecipient
         }
     }
 
-    [ObservableProperty] private bool _isEditMode = false;
 }

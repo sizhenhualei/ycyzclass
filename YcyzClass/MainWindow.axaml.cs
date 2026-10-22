@@ -22,7 +22,6 @@ using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
-using YcyzClass.Controls.EditMode;
 using YcyzClass.Core;
 using YcyzClass.Core.Abstractions.Services;
 using YcyzClass.Core.Abstractions.Services.SpeechService;
@@ -126,8 +125,6 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
 
     private double _latestDpiX = 1.0;
     private double _latestDpiY = 1.0;
-
-    private const int WindowedEditModeScreenMargin = 60;
 
     private DispatcherTimer HighFreqTopmostRecheckTimer { get; } = new()
     {
@@ -277,7 +274,6 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         }
 
         UriNavigationService.HandleAppNavigation("class-swap", args => OpenClassSwapWindow());
-        UriNavigationService.HandleAppNavigation("edit", args => EnterEditMode());
 
         IAppHost.GetService<ISplashService>().SetDetailedStatus("正在初始化输入");
         if (SettingsService.Settings.UseRawInput)
@@ -489,38 +485,6 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
             UpdateFadeStatus();
         }
 
-        if (e.PropertyName == nameof(ViewModel.IsEditMode))
-        {
-            PseudoClasses.Set(":edit-mode", ViewModel.IsEditMode);
-            if (ViewModel.IsEditMode)
-            {
-                Activate();
-                EditModeViewCp.Content = ViewModel.EditModeView = IAppHost.GetService<EditModeView>();
-            }
-            else
-            {
-                EditModeViewCp.Content = ViewModel.EditModeView = null;
-                ZoomBorder.ResetMatrix();
-            }
-
-            TopmostEffectWindow.ViewModel.IsEditMode = ViewModel.IsEditMode;
-            UpdateWindowLayer();
-            UpdateTheme();
-            _ = Dispatcher.UIThread.InvokeAsync(UpdateTheme);
-        }
-        
-        if (e.PropertyName == nameof(ViewModel.IsWindowMode))
-        {
-            PseudoClasses.Set(":windowed", ViewModel.IsWindowMode);
-            UpdateTheme();
-            if (ViewModel.IsEditMode && ViewModel.IsWindowMode)
-            {
-                ApplyWindowedEditModeBounds();
-                // 编辑模式从全屏切到自由窗口时，窗口管理器可能把窗口压到后面。
-                // 延后一帧激活，确保窗口保持在前台可操作。
-                _ = Dispatcher.UIThread.InvokeAsync(Activate, DispatcherPriority.Background);
-            }
-        }
     }
 
     private void OnSystemEventsOnUserPreferenceChanged(object? sender, PlatformColorValues args)
@@ -540,10 +504,6 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
                                      e.CloseReason != WindowCloseReason.ApplicationShutdown))
         {
             e.Cancel = true;
-            if (ViewModel.IsEditMode)
-            {
-                ExitEditMode();
-            }
             return;
         }
         AppBase.Current.Stop();
@@ -750,10 +710,6 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     
     private void ReCheckTopmostState()
     {
-        if (ViewModel.IsWindowMode || ViewModel.IsEditMode)
-        {
-            return;
-        }
         var handle = TryGetPlatformHandle()?.Handle ?? nint.Zero;
         if (ViewModel.IsNotificationWindowExplicitShowed || ViewModel.Settings.WindowLayer == 1)
         {
@@ -777,7 +733,7 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         {
             return;
         }
-        if (ViewModel.IsNotificationWindowExplicitShowed || ViewModel.IsEditMode)
+        if (ViewModel.IsNotificationWindowExplicitShowed)
         {
             //SetWindowPos(hWnd, NativeWindowHelper.HWND_TOPMOST, 0, 0, 0, 0,
             //    SET_WINDOW_POS_FLAGS.SWP_NOSIZE | SET_WINDOW_POS_FLAGS.SWP_NOMOVE | SET_WINDOW_POS_FLAGS.SWP_NOACTIVATE);
@@ -789,41 +745,25 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     private void UpdateWindowFeatures()
     {
         var isCaptureBlocked = ViewModel.Settings.IsWindowCaptureBlockingEnabled;
-        var shouldUseToolWindow = ViewModel is
-        {
-            IsEditMode: false,
-            IsWindowMode: false,
-            Settings.IsScreenRecordingModeEnabled: false
-        };
+        var shouldUseToolWindow = !ViewModel.Settings.IsScreenRecordingModeEnabled;
         PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.ToolWindow, shouldUseToolWindow);
-        PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Transparent, !ViewModel.IsEditMode);
+        PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Transparent, true);
         PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Private, isCaptureBlocked);
     }
 
     private void UpdateWindowLayer()
     {
-        if (ViewModel.IsWindowMode)
-        {
-            Topmost = false;
-            PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Topmost, false);
-            PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.Bottommost, false);
-            PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.SkipManagement, false);
-            return;
-        }
         switch (ViewModel.Settings.WindowLayer)
         {
             case 0: // bottom
-                Topmost = ViewModel.IsNotificationWindowExplicitShowed || ViewModel.IsEditMode;
+                Topmost = ViewModel.IsNotificationWindowExplicitShowed;
                 break;
             case 1:
                 Topmost = true;
                 break;
         }
 
-        // 在 Linux 上 SkipManagement 会触发 unmap/map（override_redirect 切换），
-        // 编辑模式切换“自由窗口 -> 全屏”时会出现关闭动画甚至不显示。
-        // 编辑模式下不启用 SkipManagement，避免触发这条路径。
-        var shouldSkipManagement = Topmost && !ViewModel.IsEditMode;
+        var shouldSkipManagement = Topmost;
         PlatformServices.WindowPlatformService.SetWindowFeature(this, WindowFeatures.SkipManagement, shouldSkipManagement);
         if (Topmost)
         {
@@ -886,90 +826,10 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
         }
     }
 
-    private void NewWindowPosUpdateImpl()
-    {
-        GetCurrentDpi(out var dpiX, out var dpiY);
-
-        var scale = ViewModel.Settings.Scale;
-        ViewModel.GridRootLeft = Width / 10 * (scale - 1);
-        ViewModel.GridRootTop = Height / 10 * (scale - 1);
-
-        if (ViewModel.IsWindowMode)
-        {
-            ViewModel.ActualClientBound = new Rect(0, 0, Width, Height);
-            LayoutContainerGrid.Width = Width;
-            LayoutContainerGrid.Height = Height;
-            return;
-        }
-
-        WindowState = WindowState.Normal;
-        var screen = GetSelectedScreenSafe();
-        if (screen == null)
-            return;
-        var clientRect = ViewModel.Settings.IsIgnoreWorkAreaEnabled ? screen.Bounds : screen.WorkingArea;
-        var c = (double)(screen.WorkingArea.X + screen.WorkingArea.Right) / 2;
-        var ox = ViewModel.Settings.WindowDockingOffsetX / dpiX;
-        var oy = ViewModel.Settings.WindowDockingOffsetY / dpiY;
-        var fullscreen = ViewModel.IsForegroundFullscreen;
-        var bounds = fullscreen ? screen.Bounds : clientRect;
-        var relativeX = clientRect.X - screen.Bounds.X;
-        var relativeY = clientRect.Y - screen.Bounds.Y;
-        var width = bounds.Width;
-        var height = bounds.Height;
-        // 创建相对矩形
-        var clientBoundsRelative = new PixelRect(relativeX, relativeY, width, height)
-            .ToRectWithDpi(new Vector(dpiX * 96, dpiY * 96));
-        ViewModel.ActualClientBound = clientBoundsRelative;
-        if (LayoutContainerGrid != null) 
-        {
-            LayoutContainerGrid.Width = Width = screen.Bounds.Width / dpiX;
-            LayoutContainerGrid.Height = Height = (screen.Bounds.Height - 1)  // 防止 Windows 发电误以为是全屏
-                                                  / dpiY;
-        }
-        ViewModel.ActualRootOffsetX = ox;
-        ViewModel.ActualRootOffsetY = oy;
-        var newPos = new PixelPoint((int)screen.Bounds.X, (int)screen.Bounds.Y);
-        if (Position != newPos)
-        {
-            Position = newPos;
-        }
-    }
-
-    private void ApplyWindowedEditModeBounds()
-    {
-        GetCurrentDpi(out var dpiX, out var dpiY);
-
-        var screen = GetSelectedScreenSafe() ?? Screens.ScreenFromWindow(this);
-        if (screen == null)
-        {
-            return;
-        }
-
-        var bounds = screen.WorkingArea;
-        var width = Math.Max(bounds.Width - (WindowedEditModeScreenMargin * 2), 1) / dpiX;
-        var height = Math.Max(bounds.Height - (WindowedEditModeScreenMargin * 2), 1) / dpiY;
-
-        WindowState = WindowState.Normal;
-        Position = new PixelPoint(
-            bounds.X + WindowedEditModeScreenMargin,
-            bounds.Y + WindowedEditModeScreenMargin);
-        Width = width;
-        Height = height;
-        // ViewModel.ActualClientBound = new Rect(0, 0, width, height);
-        LayoutContainerGrid.Width = width;
-        LayoutContainerGrid.Height = height;
-    }
     
     private void UpdateWindowPos(bool updateEffectWindow=false)
     {
-        if (ViewModel.IsEditMode)
-        {
-            NewWindowPosUpdateImpl();
-        }
-        else
-        {
-            OldWindowPosUpdateImpl(updateEffectWindow);
-        }
+        OldWindowPosUpdateImpl(updateEffectWindow);
     }
     
     public void GetCurrentDpi(out double dpiX, out double dpiY, Visual? visual=null)
@@ -1236,264 +1096,4 @@ public partial class MainWindow : Window, ITopmostEffectPlayer
     }
     #endregion
 
-    #region Edit Mode
-
-    private void NativeMenuItemEnterEditMode_OnClick(object? sender, EventArgs e)
-    {
-        EnterEditMode();
-    }
-
-    private void EnterEditMode()
-    {
-        if (ViewModel.IsEditMode)
-        {
-            return;
-        }
-
-        ViewModel.IsEditMode = true;
-    }
-
-    private void ButtonExitEditMode_OnClick(object? sender, RoutedEventArgs e)
-    {
-        ExitEditMode();
-    }
-
-    private void ExitEditMode()
-    {
-        if (ViewModel.EditModeView != null)
-        {
-            ViewModel.EditModeView.ViewModel.MainDrawerState = VerticalDrawerOpenState.Closed;
-            ViewModel.EditModeView.ViewModel.SecondaryDrawerState = VerticalDrawerOpenState.Closed;
-        }
-        ViewModel.IsEditMode = false;
-        MyWindow.GetState(this)?.AppToastAdorner?.Messages.Clear();
-        ComponentsService.SaveConfig();
-    }
-
-    private void ButtonOpenComponentsLib_OnClick(object? sender, RoutedEventArgs e)
-    {
-        ViewModel.EditModeView?.OpenComponentsLibDrawer();
-    }
-
-    private void ButtonOpenAppearanceSettings_OnClick(object? sender, RoutedEventArgs e)
-    {
-        ViewModel.EditModeView?.OpenAppearanceSettingsDrawer();
-    }
-    private void ListBoxMainWindowLineSettings_OnAttachedToVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
-    {
-        if (sender is not EditableComponentsListBox { Tag: MainWindowLineSettings settings } listBox)
-        {
-            return;
-        }
-
-        if (!ViewModel.ComponentsListBoxCache.Contains(listBox))
-        {
-            ViewModel.ComponentsListBoxCache.Add(listBox);
-            if (ViewModel.SelectedComponentSettings != null && settings.Children.Contains(ViewModel.SelectedComponentSettings))
-            {
-                listBox.SelectedItem = ViewModel.SelectedComponentSettings;
-            }
-        }
-        ViewModel.MainWindowLineListBoxCache[settings] = listBox;
-        ViewModel.MainWindowLineListBoxCacheReversed[listBox] = settings;
-    }
-
-    private void ListBoxMainWindowLineSettings_OnDetachedFromVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
-    {
-        if (sender is not EditableComponentsListBox listBox)
-        {
-            return;
-        }
-
-        var settings = ViewModel.MainWindowLineListBoxCacheReversed.GetValueOrDefault(listBox);
-        if (settings != null)
-        {
-            ViewModel.MainWindowLineListBoxCache.Remove(settings);
-        }
-        ViewModel.MainWindowLineListBoxCacheReversed.Remove(listBox);
-        while (ViewModel.ComponentsListBoxCache.Contains(listBox))
-        {
-            ViewModel.ComponentsListBoxCache.Remove(listBox);
-        }
-    }
-    
-    private void ListBoxContainerComponent_OnAttachedToVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
-    {
-        if (sender is not EditableComponentsListBox { Tag: EditModeContainerComponentInfo settings } listBox)
-        {
-            return;
-        }
-
-        if (!ViewModel.ComponentsListBoxCache.Contains(listBox))
-        {
-            ViewModel.ComponentsListBoxCache.Add(listBox);
-            if (ViewModel.SelectedComponentSettings != null && settings.Settings.Children?.Contains(ViewModel.SelectedComponentSettings) == true)
-            {
-                listBox.SelectedItem = ViewModel.SelectedComponentSettings;
-            }
-        }
-        ViewModel.ContainerComponentListBoxCache[settings] = listBox;
-        ViewModel.ContainerComponentListBoxCacheReversed[listBox] = settings;
-    }
-
-    private void ListBoxContainerComponent_OnDetachedFromVisualTree(object? sender, VisualTreeAttachmentEventArgs e)
-    {
-        if (sender is not EditableComponentsListBox listBox)
-        {
-            return;
-        }
-
-        var settings = ViewModel.ContainerComponentListBoxCacheReversed.GetValueOrDefault(listBox);
-        if (settings != null)
-        {
-            ViewModel.ContainerComponentListBoxCache.Remove(settings);
-        }
-        ViewModel.ContainerComponentListBoxCacheReversed.Remove(listBox);
-        while (ViewModel.ComponentsListBoxCache.Contains(listBox))
-        {
-            ViewModel.ComponentsListBoxCache.Remove(listBox);
-        }
-    }
-    
-    private void SelectorComponents_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-        if (!ViewModel.IsEditMode 
-            || e.AddedItems.Count <= 0 || e.AddedItems[0] is not ComponentSettings settings 
-            || sender is not EditableComponentsListBox { ItemsSource: IList<ComponentSettings> list } 
-            || !list.Contains(settings))
-        {
-            // UpdateSettingsVisibility();
-            return;
-        }
-        foreach (var listBox in ViewModel.ComponentsListBoxCache.Where(x => !Equals(x, sender)))
-        {
-            listBox.SelectedItem = null;
-        }
-        ViewModel.SelectedComponentSettings = settings;
-    }
-
-    private void MainWindowEditSurface_OnPointerPressed(object? sender, PointerPressedEventArgs e)
-    {
-        if (!ViewModel.IsEditMode
-            || e.Handled
-            || e.GetCurrentPoint(this).Properties.IsLeftButtonPressed == false
-            || !Equals(e.Source, ZoomBorder))
-        {
-            return;
-        }
-        ClearSelectedComponent();
-    }
-
-    private void ClearSelectedComponent()
-    {
-        foreach (var listBox in ViewModel.ComponentsListBoxCache)
-        {
-            listBox.SelectedItem = null;
-        }
-
-        ViewModel.SelectedComponentSettings = null;
-        if (ViewModel.EditModeView != null && ViewModel.EditModeView.ViewModel.MainDrawerContent == ViewModel.EditModeView.FindResource("ComponentSettingsDrawer"))
-        {
-            ViewModel.EditModeView.ViewModel.MainDrawerState = VerticalDrawerOpenState.Closed;
-        }
-    }
-
-    [RelayCommand]
-    public void ShowComponentSettings(ComponentSettings? component)
-    {
-        ViewModel.EditModeView?.ShowComponentSettings();
-    }
-
-    [RelayCommand]
-    public void CloseContainerComponent(EditModeContainerComponentInfo? info)
-    {
-        ViewModel.EditModeView?.CloseContainerComponent(info);
-    }
-    
-    private void EditableComponentsListBox_OnRequestOpenChildComponents(object? sender, EditableComponentsListBoxEventArgs e)
-    {
-        ViewModel.EditModeView?.OpenChildComponents(e.Settings, e.ComponentStack, GetContainerComponentEditContainerInitPos(e.ItemPosition));
-    }
-    
-    private void EditableComponentsListBox_OnComponentDeleted(object? sender, EditableComponentsListBoxEventArgs e)
-    {
-        ClearSelectedComponent();
-    }
-
-    public Point GetContainerComponentEditContainerInitPos(Point pos)
-    {
-        var transform = this.TransformToVisual(ContainerComponentsEditHost);
-        var pointInCanvas = transform?.Transform(pos);
-        if (pointInCanvas == null) 
-            return new Point();
-        var newPoint = new Point(pointInCanvas.Value.X, pointInCanvas.Value.Y + 48);
-        return newPoint;
-    }
-    
-    private void ToggleButtonIsMainLine_OnIsCheckedChanged(object? sender, RoutedEventArgs e)
-    {
-        if (sender is not ToggleButton button)
-        {
-            return;
-        }
-
-        foreach (var line in ComponentsService.CurrentComponents.Lines.Where(x => !Equals(button.DataContext, x)))
-        {
-            line.IsMainLine = false;
-        }
-
-        if (button.IsChecked == false)
-        {
-            var firstLine = ComponentsService.CurrentComponents.Lines.FirstOrDefault();
-            if (firstLine != null) 
-                firstLine.IsMainLine = true;
-            this.ShowToast("已将第一行设置为主要行。");
-        }
-    }
-
-    private void ToggleButtonIsNotificationEnabled_OnIsCheckedChanged(object? sender, RoutedEventArgs e)
-    {
-        if (!ComponentsService.CurrentComponents.Lines.Any(x => x.IsNotificationEnabled))
-        {
-            this.ShowWarningToast("您已经禁用了所有主界面行的提醒显示功能。如果没有插件注册其它提醒消费者，提醒将不会显示，也不会播放提醒音效、特效和语音。");
-        }
-    }
-
-    [RelayCommand]
-    private void RemoveMainWindowLine(MainWindowLineSettings? settings)
-    {
-        if (settings == null)
-        {
-            return;
-        }
-        if (ComponentsService.CurrentComponents.Lines.Count <= 1)
-        {
-            this.ShowWarningToast("至少需要保留 1 个主界面行。");
-            return;
-        }
-
-        ComponentsService.CurrentComponents.Lines.Remove(settings);
-    }
-
-    [RelayCommand]
-    private void OpenMainWindowLineSettings(MainWindowLineSettings? settings)
-    {
-        if (settings != null) ViewModel.EditModeView?.OpenMainWindowLineSettings(settings);
-    }
-    
-    private void ButtonNewMainWindowLine_OnClick(object? sender, RoutedEventArgs e)
-    {
-        ComponentsService.CurrentComponents.Lines.Add(new MainWindowLineSettings());
-    }
-    
-    private void ButtonManageComponentLayouts_OnClick(object? sender, RoutedEventArgs e)
-    {
-        ViewModel.EditModeView?.OpenComponentLayoutsManagerDrawer();
-    }
-    
-    private void EditableComponentsListBox_OnRequestAddComponent(object? sender, RequestAddComponentEventArgs e)
-    {
-        ViewModel.EditModeView?.OpenComponentsLibDrawer(e.ComponentList);
-    }
-    #endregion
 }
